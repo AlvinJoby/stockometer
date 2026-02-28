@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Stockometer</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="/static/index.css">
+</head>
+<body>
+
+    <div class="wrapper">
+        <h1 class="title">STOCKOMETER</h1>
+        <p class="subtitle">Analyze historical performance in seconds</p>
+
+        <form method="POST" action="/analyze" class="form">
+
+            <div class="symbol-input">
+                <input 
+                    type="text" 
+                    name="symbol" 
+                    placeholder="Enter stock symbol (e.g. AAPL, TSLA, INFY.NS)"
+                    required
+                >
+            </div>
+
+            <div class="date-row">
+                <div class="date-box">
+                    <label>Start Date</label>
+                    <input type="date" name="start_date" required>
+                </div>
+
+                <div class="date-box">
+                    <label>End Date</label>
+                    <input type="date" name="end_date" required>
+                </div>
+            </div>
+
+            <button type="submit">Analyze</button>
+
+        </form>
+    </div>
+
+</body>
+
+</html>

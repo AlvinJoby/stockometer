@@ -1,0 +1,119 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Inter', sans-serif;
+    background: #f5f7fa;
+    color: #111;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    padding-top: 100px;   /* Moves heading slightly up */
+}
+
+.wrapper {
+    width: 100%;
+    max-width: 720px;
+    text-align: center;
+    padding: 20px;
+}
+
+.title {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 54px;
+    font-weight: 700;
+    letter-spacing: 4px;
+    margin-bottom: 10px;
+}
+
+.subtitle {
+    font-size: 18px;
+    color: #6b7280;
+    margin-bottom: 50px;
+}
+
+.form {
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+}
+
+/* BIG PILL INPUT */
+.symbol-input input {
+    width: 100%;
+    padding: 22px 30px;
+    font-size: 18px;
+    border-radius: 50px;
+    border: 1px solid #e5e7eb;
+    outline: none;
+    transition: 0.3s ease;
+    background: white;
+}
+
+.symbol-input input:focus {
+    border-color: #4f46e5;
+    box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.15);
+}
+
+/* DATE SECTION */
+.date-row {
+    display: flex;
+    gap: 20px;
+}
+
+.date-box {
+    flex: 1;
+    text-align: left;
+}
+
+.date-box label {
+    display: block;
+    font-size: 13px;
+    margin-bottom: 8px;
+    color: #4b5563;
+    font-weight: 500;
+}
+
+/* Modern Date Input */
+.date-box input {
+    width: 100%;
+    padding: 16px;
+    border-radius: 14px;
+    border: 1px solid #e5e7eb;
+    background: white;
+    font-size: 14px;
+    outline: none;
+    transition: 0.3s;
+}
+
+.date-box input:focus {
+    border-color: #4f46e5;
+    box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+}
+
+/* Improve default calendar icon */
+input[type="date"]::-webkit-calendar-picker-indicator {
+    cursor: pointer;
+    opacity: 0.6;
+}
+
+button {
+    padding: 16px;
+    border-radius: 14px;
+    border: none;
+    background: #111827;
+    color: white;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: 0.3s ease;
+}
+
+button:hover {
+    background: #1f2937;
+    transform: translateY(-2px);
+}
