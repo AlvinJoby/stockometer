@@ -12,7 +12,7 @@ body {
     display: flex;
     justify-content: center;
     align-items: flex-start;
-    padding-top: 100px;   /* Moves heading slightly up */
+    padding-top: 100px;
 }
 
 .wrapper {
@@ -42,7 +42,6 @@ body {
     gap: 30px;
 }
 
-/* BIG PILL INPUT */
 .symbol-input input {
     width: 100%;
     padding: 22px 30px;
@@ -59,7 +58,6 @@ body {
     box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.15);
 }
 
-/* DATE SECTION */
 .date-row {
     display: flex;
     gap: 20px;
@@ -78,7 +76,6 @@ body {
     font-weight: 500;
 }
 
-/* Modern Date Input */
 .date-box input {
     width: 100%;
     padding: 16px;
@@ -95,7 +92,6 @@ body {
     box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
 }
 
-/* Improve default calendar icon */
 input[type="date"]::-webkit-calendar-picker-indicator {
     cursor: pointer;
     opacity: 0.6;

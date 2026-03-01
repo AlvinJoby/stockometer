@@ -1,0 +1,19 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Arial, sans-serif;
+}
+
+.navbar {
+    background-color: #111;
+    padding: 15px 30px;
+    position: sticky;
+    top: 0;
+}
+
+.navbar h1 {
+    margin: 0;
+    color: white;
+    font-size: 22px;
+}
