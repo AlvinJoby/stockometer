@@ -58,45 +58,6 @@ body {
     box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.15);
 }
 
-.date-row {
-    display: flex;
-    gap: 20px;
-}
-
-.date-box {
-    flex: 1;
-    text-align: left;
-}
-
-.date-box label {
-    display: block;
-    font-size: 13px;
-    margin-bottom: 8px;
-    color: #4b5563;
-    font-weight: 500;
-}
-
-.date-box input {
-    width: 100%;
-    padding: 16px;
-    border-radius: 14px;
-    border: 1px solid #e5e7eb;
-    background: white;
-    font-size: 14px;
-    outline: none;
-    transition: 0.3s;
-}
-
-.date-box input:focus {
-    border-color: #4f46e5;
-    box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
-}
-
-input[type="date"]::-webkit-calendar-picker-indicator {
-    cursor: pointer;
-    opacity: 0.6;
-}
-
 button {
     padding: 16px;
     border-radius: 14px;

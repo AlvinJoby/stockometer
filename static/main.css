@@ -6,8 +6,8 @@
 }
 
 .navbar {
-    background-color: #111;
-    padding: 15px 30px;
+    background-color: #4434a9;
+    padding: 10px 30px;
     position: sticky;
     top: 0;
 }
@@ -16,4 +16,12 @@
     margin: 0;
     color: white;
     font-size: 22px;
+}
+
+.symbol_name {
+    padding: 20px 20px;
+    padding-bottom: 0;
+    color: white;
+    background-color: #06090f;
+    font-size: 23px;
 }

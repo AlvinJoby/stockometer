@@ -1,10 +1,10 @@
 import yfinance as yf
 import pandas as pd
 
-def retrieve_data(symbol,start_date,end_date):
+def retrieve_data(symbol):
 
     try:
-        data = yf.download(symbol,start=start_date,end=end_date)
+        data = yf.download(symbol,period="1y")
         data.columns = ['_'.join(col) for col in data.columns]
         return data
     except Exception as e:

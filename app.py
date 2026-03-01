@@ -14,20 +14,16 @@ def home():
 @app.route('/analyze',  methods=['POST'])
 def analyze():
     symbol = request.form.get("symbol")
-    start_date = request.form.get("start_date") 
-    end_date = request.form.get("end_date")
-    print(symbol," ",start_date," ",end_date)
-
-    validation_result = validateInput(symbol,start_date,end_date)
+    validation_result = validateInput(symbol)
     
 
     if not validation_result["status"]:
         return validation_result["error"]
     
-    data = retrieve_data(symbol,start_date,end_date)
+    data = retrieve_data(symbol)
     graphPlot = generate_graph(data,symbol)
 
-    return render_template("main.html",graph=graphPlot)
+    return render_template("main.html",graph=graphPlot,symbol_name=symbol)
 
 
 if __name__ == "__main__":
