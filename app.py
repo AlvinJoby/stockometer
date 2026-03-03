@@ -2,7 +2,7 @@ from flask import Flask,render_template,request
 from validation import validateInput
 from retrieveData import retrieve_data,retrieve_ltp,retrieve_companyInfo
 from graph import generate_graph
-from analysis.company_data import companyData,format_large_number
+from analysis.company_data import companyData,format_number
 import pandas as pd
 
 
@@ -28,9 +28,9 @@ def analyze():
     ticker = retrieve_companyInfo(symbol)
     company= companyData(ticker)
 
-    company["marketCap"] = format_large_number(company["marketCap"])
-    company["totalRevenue"] = format_large_number(company["totalRevenue"])
-    company["netIncomeToCommon"] = format_large_number(company["netIncomeToCommon"])
+    company["marketCap"] = format_number(company["marketCap"])
+    company["totalRevenue"] = format_number(company["totalRevenue"])
+    company["netIncomeToCommon"] = format_number(company["netIncomeToCommon"])
     company["profitMargins"] = f"{company['profitMargins'] * 100:.2f}%"
 
     return render_template("main.html",graph=graphPlot,symbol_name=ticker.info['longName'],

@@ -20,7 +20,7 @@ def companyData(ticker):
 
     return company_data
 
-def format_large_number(value):
+def format_number(value):
     if value is None:
         return "N/A"
 
