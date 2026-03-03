@@ -1,20 +1,102 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="{{ url_for('static', filename='main.css') }}">
     <title>Overview</title>
 </head>
+
 <body>
+
     <div class="navbar">
         <h1>Stockometer</h1>
     </div>
-    <div class="symbol_name">
-        <h2>{{ symbol_name }} - Price Chart</h2>
+
+    <div class="symbol_header">
+        <h2>{{ symbol_name }}</h2>
+
+        <div id="ltp_area">
+
+            <span class="ltp-price 
+        {{ 'positive' if percentChange > 0 
+           else 'negative' if percentChange < 0 
+           else 'neutral' }}">
+                {{ "%.2f"|format(tLTP) }}
+            </span><span id="currency">{{ currency }}</span>
+
+            <span class="ltp-change">
+                ({% if percentChange > 0 %}
+                +{{ "%.2f"|format(percentChange) }}%
+                {% else %}
+                {{ "%.2f"|format(percentChange) }}%
+                {% endif %})
+            </span>
+
+        </div>
+
+        <div class="graph">
+            {{ graph | safe }}
+        </div>
+        
+
+        <section class="metrics-wrapper">
+
+    <div class="metrics-panel">
+
+        <div class="panel-header">
+            <span class="panel-eyebrow">Insights</span>
+            <h2>More About {{ company.longName }}</h2>
+        </div>
+
+        <div class="metrics-grid">
+
+            <div class="metric">
+                <span>Market Cap</span>
+                <strong>{{ company.marketCap }}</strong>
+            </div>
+
+            <div class="metric">
+                <span>Revenue</span>
+                <strong>{{ company.totalRevenue }}</strong>
+            </div>
+
+            <div class="metric">
+                <span>Net Income</span>
+                <strong>{{ company.netIncomeToCommon }}</strong>
+            </div>
+
+            <div class="metric">
+                <span>P/E Ratio</span>
+                <strong>{{ "%.3f"|format(company.trailingPE) }}</strong>
+            </div>
+
+            <div class="metric">
+                <span>Profit Margin</span>
+                <strong>{{ company.profitMargins }}</strong>
+            </div>
+
+            <div class="metric">
+                <span>Beta</span>
+                <strong>{{ company.beta }}</strong>
+            </div>
+
+            <div class="metric">
+                <span>Price to Book</span>
+                <strong>{{ "%.3f"|format(company.priceToBook) }}</strong>
+            </div>
+
+            <div class="metric">
+                <span>52W Range</span>
+                <strong>{{ company.fiftyTwoWeekRange }}</strong>
+            </div>
+
+        </div>
+
     </div>
-    <div class="graph">
-        {{ graph| safe }}
-    </div>
+
+</section>
 </body>
+
 </html>

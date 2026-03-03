@@ -38,7 +38,7 @@ def generate_graph(data, symbol):
         plot_bgcolor="#05080e",
         dragmode="pan",
         hovermode="x unified",
-        height=500,
+        height=520,
         margin=dict(l=10, r=10, t=20, b=40),
 
         showlegend=False

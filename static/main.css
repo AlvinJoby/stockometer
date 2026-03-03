@@ -10,6 +10,7 @@
     padding: 10px 30px;
     position: sticky;
     top: 0;
+    z-index: 1000;
 }
 
 .navbar h1 {
@@ -18,10 +19,132 @@
     font-size: 22px;
 }
 
-.symbol_name {
+.symbol_header {
     padding: 20px 20px;
     padding-bottom: 0;
     color: white;
     background-color: #06090f;
-    font-size: 23px;
+    font-size: 21px;
+}
+
+#ltp_area {
+    margin-top: 10px;
+    font-weight: bold;
+}
+
+.ltp-price {
+    margin-right: 10px;
+    font-size: 27px;
+}
+
+.ltp-price.positive {
+    color: #16c784;
+}
+
+.ltp-price.negative {
+    color: #ea3943;
+}
+
+.ltp-price.neutral {
+    color: #999999;
+}
+
+.ltp-change {
+    font-size: 22px;
+    color: #999999;
+}
+
+#currency {
+    font-size: 18px;
+    color: #cecdd1;
+}
+
+.metrics-wrapper {
+    margin-top: 100px;
+    width: 100%;
+}
+
+/* PANEL */
+.metrics-panel {
+    width: 98%;
+    margin: 0 auto;
+    padding: 70px 60px;
+    border-radius: 28px;
+
+    background: linear-gradient(
+        145deg,
+        rgba(255,255,255,0.9),
+        rgba(248,250,252,0.95)
+    );
+
+    backdrop-filter: blur(18px);
+
+    box-shadow:
+        0 20px 60px rgba(0,0,0,0.05),
+        0 5px 20px rgba(0,0,0,0.03);
+}
+
+/* HEADER INSIDE PANEL */
+.panel-header {
+    margin-bottom: 60px;
+    position: relative;
+}
+
+.panel-eyebrow {
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: #94a3b8;
+    display: block;
+    margin-bottom: 14px;
+}
+
+.panel-header h2 {
+    font-size: 28px;
+    font-weight: 500;
+    color: #0f172a;
+    line-height: 1.3;
+    position: relative;
+}
+
+/* Subtle accent line */
+.panel-header h2::after {
+    content: "";
+    display: block;
+    width: 60px;
+    height: 3px;
+    margin-top: 18px;
+    background: linear-gradient(to right, #6366f1, transparent);
+    border-radius: 2px;
+}
+
+/* GRID */
+.metrics-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 50px 70px;
+}
+
+/* METRIC */
+.metric {
+    transition: transform 0.25s ease;
+}
+
+.metric span {
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: #94a3b8;
+    display: block;
+    margin-bottom: 12px;
+}
+
+.metric strong {
+    font-size: 24px;
+    font-weight: 500;
+    color: #0f172a;
+}
+
+.metric:hover {
+    transform: translateY(-6px);
 }
