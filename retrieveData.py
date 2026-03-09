@@ -4,7 +4,7 @@ import pandas as pd
 def retrieve_data(symbol):
 
     try:
-        data = yf.download(symbol,period="6mo",interval="1d")
+        data = yf.download(symbol,period="1y",interval="1d")
         data.columns = ['_'.join(col) for col in data.columns]
         return data
     except Exception as e:

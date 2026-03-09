@@ -36,3 +36,22 @@ def calculate_rsi(data,symbol):
     #RSI
 
     data['RSI'] = 100-(100/(1+data['RS']))
+
+
+def mark_signals(data, symbol):
+
+    data["buy_RSI"] = None
+    data["sell_RSI"] = None
+
+    for i in range(1, len(data)):
+
+        prev_rsi = data.iloc[i-1]["RSI"]
+        curr_rsi = data.iloc[i]["RSI"]
+
+        if prev_rsi < 30 and curr_rsi > 30:
+            data.loc[data.index[i], "buy_RSI"] = data.iloc[i][colname(symbol,"Close")]
+
+        elif prev_rsi > 70 and curr_rsi < 70:
+            data.loc[data.index[i], "sell_RSI"] = data.iloc[i][colname(symbol,"Close")]
+
+    return data

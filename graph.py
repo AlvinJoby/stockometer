@@ -1,6 +1,7 @@
 import plotly.graph_objects as go
 import plotly.io as pio
 import pandas as pd
+import datetime
 from plotly.subplots import make_subplots
 from retrieveData import colname
 
@@ -71,6 +72,41 @@ def generate_graph(data, symbol, show_rsi=False):
             row=2,
             col=1
         )
+        fig.add_trace(
+            go.Scatter(
+                x=data.index,
+                y=data["buy_RSI"],
+                mode="markers+text",
+                text=["BUY"] * len(data),
+                textposition="top center",
+                marker=dict(
+                    symbol="triangle-up",
+                    color="#22c55e",
+                    size=12
+                ),
+                name="Buy"
+            ),
+            row=2,
+            col=1
+        )
+
+        fig.add_trace(
+            go.Scatter(
+                x=data.index,
+                y=data["sell_RSI"],
+                mode="markers+text",
+                text=["SELL"] * len(data),
+                textposition="bottom center",
+                marker=dict(
+                    symbol="triangle-down",
+                    color="#ef4444",
+                    size=12
+                ),
+                name="Sell"
+            ),
+            row=2,
+            col=1
+        )
 
         # RSI levels
         fig.add_hline(y=70, line_dash="dash", line_color="red", row=2, col=1)
@@ -120,6 +156,23 @@ def generate_graph(data, symbol, show_rsi=False):
 
     fig.update_yaxes(fixedrange=True)
 
+    fig.update_yaxes(fixedrange=True)
+
+    end_date = data.index[-1]
+    start_date = end_date - pd.DateOffset(months=6)
+
+    visible_data = data[data.index >= start_date]
+    y_min = float(visible_data[colname(symbol, "Low")].min())
+    y_max = float(visible_data[colname(symbol, "High")].max())
+    padding = (y_max - y_min) * 0.05
+
+    fig.update_xaxes(range=[start_date, end_date], fixedrange=False)
+
+    if show_rsi:
+        fig.update_yaxes(range=[y_min - padding, y_max + padding], fixedrange=True, row=1, col=1)
+    else:
+        fig.update_yaxes(range=[y_min - padding, y_max + padding], fixedrange=True)
+
     graph_html = pio.to_html(
         fig,
         full_html=False,
@@ -130,5 +183,6 @@ def generate_graph(data, symbol, show_rsi=False):
             "responsive": True
         }
     )
-
+    
+ 
     return graph_html
