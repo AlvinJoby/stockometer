@@ -18,7 +18,7 @@ document.addEventListener("mousemove", (e) => {
   const totalWidth = containerRect.width;
   const offsetX = e.clientX - containerRect.left;
 
-  const mainPct = Math.min(Math.max((offsetX / totalWidth) * 100, 40), 85);
+  const mainPct = Math.min(Math.max((offsetX / totalWidth) * 100, 70), 85);
   const returnsPct = 100 - mainPct - 0.4;
 
   mainPanel.style.flex = `0 0 ${mainPct}%`;
