@@ -177,7 +177,7 @@ def generate_graph(data, symbol, show_rsi=False):
         fig,
         full_html=False,
         config={
-            "scrollZoom": True,
+            "scrollZoom": False,
             "displaylogo": False,
             "displayModeBar": False,
             "responsive": True

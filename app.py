@@ -3,6 +3,7 @@ from validation import validateInput
 from retrieveData import retrieve_data,retrieve_ltp,retrieve_companyInfo
 from graph import generate_graph
 from analysis.rsi_indicator import calculate_rsi,mark_signals
+from analysis.periodic_returns import periodic_returns
 from analysis.company_data import companyData,format_number
 from analysis.daily_returns import price_change,dailyReturns
 import pandas as pd
@@ -44,12 +45,14 @@ def analyze():
     dailyReturns(data,symbol)
     calculate_rsi(data,symbol)
     mark_signals(data,symbol)
+    periodicReturns = periodic_returns(data,symbol)
+
 
     graphPlot = generate_graph(data,symbol,show_rsi=True)
 
     return render_template("main.html",graph=graphPlot,symbol_name=ticker.info['longName'],
                            tLTP=LTP['tLTP'],percentChange=LTP['percentChange'],
-                           currency=ticker.info['currency'],company=company)
+                           currency=ticker.info['currency'],company=company,periodicReturns=periodicReturns)
 
 
 if __name__ == "__main__":
