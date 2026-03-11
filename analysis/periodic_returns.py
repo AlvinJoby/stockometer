@@ -7,12 +7,11 @@ def periodic_returns(data,symbol):
         "1D": 1,
         "1W": 5,
         "1M": 21,
-        "6M": 126,
-        "1Y": 252
+        "6M": 126
     }
     returns = {}
     for label,period in periods.items():
-        return_series = adj_close.pct_change(period)
+        return_series = adj_close.pct_change(period)*100
         value = return_series.iloc[-1]
         returns[label] = value
     return returns

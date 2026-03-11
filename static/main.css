@@ -30,7 +30,6 @@
     padding-left: 14px;
 }
 
-/* accent bar left of brand name */
 .navbar h1::before {
     content: "";
     position: absolute;
@@ -43,7 +42,6 @@
     border-radius: 2px;
 }
 
-/* techy status chip */
 .navbar::after {
     content: "● LIVE";
     font-size: 10px;
@@ -101,7 +99,6 @@
     width: 100%;
 }
 
-/* PANEL */
 .metrics-panel {
     width: 98%;
     margin: 0 auto;
@@ -121,7 +118,6 @@
         0 5px 20px rgba(0,0,0,0.03);
 }
 
-/* HEADER INSIDE PANEL */
 .panel-header {
     margin-bottom: 60px;
     position: relative;
@@ -144,7 +140,6 @@
     position: relative;
 }
 
-/* Subtle accent line */
 .panel-header h2::after {
     content: "";
     display: block;
@@ -155,14 +150,12 @@
     border-radius: 2px;
 }
 
-/* GRID */
 .metrics-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
     gap: 50px 70px;
 }
 
-/* METRIC */
 .metric {
     transition: transform 0.05s ease;
 }
@@ -186,7 +179,6 @@
     transform: translateY(-6px);
 }
 
-/* ── DRAG DIVIDER ── */
 .divider {
     flex: 0 0 4px;
     background: #1a1f2e;
@@ -200,7 +192,6 @@
     background: #4a9eff;
 }
 
-/* ── TWO-PANEL LAYOUT ── */
 .front-layout {
     display: flex;
     align-items: stretch;
@@ -208,7 +199,7 @@
 }
 
 .main-panel {
-    flex: 0 0 80%;
+    flex: 0 0 85%;
     min-width: 0;
     background-color: #06090f;
 }
@@ -219,14 +210,13 @@
 }
 
 .returns-panel {
-    flex: 0 0 20%;
+    flex: 0 0 15%;
     padding: 18px;
     background: #0a0d16;
     border-left: 2px solid #4434a9;
     color: white;
     font-family: "Inter", sans-serif;
 }
-/* ───────────────────────── */
 
 .returns-title {
     font-size: 16px;
