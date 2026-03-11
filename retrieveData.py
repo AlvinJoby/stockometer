@@ -25,4 +25,5 @@ def retrieve_ltp(data,symbol):
 
 def retrieve_companyInfo(symbol):
     ticker = yf.Ticker(symbol)
+    print(ticker)
     return ticker

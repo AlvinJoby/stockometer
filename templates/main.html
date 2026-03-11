@@ -37,6 +37,45 @@
             </span>
           </div>
           {% endfor %}
+
+          <div class="metrics-box-section">
+            <h3 class="returns-title" style="margin-top: 20px;">Key Stats</h3>
+
+            <div class="stat-box {{ 'positive' if company.currentPrice > company.fiftyDayAverage else 'negative' }}">
+              <span class="stat-label">Day High</span>
+              <strong>{{ "%.2f"|format(company.dayHigh) }}</strong>
+            </div>
+
+            <div class="stat-box negative">
+              <span class="stat-label">Day Low</span>
+              <strong>{{ "%.2f"|format(company.dayLow) }}</strong>
+            </div>
+
+            <div class="stat-box {{ 'positive' if company.currentPrice > company.fiftyDayAverage else 'negative' }}">
+              <span class="stat-label">50D MA</span>
+              <strong>{{ "%.2f"|format(company.fiftyDayAverage) }}</strong>
+            </div>
+
+            <div class="stat-box {{ 'positive' if company.currentPrice > company.fiftyTwoWeekLow else 'negative' }}">
+              <span class="stat-label">52W High</span>
+              <strong>{{ "%.2f"|format(company.fiftyTwoWeekHigh) }}</strong>
+            </div>
+
+            <div class="stat-box negative">
+              <span class="stat-label">52W Low</span>
+              <strong>{{ "%.2f"|format(company.fiftyTwoWeekLow) }}</strong>
+            </div>
+
+            <div class="stat-box {{ 'positive' if company.trailingPE and company.trailingPE < 25 else 'negative' }}">
+              <span class="stat-label">P/E Ratio</span>
+              <strong>{{ "%.2f"|format(company.trailingPE) if company.trailingPE else 'N/A' }}</strong>
+            </div>
+
+            <div class="stat-box {{ 'positive' if company.dividendYield and company.dividendYield > 0 else 'negative' }}">
+              <span class="stat-label">Div Yield</span>
+              <strong>{{ "%.2f"|format(company.dividendYield * 100) ~ '%' if company.dividendYield else 'N/A' }}</strong>
+            </div>
+          </div>
         </div>
       </div>
       <section class="metrics-wrapper">

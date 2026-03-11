@@ -13,7 +13,14 @@ def companyData(ticker):
         "netIncomeToCommon",
         "profitMargins",
         "beta",
-        "fiftyTwoWeekRange"
+        "fiftyTwoWeekRange",
+        "currentPrice",
+        "dayHigh",
+        "dayLow",
+        "fiftyDayAverage",
+        "fiftyTwoWeekHigh",
+        "fiftyTwoWeekLow",
+        "dividendYield",
     ]
 
     company_data = {field: info.get(field) for field in required_fields}
