@@ -6,7 +6,7 @@ from plotly.subplots import make_subplots
 from retrieveData import colname
 
 
-def generate_graph(data, symbol, show_rsi=False):
+def generate_graph(data, symbol, show_rsi=True):
 
     # Create figure depending on RSI selection
     if show_rsi:
@@ -50,10 +50,33 @@ def generate_graph(data, symbol, show_rsi=False):
         )
     )
 
+
     if show_rsi:
         fig.add_trace(candle, row=1, col=1)
     else:
         fig.add_trace(candle)
+
+    if show_rsi:
+        fig.add_trace(
+            go.Scatter(
+                x=data.index,
+                y=data["sma_indicator"],
+                mode="lines",
+                name="SMA",
+                line=dict(color="#facc15", width=3)
+            ),
+            row=1, col=1
+        )
+    else:
+        fig.add_trace(
+            go.Scatter(
+                x=data.index,
+                y=data["sma_indicator"],
+                mode="lines",
+                name="SMA",
+                line=dict(color="#facc15", width=3)
+            )
+        )
 
     # -----------------------
     # RSI PANEL
