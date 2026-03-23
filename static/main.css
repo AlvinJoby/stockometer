@@ -270,3 +270,153 @@
 
 .stat-box.positive strong { color: #22c55e; }
 .stat-box.negative strong { color: #ef4444; }
+
+/* ── MOBILE ── */
+@media (max-width: 768px) {
+
+    .navbar {
+        padding: 14px 20px;
+    }
+
+    .navbar h1 {
+        font-size: 15px;
+        letter-spacing: 3px;
+    }
+
+    /* stack panels vertically */
+    .front-layout {
+        flex-direction: column;
+    }
+
+    .main-panel {
+        flex: 1 1 auto;
+        width: 100%;
+    }
+
+    /* hide drag divider on mobile */
+    .divider {
+        display: none;
+    }
+
+    /* side panel full width below chart */
+    .returns-panel {
+        flex: 1 1 auto;
+        width: 100%;
+        border-left: none;
+        border-top: 1px solid #1e2330;
+        padding: 20px 16px 28px;
+        background: #0d0f14;
+    }
+
+    /* section title — smaller, muted, uppercase label style */
+    .returns-title {
+        font-size: 10px;
+        font-weight: 600;
+        letter-spacing: 2.5px;
+        text-transform: uppercase;
+        color: #4a5568;
+        margin-bottom: 10px;
+        margin-top: 4px;
+    }
+
+    /* performance: horizontal pill row */
+    .return-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0;
+        border-bottom: none;
+        background: #13151c;
+        border-radius: 8px;
+        padding: 10px 14px;
+        margin-bottom: 6px;
+    }
+
+    .return-label {
+        font-size: 13px;
+        font-weight: 500;
+        color: #6b7280;
+        letter-spacing: 0.5px;
+    }
+
+    .return-value {
+        font-size: 14px;
+        font-weight: 700;
+        letter-spacing: 0.3px;
+    }
+
+    /* key stats: tight 2-col card grid */
+    .metrics-box-section {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 6px;
+        margin-top: 8px;
+    }
+
+    .stat-box {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 6px;
+        padding: 12px 14px;
+        border-radius: 10px;
+        margin-bottom: 0;
+    }
+
+    .stat-label {
+        font-size: 10px;
+        letter-spacing: 1.5px;
+        color: #4a5568;
+        font-weight: 600;
+    }
+
+    .stat-box strong {
+        font-size: 16px;
+        font-weight: 700;
+        letter-spacing: 0.3px;
+    }
+
+    /* symbol header */
+    .symbol_header {
+        padding: 14px 14px 0 14px;
+        font-size: 18px;
+    }
+
+    .ltp-price {
+        font-size: 22px;
+    }
+
+    .ltp-change {
+        font-size: 16px;
+    }
+
+    #currency {
+        font-size: 14px;
+    }
+
+    /* bottom metrics panel */
+    .metrics-wrapper {
+        margin-top: 40px;
+    }
+
+    .metrics-panel {
+        padding: 32px 20px;
+        border-radius: 16px;
+    }
+
+    .panel-header {
+        margin-bottom: 32px;
+    }
+
+    .panel-header h2 {
+        font-size: 20px;
+    }
+
+    .metrics-grid {
+        grid-template-columns: 1fr 1fr;
+        gap: 28px 24px;
+    }
+
+    .metric strong {
+        font-size: 18px;
+    }
+}
