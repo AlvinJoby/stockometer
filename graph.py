@@ -67,6 +67,16 @@ def generate_graph(data, symbol, show_rsi=True):
             ),
             row=1, col=1
         )
+        fig.add_trace(
+            go.Scatter(
+                x=data.index,
+                y=data["ema_indicator"],
+                mode="lines",
+                name="EMA",
+                line=dict(color="#21AB21", width=3)
+            ),
+            row=1, col=1
+        )
     else:
         fig.add_trace(
             go.Scatter(
@@ -75,6 +85,15 @@ def generate_graph(data, symbol, show_rsi=True):
                 mode="lines",
                 name="SMA",
                 line=dict(color="#facc15", width=3)
+            )
+        )
+        fig.add_trace(
+            go.Scatter(
+                x=data.index,
+                y=data["ema_indicator"],
+                mode="lines",
+                name="EMA",
+                line=dict(color="#21AB21", width=3)
             )
         )
 
@@ -192,9 +211,9 @@ def generate_graph(data, symbol, show_rsi=True):
     fig.update_xaxes(range=[start_date, end_date], fixedrange=False)
 
     if show_rsi:
-        fig.update_yaxes(range=[y_min - padding, y_max + padding], fixedrange=True, row=1, col=1)
+        fig.update_yaxes(range=[y_min - padding, y_max + padding], fixedrange=False, row=1, col=1)
     else:
-        fig.update_yaxes(range=[y_min - padding, y_max + padding], fixedrange=True)
+        fig.update_yaxes(range=[y_min - padding, y_max + padding], fixedrange=False)
 
     graph_html = pio.to_html(
         fig,

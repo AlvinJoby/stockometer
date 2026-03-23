@@ -3,7 +3,7 @@ from validation import validateInput
 from retrieveData import retrieve_data,retrieve_ltp,retrieve_companyInfo
 from graph import generate_graph
 from analysis.rsi_indicator import calculate_rsi,mark_signals
-from analysis.sma_indicator import calculate_sma
+from analysis.ma_indicator import calculate_sma,calculate_ema
 from analysis.periodic_returns import periodic_returns
 from analysis.company_data import companyData,format_number
 from analysis.daily_returns import price_change,dailyReturns
@@ -45,7 +45,8 @@ def analyze():
     price_change(data,symbol)
     dailyReturns(data,symbol)
     calculate_rsi(data,symbol)
-    calculate_sma(data,symbol,200)
+    calculate_sma(data,symbol,20)
+    calculate_ema(data,symbol,20)
 
     mark_signals(data,symbol)
     periodicReturns = periodic_returns(data,symbol)
