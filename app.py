@@ -7,6 +7,7 @@ from analysis.ma_indicator import calculate_sma,calculate_ema
 from analysis.periodic_returns import periodic_returns
 from analysis.company_data import companyData,format_number
 from analysis.daily_returns import price_change,dailyReturns
+from analysis.buysell_marker import marking_bs
 import pandas as pd
 
 import config
@@ -47,6 +48,7 @@ def analyze():
     calculate_rsi(data,symbol)
     calculate_sma(data,symbol,20)
     calculate_ema(data,symbol,20)
+    marking_bs(data,symbol)
 
     mark_signals(data,symbol)
     periodicReturns = periodic_returns(data,symbol)
