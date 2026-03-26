@@ -6,5 +6,9 @@ def calculate_sma(data,symbol,period):
     return data
 
 def calculate_ema(data,symbol,period):
-    data['ema_indicator'] = (data[colname(symbol,'Close')].ewm(span=period,adjust=False)).mean()
+    data['ema_'+str(period)] = (data[colname(symbol,'Close')].ewm(span=period,adjust=False)).mean()
+    return data
+
+def custom_ema(data,period,column,cname):
+    data[cname] = (data[column].ewm(span=period,adjust=False)).mean()
     return data

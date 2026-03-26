@@ -13,8 +13,8 @@ def marking_bs(data,symbol):
     rsi_cross_up = prev_rsi < 30 and curr_rsi > 30
     rsi_cross_down = prev_rsi > 70 and curr_rsi < 70
 
-    uptrend = data[colname(symbol,'Close')].iloc[-1] > data['ema_indicator'].iloc[-1]
-    downtrend = data[colname(symbol,'Close')].iloc[-1] < data['ema_indicator'].iloc[-1]
+    uptrend = data[colname(symbol,'Close')].iloc[-1] > data['ema_20'].iloc[-1]
+    downtrend = data[colname(symbol,'Close')].iloc[-1] < data['ema_20'].iloc[-1]
 
     buy_signal = rsi_cross_up and uptrend
     sell_signal = rsi_cross_down and downtrend

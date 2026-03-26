@@ -1,29 +1,29 @@
 import plotly.graph_objects as go
 import plotly.io as pio
 import pandas as pd
-import datetime
 from plotly.subplots import make_subplots
 from retrieveData import colname
 
 
 def generate_graph(data, symbol, show_rsi=True):
 
-    # Create figure depending on RSI selection
+    # -----------------------
+    # Create Figure
+    # -----------------------
     if show_rsi:
         fig = make_subplots(
-            rows=2,
+            rows=3,
             cols=1,
             shared_xaxes=True,
             vertical_spacing=0.04,
-            row_heights=[0.7, 0.3]
+            row_heights=[0.6, 0.2, 0.2]
         )
     else:
         fig = go.Figure()
 
     # -----------------------
-    # Candlestick chart
+    # Candlestick
     # -----------------------
-
     candle = go.Candlestick(
         x=data.index,
         open=data[colname(symbol, "Open")],
@@ -31,16 +31,8 @@ def generate_graph(data, symbol, show_rsi=True):
         low=data[colname(symbol, "Low")],
         close=data[colname(symbol, "Close")],
         name="Price",
-
-        increasing=dict(
-            line=dict(color="#22c55e", width=1),
-            fillcolor="#22c55e"
-        ),
-        decreasing=dict(
-            line=dict(color="#ef4444", width=1),
-            fillcolor="#ef4444"
-        ),
-
+        increasing=dict(line=dict(color="#22c55e", width=1), fillcolor="#22c55e"),
+        decreasing=dict(line=dict(color="#ef4444", width=1), fillcolor="#ef4444"),
         hovertemplate=(
             "Open: %{open:.2f}<br>"
             "High: %{high:.2f}<br>"
@@ -50,12 +42,14 @@ def generate_graph(data, symbol, show_rsi=True):
         )
     )
 
-
     if show_rsi:
         fig.add_trace(candle, row=1, col=1)
     else:
         fig.add_trace(candle)
 
+    # -----------------------
+    # SMA + EMA
+    # -----------------------
     if show_rsi:
         fig.add_trace(
             go.Scatter(
@@ -70,7 +64,7 @@ def generate_graph(data, symbol, show_rsi=True):
         fig.add_trace(
             go.Scatter(
                 x=data.index,
-                y=data["ema_indicator"],
+                y=data["ema_20"],
                 mode="lines",
                 name="EMA",
                 line=dict(color="#21AB21", width=3)
@@ -90,7 +84,7 @@ def generate_graph(data, symbol, show_rsi=True):
         fig.add_trace(
             go.Scatter(
                 x=data.index,
-                y=data["ema_indicator"],
+                y=data["ema_20"],
                 mode="lines",
                 name="EMA",
                 line=dict(color="#21AB21", width=3)
@@ -100,7 +94,6 @@ def generate_graph(data, symbol, show_rsi=True):
     # -----------------------
     # RSI PANEL
     # -----------------------
-
     if show_rsi:
 
         fig.add_trace(
@@ -111,25 +104,23 @@ def generate_graph(data, symbol, show_rsi=True):
                 name="RSI",
                 line=dict(color="#3b82f6", width=3)
             ),
-            row=2,
-            col=1
+            row=2, col=1
         )
+
         fig.add_trace(
             go.Scatter(
                 x=data.index,
                 y=data["buy_RSI"],
                 mode="markers+text",
-                text=["BUY"] * len(data),
+                text=[
+                    "BUY" if pd.notna(val) else ""
+                    for val in data["buy_RSI"]
+                ],
                 textposition="top center",
-                marker=dict(
-                    symbol="triangle-up",
-                    color="#22c55e",
-                    size=12
-                ),
+                marker=dict(symbol="triangle-up", color="#22c55e", size=12),
                 name="Buy"
             ),
-            row=2,
-            col=1
+            row=2, col=1
         )
 
         fig.add_trace(
@@ -137,17 +128,15 @@ def generate_graph(data, symbol, show_rsi=True):
                 x=data.index,
                 y=data["sell_RSI"],
                 mode="markers+text",
-                text=["SELL"] * len(data),
+                text=[
+                    "SELL" if pd.notna(val) else ""
+                    for val in data["sell_RSI"]
+                ],
                 textposition="bottom center",
-                marker=dict(
-                    symbol="triangle-down",
-                    color="#ef4444",
-                    size=12
-                ),
+                marker=dict(symbol="triangle-down", color="#ef4444", size=12),
                 name="Sell"
             ),
-            row=2,
-            col=1
+            row=2, col=1
         )
 
         # RSI levels
@@ -157,18 +146,62 @@ def generate_graph(data, symbol, show_rsi=True):
 
         fig.update_yaxes(range=[0, 100], row=2, col=1)
 
+    # -----------------------
+    # MACD PANEL
+    # -----------------------
+    if show_rsi:
+
+        fig.add_trace(
+            go.Bar(
+                x=data.index,
+                y=data["macd_histogram"],
+                name="MACD Histogram",
+                marker=dict(
+                    color=[
+                        "#22c55e" if (pd.notna(val) and val >= 0)
+                        else "#ef4444" if (pd.notna(val) and val < 0)
+                        else "#000000"
+                        for val in data["macd_histogram"]
+                    ]
+                )
+            ),
+            row=3, col=1
+        )
+
+        fig.add_trace(
+            go.Scatter(
+                x=data.index,
+                y=data["macd_indicator"],
+                mode="lines",
+                name="MACD",
+                line=dict(color="#3b82f6", width=2)
+            ),
+            row=3, col=1
+        )
+
+        fig.add_trace(
+            go.Scatter(
+                x=data.index,
+                y=data["macd_ema"],
+                mode="lines",
+                name="Signal",
+                line=dict(color="#facc15", width=2)
+            ),
+            row=3, col=1
+        )
+
+        fig.add_hline(y=0, line_dash="dot", line_color="gray", row=3, col=1)
 
     # -----------------------
     # Layout
     # -----------------------
-
     fig.update_layout(
         template="plotly_dark",
         paper_bgcolor="#06090f",
         plot_bgcolor="#05080e",
         dragmode="pan",
         hovermode="x unified",
-        height=650 if show_rsi else 520,
+        height=750 if show_rsi else 600,
         margin=dict(l=10, r=10, t=20, b=40),
         showlegend=False
     )
@@ -198,8 +231,9 @@ def generate_graph(data, symbol, show_rsi=True):
 
     fig.update_yaxes(fixedrange=True)
 
-    fig.update_yaxes(fixedrange=True)
-
+    # -----------------------
+    # Zoom (6 months)
+    # -----------------------
     end_date = data.index[-1]
     start_date = end_date - pd.DateOffset(months=6)
 
@@ -211,10 +245,20 @@ def generate_graph(data, symbol, show_rsi=True):
     fig.update_xaxes(range=[start_date, end_date], fixedrange=False)
 
     if show_rsi:
-        fig.update_yaxes(range=[y_min - padding, y_max + padding], fixedrange=False, row=1, col=1)
+        fig.update_yaxes(
+            range=[y_min - padding, y_max + padding],
+            fixedrange=False,
+            row=1, col=1
+        )
     else:
-        fig.update_yaxes(range=[y_min - padding, y_max + padding], fixedrange=False)
+        fig.update_yaxes(
+            range=[y_min - padding, y_max + padding],
+            fixedrange=False
+        )
 
+    # -----------------------
+    # Export HTML
+    # -----------------------
     graph_html = pio.to_html(
         fig,
         full_html=False,
@@ -225,6 +269,5 @@ def generate_graph(data, symbol, show_rsi=True):
             "responsive": True
         }
     )
-    
- 
+
     return graph_html
