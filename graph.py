@@ -4,193 +4,61 @@ import pandas as pd
 from plotly.subplots import make_subplots
 from retrieveData import colname
 
+from charts.price_chart import add_price
+from charts.ma_chart import add_ema20,add_sma
+from charts.rsi_chart import add_rsi
+from charts.macd_indicator import add_macd
 
-def generate_graph(data, symbol, show_rsi=True):
+OVERLAY_INDICATORS = {
+    "SMA_20": add_sma,
+    "EMA_20": add_ema20,
+}
 
-    # -----------------------
-    # Create Figure
-    # -----------------------
-    if show_rsi:
-        fig = make_subplots(
-            rows=3,
-            cols=1,
-            shared_xaxes=True,
-            vertical_spacing=0.04,
-            row_heights=[0.6, 0.2, 0.2]
-        )
-    else:
-        fig = go.Figure()
+PANEL_INDICATORS = {
+    "RSI": add_rsi,
+    "MACD": add_macd,
+}
 
-    # -----------------------
-    # Candlestick
-    # -----------------------
-    candle = go.Candlestick(
-        x=data.index,
-        open=data[colname(symbol, "Open")],
-        high=data[colname(symbol, "High")],
-        low=data[colname(symbol, "Low")],
-        close=data[colname(symbol, "Close")],
-        name="Price",
-        increasing=dict(line=dict(color="#22c55e", width=1), fillcolor="#22c55e"),
-        decreasing=dict(line=dict(color="#ef4444", width=1), fillcolor="#ef4444"),
-        hovertemplate=(
-            "Open: %{open:.2f}<br>"
-            "High: %{high:.2f}<br>"
-            "Low: %{low:.2f}<br>"
-            "Close: %{close:.2f}"
-            "<extra></extra>"
-        )
+def generate_graph(data, symbol, indicators=None):
+
+    if indicators is None:
+        indicators = []
+
+    overlay_inds = [i for i in indicators if i in OVERLAY_INDICATORS]
+    panel_inds = [i for i in indicators if i in PANEL_INDICATORS]
+    
+    #layout-calculation
+
+    rows = 1 + len(panel_inds)
+
+    
+    row_heights = [3] + [1] * len(panel_inds)
+
+    fig = make_subplots(
+        rows=rows,
+        cols=1,
+        shared_xaxes=True,
+        vertical_spacing=0.04,
+        row_heights=row_heights
     )
 
-    if show_rsi:
-        fig.add_trace(candle, row=1, col=1)
-    else:
-        fig.add_trace(candle)
+    #row-mapping
 
-    # -----------------------
-    # SMA + EMA
-    # -----------------------
-    if show_rsi:
-        fig.add_trace(
-            go.Scatter(
-                x=data.index,
-                y=data["sma_indicator"],
-                mode="lines",
-                name="SMA",
-                line=dict(color="#facc15", width=3)
-            ),
-            row=1, col=1
-        )
-        fig.add_trace(
-            go.Scatter(
-                x=data.index,
-                y=data["ema_20"],
-                mode="lines",
-                name="EMA",
-                line=dict(color="#21AB21", width=3)
-            ),
-            row=1, col=1
-        )
-    else:
-        fig.add_trace(
-            go.Scatter(
-                x=data.index,
-                y=data["sma_indicator"],
-                mode="lines",
-                name="SMA",
-                line=dict(color="#facc15", width=3)
-            )
-        )
-        fig.add_trace(
-            go.Scatter(
-                x=data.index,
-                y=data["ema_20"],
-                mode="lines",
-                name="EMA",
-                line=dict(color="#21AB21", width=3)
-            )
-        )
+    row_map = {"PRICE": 1}
 
-    # -----------------------
-    # RSI PANEL
-    # -----------------------
-    if show_rsi:
+    current_row = 2
 
-        fig.add_trace(
-            go.Scatter(
-                x=data.index,
-                y=data["RSI"],
-                mode="lines",
-                name="RSI",
-                line=dict(color="#3b82f6", width=3)
-            ),
-            row=2, col=1
-        )
+    for ind in panel_inds:
+        row_map[ind] = current_row
+        current_row += 1
 
-        fig.add_trace(
-            go.Scatter(
-                x=data.index,
-                y=data["buy_RSI"],
-                mode="markers+text",
-                text=[
-                    "BUY" if pd.notna(val) else ""
-                    for val in data["buy_RSI"]
-                ],
-                textposition="top center",
-                marker=dict(symbol="triangle-up", color="#22c55e", size=12),
-                name="Buy"
-            ),
-            row=2, col=1
-        )
+    add_price(fig, data, symbol, rows=row_map["PRICE"])
 
-        fig.add_trace(
-            go.Scatter(
-                x=data.index,
-                y=data["sell_RSI"],
-                mode="markers+text",
-                text=[
-                    "SELL" if pd.notna(val) else ""
-                    for val in data["sell_RSI"]
-                ],
-                textposition="bottom center",
-                marker=dict(symbol="triangle-down", color="#ef4444", size=12),
-                name="Sell"
-            ),
-            row=2, col=1
-        )
+    for ind in overlay_inds:
+        OVERLAY_INDICATORS[ind](fig, data, symbol, rows=row_map["PRICE"])
 
-        # RSI levels
-        fig.add_hline(y=70, line_dash="dash", line_color="red", row=2, col=1)
-        fig.add_hline(y=30, line_dash="dash", line_color="green", row=2, col=1)
-        fig.add_hline(y=50, line_dash="dot", line_color="gray", row=2, col=1)
-
-        fig.update_yaxes(range=[0, 100], row=2, col=1)
-
-    # -----------------------
-    # MACD PANEL
-    # -----------------------
-    if show_rsi:
-
-        fig.add_trace(
-            go.Bar(
-                x=data.index,
-                y=data["macd_histogram"],
-                name="MACD Histogram",
-                marker=dict(
-                    color=[
-                        "#22c55e" if (pd.notna(val) and val >= 0)
-                        else "#ef4444" if (pd.notna(val) and val < 0)
-                        else "#000000"
-                        for val in data["macd_histogram"]
-                    ]
-                )
-            ),
-            row=3, col=1
-        )
-
-        fig.add_trace(
-            go.Scatter(
-                x=data.index,
-                y=data["macd_indicator"],
-                mode="lines",
-                name="MACD",
-                line=dict(color="#3b82f6", width=2)
-            ),
-            row=3, col=1
-        )
-
-        fig.add_trace(
-            go.Scatter(
-                x=data.index,
-                y=data["macd_ema"],
-                mode="lines",
-                name="Signal",
-                line=dict(color="#facc15", width=2)
-            ),
-            row=3, col=1
-        )
-
-        fig.add_hline(y=0, line_dash="dot", line_color="gray", row=3, col=1)
+    for ind in panel_inds:
+        PANEL_INDICATORS[ind](fig, data, symbol, rows=row_map[ind])
 
     # -----------------------
     # Layout
@@ -201,7 +69,7 @@ def generate_graph(data, symbol, show_rsi=True):
         plot_bgcolor="#05080e",
         dragmode="pan",
         hovermode="x unified",
-        height=750 if show_rsi else 600,
+        height=400 + (rows - 1) * 150,
         margin=dict(l=10, r=10, t=20, b=40),
         showlegend=False
     )
@@ -244,17 +112,11 @@ def generate_graph(data, symbol, show_rsi=True):
 
     fig.update_xaxes(range=[start_date, end_date], fixedrange=False)
 
-    if show_rsi:
-        fig.update_yaxes(
+    fig.update_yaxes(
             range=[y_min - padding, y_max + padding],
             fixedrange=False,
             row=1, col=1
-        )
-    else:
-        fig.update_yaxes(
-            range=[y_min - padding, y_max + padding],
-            fixedrange=False
-        )
+    )
 
     # -----------------------
     # Export HTML

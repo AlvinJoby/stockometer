@@ -55,8 +55,8 @@ def analyze():
     mark_signals(data,symbol)
     periodicReturns = periodic_returns(data,symbol)
 
-
-    graphPlot = generate_graph(data,symbol,show_rsi=True)
+    indicators = ["RSI","SMA_20","EMA_20","MACD"]
+    graphPlot = generate_graph(data,symbol,indicators)
 
     return render_template("main.html",graph=graphPlot,symbol_name=ticker.info['longName'],
                            tLTP=LTP['tLTP'],percentChange=LTP['percentChange'],
