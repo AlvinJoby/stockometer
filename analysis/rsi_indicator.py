@@ -1,18 +1,17 @@
-from retrieveData import colname
 import pandas as pd
 import config
 
 
 
-def calculate_rsi(data,symbol):
+def calculate_rsi(data):
 
     period = 14
 
     #gain=max(priceChange,0)
     #loss=max(-priceChange,0)
 
-    data['gain'] = data[colname(symbol,"priceChange")].clip(lower=0)
-    data['loss'] = (data[colname(symbol,"priceChange")].clip(upper=0)).abs()
+    data['gain'] = data["priceChange"].clip(lower=0)
+    data['loss'] = (data["priceChange"].clip(upper=0)).abs()
 
     #calculating normal 14day avg of g/l
 
@@ -38,7 +37,7 @@ def calculate_rsi(data,symbol):
     data['RSI'] = 100-(100/(1+data['RS']))
 
 
-def mark_signals(data, symbol):
+def mark_signals(data):
 
     data["buy_RSI"] = None
     data["sell_RSI"] = None
@@ -49,9 +48,9 @@ def mark_signals(data, symbol):
         curr_rsi = data.iloc[i]["RSI"]
 
         if prev_rsi < 30 and curr_rsi > 30:
-            data.loc[data.index[i], "buy_RSI"] = data.iloc[i][colname(symbol,"Close")]
+            data.loc[data.index[i], "buy_RSI"] = data.iloc[i]["Close"]
 
         elif prev_rsi > 70 and curr_rsi < 70:
-            data.loc[data.index[i], "sell_RSI"] = data.iloc[i][colname(symbol,"Close")]
+            data.loc[data.index[i], "sell_RSI"] = data.iloc[i]["Close"]
 
     return data

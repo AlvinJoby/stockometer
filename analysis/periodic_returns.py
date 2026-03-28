@@ -1,8 +1,7 @@
 import pandas as pd
-from retrieveData import colname
 
-def periodic_returns(data,symbol):
-    adj_close =  data[colname(symbol,'Close')]
+def periodic_returns(data):
+    adj_close =  data['Close']
     periods = {
         "1D": 1,
         "1W": 5,

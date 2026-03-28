@@ -1,7 +1,6 @@
 import pandas as pd
-from retrieveData import colname
 
-def marking_bs(data,symbol):
+def marking_bs(data):
 
     print(data.shape)
     print(data.columns)
@@ -13,8 +12,8 @@ def marking_bs(data,symbol):
     rsi_cross_up = prev_rsi < 30 and curr_rsi > 30
     rsi_cross_down = prev_rsi > 70 and curr_rsi < 70
 
-    uptrend = data[colname(symbol,'Close')].iloc[-1] > data['ema_20'].iloc[-1]
-    downtrend = data[colname(symbol,'Close')].iloc[-1] < data['ema_20'].iloc[-1]
+    uptrend = data['Close'].iloc[-1] > data['ema_20'].iloc[-1]
+    downtrend = data['Close'].iloc[-1] < data['ema_20'].iloc[-1]
 
     buy_signal = rsi_cross_up and uptrend
     sell_signal = rsi_cross_down and downtrend

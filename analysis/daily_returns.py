@@ -1,12 +1,10 @@
 import pandas as pd
-from retrieveData import colname
 
+def price_change(data):
+    data["priceChange"] = data["Close"].diff()
 
-def price_change(data,symbol):
-    data[colname(symbol,"priceChange")] = data[colname(symbol,"Close")].diff()
-
-def dailyReturns(data,symbol):
-    data[colname(symbol,"dailyReturns")] = data[colname(symbol,"Close")].pct_change()*100
+def dailyReturns(data):
+    data["dailyReturns"] = data["Close"].pct_change()*100
 
 
 

@@ -1,9 +1,9 @@
 import pandas as pd
 from analysis.ma_indicator import calculate_ema,custom_ema
 
-def calculate_macd(data,symbol):
-    calculate_ema(data,symbol,12)
-    calculate_ema(data,symbol,26)
+def calculate_macd(data):
+    calculate_ema(data,12)
+    calculate_ema(data,26)
 
     data['macd_indicator'] = data['ema_12'] - data['ema_26']
 

@@ -1,8 +1,7 @@
 import plotly.graph_objects as go
-from retrieveData import colname
 import pandas as pd
 
-def add_sma(fig,data,symbol,rows):
+def add_sma(fig,data,rows):
         fig.add_trace(
             go.Scatter(
                 x=data.index,
@@ -15,7 +14,7 @@ def add_sma(fig,data,symbol,rows):
         )
 
 
-def add_ema20(fig,data,symbol,rows):
+def add_ema20(fig,data,rows):
         fig.add_trace(
             go.Scatter(
                 x=data.index,

@@ -2,7 +2,6 @@ import plotly.graph_objects as go
 import plotly.io as pio
 import pandas as pd
 from plotly.subplots import make_subplots
-from retrieveData import colname
 
 from charts.price_chart import add_price
 from charts.ma_chart import add_ema20,add_sma
@@ -19,7 +18,7 @@ PANEL_INDICATORS = {
     "MACD": add_macd,
 }
 
-def generate_graph(data, symbol, indicators=None):
+def generate_graph(data, indicators=None):
 
     if indicators is None:
         indicators = []
@@ -52,13 +51,18 @@ def generate_graph(data, symbol, indicators=None):
         row_map[ind] = current_row
         current_row += 1
 
-    add_price(fig, data, symbol, rows=row_map["PRICE"])
+    add_price(fig, data, rows=row_map["PRICE"])
 
     for ind in overlay_inds:
-        OVERLAY_INDICATORS[ind](fig, data, symbol, rows=row_map["PRICE"])
+        OVERLAY_INDICATORS[ind](fig, data, rows=row_map["PRICE"])
 
     for ind in panel_inds:
-        PANEL_INDICATORS[ind](fig, data, symbol, rows=row_map[ind])
+        PANEL_INDICATORS[ind](fig, data, rows=row_map[ind])
+
+    if len(panel_inds)>0:
+        height = 400 + (rows - 1) * 150
+    else:
+        height = 570
 
     # -----------------------
     # Layout
@@ -69,8 +73,8 @@ def generate_graph(data, symbol, indicators=None):
         plot_bgcolor="#05080e",
         dragmode="pan",
         hovermode="x unified",
-        height=400 + (rows - 1) * 150,
-        margin=dict(l=10, r=10, t=20, b=40),
+        height=height,
+        margin=dict(l=10, r=60, t=20, b=40),
         showlegend=False
     )
 
@@ -106,8 +110,8 @@ def generate_graph(data, symbol, indicators=None):
     start_date = end_date - pd.DateOffset(months=6)
 
     visible_data = data[data.index >= start_date]
-    y_min = float(visible_data[colname(symbol, "Low")].min())
-    y_max = float(visible_data[colname(symbol, "High")].max())
+    y_min = float(visible_data["Low"].min())
+    y_max = float(visible_data["High"].max())
     padding = (y_max - y_min) * 0.05
 
     fig.update_xaxes(range=[start_date, end_date], fixedrange=False)

@@ -26,9 +26,9 @@ def retrieve_data(symbol):
 def colname(symbol,col_name):
     return col_name+"_"+symbol
 
-def retrieve_ltp(data, symbol):
+def retrieve_ltp(data):
 
-    price_col = colname(symbol, 'Close')
+    price_col = "Close"
 
     # 🔹 Validate data
     if data is None or data.empty:
@@ -61,3 +61,12 @@ def retrieve_companyInfo(symbol):
     ticker = yf.Ticker(symbol)
     print(ticker)
     return ticker
+
+def normalize_columns(data,symbol):
+    return data.rename(columns={
+        colname(symbol,"Close") : "Close",
+        colname(symbol,"Open") : "Open",
+        colname(symbol,"High") : "High",
+        colname(symbol,"Low") : "Low",
+        
+    })

@@ -1,6 +1,6 @@
 from flask import Flask,render_template,request
 from validation import validateInput
-from retrieveData import retrieve_data,retrieve_ltp,retrieve_companyInfo
+from retrieveData import retrieve_data,retrieve_ltp,retrieve_companyInfo,normalize_columns
 from graph import generate_graph
 from analysis.rsi_indicator import calculate_rsi,mark_signals
 from analysis.ma_indicator import calculate_sma,calculate_ema
@@ -30,12 +30,13 @@ def analyze():
         return validation_result["error"]
     
     data = retrieve_data(symbol)
+    data = normalize_columns(data,symbol)
     
 
     config.symbol=symbol
     config.data=data
 
-    LTP = retrieve_ltp(data,symbol)
+    LTP = retrieve_ltp(data)
     ticker = retrieve_companyInfo(symbol)
     company= companyData(ticker)
 
@@ -44,19 +45,19 @@ def analyze():
     company["netIncomeToCommon"] = format_number(company["netIncomeToCommon"])
     company["profitMargins"] = f"{company['profitMargins'] * 100:.2f}%"
 
-    price_change(data,symbol)
-    dailyReturns(data,symbol)
-    calculate_rsi(data,symbol)
-    calculate_sma(data,symbol,20)
-    calculate_ema(data,symbol,20)
-    calculate_macd(data,symbol)
-    marking_bs(data,symbol)
+    price_change(data)
+    dailyReturns(data)
+    calculate_rsi(data)
+    calculate_sma(data,20)
+    calculate_ema(data,20)
+    calculate_macd(data)
+    marking_bs(data)
 
-    mark_signals(data,symbol)
-    periodicReturns = periodic_returns(data,symbol)
+    mark_signals(data)
+    periodicReturns = periodic_returns(data)
 
     indicators = ["RSI","SMA_20","EMA_20","MACD"]
-    graphPlot = generate_graph(data,symbol,indicators)
+    graphPlot = generate_graph(data,indicators)
 
     return render_template("main.html",graph=graphPlot,symbol_name=ticker.info['longName'],
                            tLTP=LTP['tLTP'],percentChange=LTP['percentChange'],

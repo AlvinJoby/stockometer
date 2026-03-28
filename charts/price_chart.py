@@ -2,15 +2,15 @@ import plotly.graph_objects as go
 from retrieveData import colname
 
 
-def add_price(fig, data, symbol, rows):
+def add_price(fig, data, rows):
 
     fig.add_trace(
         go.Candlestick(
             x=data.index,
-            open=data[colname(symbol, "Open")],
-            high=data[colname(symbol, "High")],
-            low=data[colname(symbol, "Low")],
-            close=data[colname(symbol, "Close")],
+            open=data["Open"],
+            high=data["High"],
+            low=data["Low"],
+            close=data["Close"],
             name="Price",
 
             increasing=dict(

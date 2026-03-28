@@ -1,8 +1,7 @@
 import plotly.graph_objects as go
-from retrieveData import colname
 import pandas as pd
 
-def add_macd(fig,data,symbol,rows):
+def add_macd(fig,data,rows):
         fig.add_trace(
             go.Bar(
                 x=data.index,
