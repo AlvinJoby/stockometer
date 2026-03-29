@@ -9,6 +9,7 @@ from analysis.company_data import companyData,format_number
 from analysis.daily_returns import price_change,dailyReturns
 from analysis.macd_indicator import calculate_macd
 from analysis.buysell_marker import marking_bs
+from exchange.getIndex import get_index
 import pandas as pd
 
 import config
@@ -40,6 +41,9 @@ def analyze():
     ticker = retrieve_companyInfo(symbol)
     company= companyData(ticker)
 
+    exchange = ticker.info["exchange"]
+    index = get_index(exchange)
+
     company["marketCap"] = format_number(company["marketCap"])
     company["totalRevenue"] = format_number(company["totalRevenue"])
     company["netIncomeToCommon"] = format_number(company["netIncomeToCommon"])
@@ -50,13 +54,15 @@ def analyze():
     calculate_rsi(data)
     calculate_sma(data,20)
     calculate_ema(data,20)
+    calculate_ema(data,50)
+    calculate_ema(data,100)
     calculate_macd(data)
     marking_bs(data)
 
     mark_signals(data)
     periodicReturns = periodic_returns(data)
 
-    indicators = ["RSI","SMA_20","EMA_20","MACD"]
+    indicators = ["RSI","SMA_20","EMA_20","EMA_50","EMA_100","MACD"]
     graphPlot = generate_graph(data,indicators)
 
     return render_template("main.html",graph=graphPlot,symbol_name=ticker.info['longName'],

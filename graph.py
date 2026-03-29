@@ -4,13 +4,15 @@ import pandas as pd
 from plotly.subplots import make_subplots
 
 from charts.price_chart import add_price
-from charts.ma_chart import add_ema20,add_sma
+from charts.ma_chart import add_sma,add_ema20,add_ema50,add_ema100
 from charts.rsi_chart import add_rsi
-from charts.macd_indicator import add_macd
+from charts.macd_chart import add_macd
 
 OVERLAY_INDICATORS = {
     "SMA_20": add_sma,
     "EMA_20": add_ema20,
+    "EMA_50": add_ema50,
+    "EMA_100": add_ema100,
 }
 
 PANEL_INDICATORS = {
@@ -75,7 +77,18 @@ def generate_graph(data, indicators=None):
         hovermode="x unified",
         height=height,
         margin=dict(l=10, r=60, t=20, b=40),
-        showlegend=False
+        showlegend=False,
+
+        hoverlabel=dict(
+            bgcolor="#0d1117",
+            bordercolor="#1e2330",
+            font=dict(
+                family="Inter, monospace",
+                size=12,
+                color="#e2e8f0"
+            ),
+            namelength=-1
+        )
     )
 
     fig.update_layout(xaxis_rangeslider_visible=False)
