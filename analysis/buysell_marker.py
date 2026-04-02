@@ -1,11 +1,6 @@
 import pandas as pd
 
 def marking_bs(data):
-
-    print(data.shape)
-    print(data.columns)
-    print(data.tail())
-    
     prev_rsi = data['RSI'].iloc[-2]
     curr_rsi = data['RSI'].iloc[-1]
 

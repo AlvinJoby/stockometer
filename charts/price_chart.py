@@ -1,8 +1,21 @@
 import plotly.graph_objects as go
-from retrieveData import colname
 
 
 def add_price(fig, data, rows):
+    hover_text = [
+        (
+            f"Open: {open_price:.2f}<br>"
+            f"High: {high_price:.2f}<br>"
+            f"Low: {low_price:.2f}<br>"
+            f"Close: {close_price:.2f}"
+        )
+        for open_price, high_price, low_price, close_price in zip(
+            data["Open"],
+            data["High"],
+            data["Low"],
+            data["Close"],
+        )
+    ]
 
     fig.add_trace(
         go.Candlestick(
@@ -21,14 +34,8 @@ def add_price(fig, data, rows):
                 line=dict(color="#ef4444", width=1),
                 fillcolor="#ef4444"
             ),
-
-            hovertemplate=(
-                "Open: %{open:.2f}<br>"
-                "High: %{high:.2f}<br>"
-                "Low: %{low:.2f}<br>"
-                "Close: %{close:.2f}"
-                "<extra></extra>"
-            )
+            text=hover_text,
+            hoverinfo="text"
         ),
         row=rows,
         col=1

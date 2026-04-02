@@ -41,39 +41,39 @@
           <div class="metrics-box-section">
             <h3 class="returns-title" style="margin-top: 20px;">Key Stats</h3>
 
-            <div class="stat-box {{ 'positive' if company.currentPrice > company.fiftyDayAverage else 'negative' }}">
+            <div class="stat-box {{ 'positive' if company.isAbove50DayAverage else 'negative' }}">
               <span class="stat-label">Day High</span>
-              <strong>{{ "%.2f"|format(company.dayHigh) }}</strong>
+              <strong>{{ company.dayHighDisplay }}</strong>
             </div>
 
             <div class="stat-box negative">
               <span class="stat-label">Day Low</span>
-              <strong>{{ "%.2f"|format(company.dayLow) }}</strong>
+              <strong>{{ company.dayLowDisplay }}</strong>
             </div>
 
-            <div class="stat-box {{ 'positive' if company.currentPrice > company.fiftyDayAverage else 'negative' }}">
+            <div class="stat-box {{ 'positive' if company.isAbove50DayAverage else 'negative' }}">
               <span class="stat-label">50D MA</span>
-              <strong>{{ "%.2f"|format(company.fiftyDayAverage) }}</strong>
+              <strong>{{ company.fiftyDayAverageDisplay }}</strong>
             </div>
 
-            <div class="stat-box {{ 'positive' if company.currentPrice > company.fiftyTwoWeekLow else 'negative' }}">
+            <div class="stat-box {{ 'positive' if company.isAbove52WeekLow else 'negative' }}">
               <span class="stat-label">52W High</span>
-              <strong>{{ "%.2f"|format(company.fiftyTwoWeekHigh) }}</strong>
+              <strong>{{ company.fiftyTwoWeekHighDisplay }}</strong>
             </div>
 
             <div class="stat-box negative">
               <span class="stat-label">52W Low</span>
-              <strong>{{ "%.2f"|format(company.fiftyTwoWeekLow) }}</strong>
+              <strong>{{ company.fiftyTwoWeekLowDisplay }}</strong>
             </div>
 
-            <div class="stat-box {{ 'positive' if company.trailingPE and company.trailingPE < 25 else 'negative' }}">
+            <div class="stat-box {{ 'positive' if company.hasLowPE else 'negative' }}">
               <span class="stat-label">P/E Ratio</span>
-              <strong>{{ "%.2f"|format(company.trailingPE) if company.trailingPE else 'N/A' }}</strong>
+              <strong>{{ company.trailingPEDisplay }}</strong>
             </div>
 
-            <div class="stat-box {{ 'positive' if company.dividendYield and company.dividendYield > 0 else 'negative' }}">
+            <div class="stat-box {{ 'positive' if company.hasDividend else 'negative' }}">
               <span class="stat-label">Div Yield</span>
-              <strong>{{ "%.2f"|format(company.dividendYield * 100) ~ '%' if company.dividendYield else 'N/A' }}</strong>
+              <strong>{{ company.dividendYieldDisplay }}</strong>
             </div>
           </div>
         </div>
@@ -107,7 +107,7 @@
             </div>
             <div class="metric">
               <span>P/E Ratio</span>
-              <strong>{{ "%.3f"|format(company.trailingPE) }}</strong>
+              <strong>{{ company.trailingPEDisplay }}</strong>
             </div>
             <div class="metric">
               <span>Profit Margin</span>
@@ -115,15 +115,15 @@
             </div>
             <div class="metric">
               <span>Beta</span>
-              <strong>{{ company.beta }}</strong>
+              <strong>{{ company.betaDisplay }}</strong>
             </div>
             <div class="metric">
               <span>Price to Book</span>
-              <strong>{{ "%.3f"|format(company.priceToBook) }}</strong>
+              <strong>{{ company.priceToBookDisplay }}</strong>
             </div>
             <div class="metric">
               <span>52W Range</span>
-              <strong>{{ company.fiftyTwoWeekRange }}</strong>
+              <strong>{{ company.fiftyTwoWeekRange or 'N/A' }}</strong>
             </div>
           </div>
         </div>

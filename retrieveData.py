@@ -1,9 +1,6 @@
 import yfinance as yf
 import pandas as pd
 
-import yfinance as yf
-import pandas as pd
-
 def retrieve_data(symbol):
     try:
         data = yf.download(symbol, period="1y", interval="1d")
@@ -58,9 +55,7 @@ def retrieve_ltp(data):
     }
 
 def retrieve_companyInfo(symbol):
-    ticker = yf.Ticker(symbol)
-    print(ticker)
-    return ticker
+    return yf.Ticker(symbol)
 
 def normalize_columns(data,symbol):
     return data.rename(columns={
