@@ -53,9 +53,77 @@ body {
     background: white;
 }
 
+.autocomplete {
+    position: relative;
+}
+
 .symbol-input input:focus {
     border-color: #4f46e5;
     box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.15);
+}
+
+.suggestions {
+    position: absolute;
+    top: calc(100% + 12px);
+    left: 0;
+    right: 0;
+    background: rgba(255, 255, 255, 0.98);
+    border: 1px solid #e5e7eb;
+    border-radius: 22px;
+    box-shadow: 0 24px 60px rgba(15, 23, 42, 0.14);
+    overflow: hidden;
+    text-align: left;
+    z-index: 20;
+}
+
+.suggestion {
+    width: 100%;
+    border: none;
+    border-bottom: 1px solid #eef2f7;
+    background: transparent;
+    color: inherit;
+    padding: 16px 22px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    cursor: pointer;
+    text-align: left;
+    transition: background 0.18s ease;
+}
+
+.suggestion:last-child {
+    border-bottom: none;
+}
+
+.suggestion:hover,
+.suggestion.active {
+    background: #eef4ff;
+}
+
+.suggestion-symbol {
+    font-size: 15px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    color: #0f172a;
+}
+
+.suggestion-label,
+.suggestion-meta {
+    font-size: 13px;
+    color: #64748b;
+    line-height: 1.4;
+}
+
+.suggestion-meta {
+    padding: 18px 22px;
+}
+
+.suggestion-loading {
+    color: #334155;
+}
+
+.suggestion-empty {
+    color: #94a3b8;
 }
 
 button {
@@ -73,4 +141,23 @@ button {
 button:hover {
     background: #1f2937;
     transform: translateY(-2px);
+}
+
+@media (max-width: 640px) {
+    body {
+        padding-top: 64px;
+    }
+
+    .title {
+        font-size: 42px;
+    }
+
+    .symbol-input input {
+        padding: 18px 22px;
+        font-size: 16px;
+    }
+
+    .suggestions {
+        border-radius: 18px;
+    }
 }
