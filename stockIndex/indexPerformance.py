@@ -27,7 +27,20 @@ def indexPerformance(index,stock_df):
     index_df = normalize_data(index_df)
     stock_df = normalize_data(stock_df)
 
-    normalized_df = align_data(stock_df,index_df)
+    df = align_data(stock_df,index_df)
+
+    df['returns_stock'] = df['normalized_stock'].pct_change()
+    df['returns_index'] = df['normalized_index'].pct_change()
+    
+    df['alpha_daily'] = df['returns_stock']-df['returns_index']
+    df['alpha_rolling'] = df['alpha_daily'].rolling(window=20,min_periods=5).mean()
+    df["alpha_cumulative"] = (1 + df["alpha_daily"]).cumprod()
+
+    df["relative_strength"] = df["normalized_stock"] / df["normalized_index"]
+
+    
+
+    
     
 
     
