@@ -10,7 +10,7 @@ from analysis.daily_returns import price_change,dailyReturns
 from analysis.macd_indicator import calculate_macd
 from analysis.buysell_marker import marking_bs
 from stockIndex.getIndex import get_index
-from stockIndex.indexPerformance import indexPerformance
+from stockIndex.indexPerformance import index_performance_pipeline
 import pandas as pd
 
 import config
@@ -62,14 +62,17 @@ def analyze():
 
     exchange = ticker.info["exchange"]
     index = get_index(exchange)
-    indexPerformance(index,data)
+    index_df = retrieve_data(index)
+    index_df = normalize_columns(index_df,index)
+    index_result = index_performance_pipeline(data,index_df)
 
     indicators = ["RSI","SMA_20","EMA_20","EMA_50","EMA_100","MACD"]
     graphPlot = generate_graph(data,indicators)
 
     return render_template("main.html",graph=graphPlot,symbol_name=ticker.info['longName'],
                            tLTP=LTP['tLTP'],percentChange=LTP['percentChange'],
-                           currency=ticker.info['currency'],company=company,periodicReturns=periodicReturns)
+                           currency=ticker.info['currency'],company=company,periodicReturns=periodicReturns,
+                           summary=index_result['summary'])
 
 
 if __name__ == "__main__":
