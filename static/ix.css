@@ -1,0 +1,358 @@
+/* ═══════════════════════════════════════════════
+   IX — Index Comparison
+   Design: hero verdict center, then chart, then data
+   Palette: matches main.css exactly
+   ═══════════════════════════════════════════════ */
+
+.ix-section {
+    width: 100%;
+    border-top: 1px solid #1e2330;
+}
+
+/* ══════════════════════════════════════
+   HERO — the big verdict block
+   ══════════════════════════════════════ */
+.ix-hero {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 56px 20px 48px;
+    border-bottom: 1px solid #1e2330;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+}
+
+/* subtle radial glow behind the number */
+.ix-hero::before {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 500px;
+    height: 200px;
+    border-radius: 50%;
+    opacity: 0.04;
+    pointer-events: none;
+}
+
+.ix-hero.beat::before { background: radial-gradient(ellipse, #22c55e, transparent 70%); }
+.ix-hero.lag::before  { background: radial-gradient(ellipse, #ef4444, transparent 70%); }
+
+.ix-hero-label {
+    font-size: 10px;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    color: #3a4460;
+    margin-bottom: 18px;
+}
+
+/* "AAPL vs ^NSEI" */
+.ix-hero-pair {
+    font-size: 13px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: #4a5568;
+    margin-bottom: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.ix-hero-pair-sep { color: #1e2330; }
+
+/* the giant number */
+.ix-hero-number {
+    font-size: clamp(56px, 8vw, 88px);
+    font-weight: 200;
+    letter-spacing: -2px;
+    line-height: 1;
+    font-variant-numeric: tabular-nums;
+    margin-bottom: 16px;
+}
+
+.ix-hero.beat .ix-hero-number { color: #22c55e; }
+.ix-hero.lag  .ix-hero-number { color: #ef4444; }
+
+/* "outperformed / underperformed its index" */
+.ix-hero-verdict {
+    font-size: 15px;
+    font-weight: 300;
+    color: #94a3b8;
+    letter-spacing: 0.5px;
+    margin-bottom: 28px;
+}
+
+.ix-hero-verdict strong {
+    color: #e2e8f0;
+    font-weight: 400;
+}
+
+/* the two return pills side by side */
+.ix-hero-pills {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 0;
+    border: 1px solid #1e2330;
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.ix-hero-pill {
+    flex: 1 1 180px;
+    min-width: 0;
+    padding: 9px 22px;
+    font-size: 12px;
+    letter-spacing: 0.5px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 3px;
+}
+
+.ix-hero-pill:first-child { border-right: 1px solid #1e2330; }
+
+.ix-hero-pill-label {
+    font-size: 9px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: #3a4460;
+}
+
+.ix-hero-pill-val {
+    font-size: 15px;
+    font-weight: 400;
+    font-variant-numeric: tabular-nums;
+}
+
+/* ══════════════════════════════════════
+   CHART AREA
+   ══════════════════════════════════════ */
+.ix-chart-area {
+    border-bottom: 1px solid #1e2330;
+}
+
+.ix-tabs {
+    display: flex;
+    padding: 0 20px;
+    border-bottom: 1px solid #1e2330;
+    overflow-x: auto;
+    gap: 0;
+    scrollbar-width: none;
+}
+.ix-tabs::-webkit-scrollbar { display: none; }
+
+.ix-tab {
+    background: none;
+    border: none;
+    border-bottom: 2px solid transparent;
+    padding: 13px 18px 11px;
+    font-family: Arial, sans-serif;
+    font-size: 10px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: #3a4460;
+    cursor: pointer;
+    transition: color 0.15s;
+    white-space: nowrap;
+    margin-bottom: -1px;
+}
+
+.ix-tab:hover { color: #94a3b8; }
+
+.ix-tab.active {
+    color: #e2e8f0;
+    border-bottom-color: #38bdf8;
+}
+
+#ix-chart {
+    width: 100%;
+    height: 300px;
+    display: block;
+}
+
+.ix-caption {
+    padding: 8px 20px 14px;
+    font-size: 11px;
+    color: #2a3350;
+    letter-spacing: 0.3px;
+}
+
+/* ══════════════════════════════════════
+   DATA ROW — 6 metrics below chart
+   ══════════════════════════════════════ */
+.ix-data-row {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    border-bottom: 1px solid #1e2330;
+}
+
+.ix-data-cell {
+    padding: 16px 20px;
+    border-right: 1px solid #1e2330;
+}
+
+.ix-data-cell:last-child { border-right: none; }
+
+.ix-data-label {
+    display: block;
+    font-size: 9px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: #3a4460;
+    margin-bottom: 6px;
+}
+
+.ix-data-value {
+    display: block;
+    font-size: 15px;
+    font-weight: 300;
+    font-variant-numeric: tabular-nums;
+    color: #e2e8f0;
+}
+
+.ix-data-note {
+    display: block;
+    font-size: 10px;
+    color: #2a3350;
+    margin-top: 2px;
+}
+
+/* color utils */
+.ix-pos  { color: #22c55e; }
+.ix-neg  { color: #ef4444; }
+.ix-dim  { color: #94a3b8; }
+.ix-blue { color: #38bdf8; }
+
+/* ══════════════════════════════════════
+   MOBILE
+   ══════════════════════════════════════ */
+@media (max-width: 768px) {
+    .ix-hero {
+        padding: 32px 16px 28px;
+    }
+
+    .ix-hero-label {
+        margin-bottom: 14px;
+        letter-spacing: 3px;
+    }
+
+    .ix-hero-pair {
+        margin-bottom: 18px;
+        gap: 6px;
+        font-size: 11px;
+        letter-spacing: 1.2px;
+        line-height: 1.5;
+    }
+
+    .ix-hero-number {
+        font-size: clamp(42px, 14vw, 64px);
+        letter-spacing: -1px;
+        margin-bottom: 12px;
+    }
+
+    .ix-hero-verdict {
+        max-width: 32ch;
+        font-size: 13px;
+        line-height: 1.5;
+        margin-bottom: 20px;
+    }
+
+    .ix-hero-pills {
+        width: 100%;
+    }
+
+    .ix-hero-pill {
+        padding: 10px 14px;
+        flex-basis: 140px;
+    }
+
+    .ix-tabs {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        padding: 0;
+        overflow: hidden;
+    }
+
+    .ix-tab {
+        min-width: 0;
+        font-size: 9px;
+        letter-spacing: 1.2px;
+        padding: 12px 10px 10px;
+    }
+
+    #ix-chart {
+        height: 240px;
+    }
+
+    .ix-caption {
+        padding: 10px 14px 14px;
+        font-size: 10px;
+        line-height: 1.5;
+    }
+
+    .ix-data-row {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .ix-data-cell {
+        padding: 14px;
+        min-width: 0;
+        border-right: 1px solid #1e2330;
+        border-top: 1px solid #1e2330;
+    }
+
+    .ix-data-cell:nth-child(1),
+    .ix-data-cell:nth-child(2) {
+        border-top: none;
+    }
+
+    .ix-data-cell:nth-child(2n) {
+        border-right: none;
+    }
+}
+
+@media (max-width: 480px) {
+    .ix-hero-pair-sep {
+        display: none;
+    }
+
+    .ix-hero-pill {
+        flex-basis: 100%;
+    }
+
+    .ix-hero-pill:first-child {
+        border-right: none;
+        border-bottom: 1px solid #1e2330;
+    }
+
+    .ix-tabs {
+        grid-template-columns: 1fr;
+    }
+
+    #ix-chart {
+        height: 220px;
+    }
+
+    .ix-data-row {
+        grid-template-columns: 1fr;
+    }
+
+    .ix-data-cell {
+        border-right: none;
+    }
+
+    .ix-data-cell:nth-child(n) {
+        border-top: 1px solid #1e2330;
+    }
+
+    .ix-data-cell:first-child {
+        border-top: none;
+    }
+}

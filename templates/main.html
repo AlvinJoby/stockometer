@@ -4,13 +4,17 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="stylesheet" href="{{ url_for('static', filename='main.css') }}" />
+    {% if summary %}<link rel="stylesheet" href="{{ url_for('static', filename='ix.css') }}" />{% endif %}
     <title>Overview</title>
   </head>
   <body>
     <div class="navbar">
       <h1>Stockometer</h1>
     </div>
+
     <section class="bg_color">
+
+      <!-- ── CHART + SIDE PANEL ── -->
       <div class="front-layout">
         <div class="main-panel">
           <div class="symbol_header">
@@ -40,37 +44,30 @@
 
           <div class="metrics-box-section">
             <h3 class="returns-title" style="margin-top: 20px;">Key Stats</h3>
-
             <div class="stat-box {{ 'positive' if company.isAbove50DayAverage else 'negative' }}">
               <span class="stat-label">Day High</span>
               <strong>{{ company.dayHighDisplay }}</strong>
             </div>
-
             <div class="stat-box negative">
               <span class="stat-label">Day Low</span>
               <strong>{{ company.dayLowDisplay }}</strong>
             </div>
-
             <div class="stat-box {{ 'positive' if company.isAbove50DayAverage else 'negative' }}">
               <span class="stat-label">50D MA</span>
               <strong>{{ company.fiftyDayAverageDisplay }}</strong>
             </div>
-
             <div class="stat-box {{ 'positive' if company.isAbove52WeekLow else 'negative' }}">
               <span class="stat-label">52W High</span>
               <strong>{{ company.fiftyTwoWeekHighDisplay }}</strong>
             </div>
-
             <div class="stat-box negative">
               <span class="stat-label">52W Low</span>
               <strong>{{ company.fiftyTwoWeekLowDisplay }}</strong>
             </div>
-
             <div class="stat-box {{ 'positive' if company.hasLowPE else 'negative' }}">
               <span class="stat-label">P/E Ratio</span>
               <strong>{{ company.trailingPEDisplay }}</strong>
             </div>
-
             <div class="stat-box {{ 'positive' if company.hasDividend else 'negative' }}">
               <span class="stat-label">Div Yield</span>
               <strong>{{ company.dividendYieldDisplay }}</strong>
@@ -79,13 +76,126 @@
         </div>
       </div>
 
-      <!-----MID CONTENT-->
+      <!-- ══════════════════════════════════════
+           INDEX COMPARISON
+           ══════════════════════════════════════ -->
+      {% if summary %}
+      {% set alpha    = summary.alpha %}
+      {% set sr       = summary.stock_return %}
+      {% set ir       = summary.index_return %}
+      {% set beating  = alpha >= 0 %}
 
-      
+      <section class="ix-section">
 
-      <!-----MID CONTENT-->
+        <!-- HERO VERDICT -->
+        <div class="ix-hero {{ 'beat' if beating else 'lag' }}">
 
+          <span class="ix-hero-label">vs benchmark</span>
 
+          <div class="ix-hero-pair">
+            <span>{{ stock_name }}</span>
+            <span class="ix-hero-pair-sep">/</span>
+            <span>{{ index_name }}</span>
+          </div>
+
+          <div class="ix-hero-number">
+            {{ '%+.2f'|format(alpha) }}%
+          </div>
+
+          <div class="ix-hero-verdict">
+            <strong>{{ stock_name }}</strong>
+            {{ 'outperformed' if beating else 'underperformed' }}
+            its index <strong>({{ index_name }})</strong>
+            by this much over the past year
+          </div>
+
+          <!-- stock return vs index return pills -->
+          <div class="ix-hero-pills">
+            <div class="ix-hero-pill">
+              <span class="ix-hero-pill-label">{{ stock_name }}</span>
+              <span class="ix-hero-pill-val {{ 'ix-pos' if sr >= 0 else 'ix-neg' }}">
+                {{ '%+.2f'|format(sr) }}%
+              </span>
+            </div>
+            <div class="ix-hero-pill">
+              <span class="ix-hero-pill-label">{{ index_name }}</span>
+              <span class="ix-hero-pill-val {{ 'ix-pos' if ir >= 0 else 'ix-neg' }}">
+                {{ '%+.2f'|format(ir) }}%
+              </span>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- CHART -->
+        <div class="ix-chart-area">
+          <div class="ix-tabs">
+            <button class="ix-tab active" data-chart="race">Performance Race</button>
+            <button class="ix-tab"        data-chart="cumulative">Cumulative Alpha</button>
+            <button class="ix-tab"        data-chart="rolling">Rolling Alpha</button>
+            <button class="ix-tab"        data-chart="rs">Relative Strength</button>
+          </div>
+          <div id="ix-chart"></div>
+          <div class="ix-caption" id="ix-caption">
+            Normalized to 100 at start · {{ stock_name }} (blue) vs {{ index_name }} (amber)
+          </div>
+        </div>
+
+        <!-- DATA STRIP -->
+        <div class="ix-data-row">
+
+          <div class="ix-data-cell">
+            <span class="ix-data-label">Win Rate</span>
+            <span class="ix-data-value ix-blue">{{ "%.1f"|format(summary.outperformance_days_pct) }}%</span>
+            <span class="ix-data-note">days beating index</span>
+          </div>
+
+          <div class="ix-data-cell">
+            <span class="ix-data-label">Stock CAGR</span>
+            <span class="ix-data-value {{ 'ix-pos' if summary.stock_cagr and summary.stock_cagr >= 0 else 'ix-neg' }}">
+              {% if summary.stock_cagr is not none %}{{ '%+.1f'|format(summary.stock_cagr * 100) }}%{% else %}N/A{% endif %}
+            </span>
+            <span class="ix-data-note">annualised</span>
+          </div>
+
+          <div class="ix-data-cell">
+            <span class="ix-data-label">Index CAGR</span>
+            <span class="ix-data-value {{ 'ix-pos' if summary.index_cagr and summary.index_cagr >= 0 else 'ix-neg' }}">
+              {% if summary.index_cagr is not none %}{{ '%+.1f'|format(summary.index_cagr * 100) }}%{% else %}N/A{% endif %}
+            </span>
+            <span class="ix-data-note">annualised</span>
+          </div>
+
+          <div class="ix-data-cell">
+            <span class="ix-data-label">Info Ratio</span>
+            <span class="ix-data-value {% if summary.information_ratio is not none %}{{ 'ix-pos' if summary.information_ratio >= 0 else 'ix-neg' }}{% endif %}">
+              {% if summary.information_ratio is not none %}{{ '%+.2f'|format(summary.information_ratio) }}{% else %}N/A{% endif %}
+            </span>
+            <span class="ix-data-note">alpha / tracking error</span>
+          </div>
+
+          <div class="ix-data-cell">
+            <span class="ix-data-label">Volatility</span>
+            <span class="ix-data-value ix-dim">
+              <span style="color:#38bdf8">{{ "%.1f"|format(summary.stock_volatility * 100) }}%</span>
+              <span style="color:#2a3350; font-size:11px"> / </span>
+              <span style="color:#f5a623">{{ "%.1f"|format(summary.index_volatility * 100) }}%</span>
+            </span>
+            <span class="ix-data-note">stock / index</span>
+          </div>
+
+          <div class="ix-data-cell">
+            <span class="ix-data-label">Worst Drawdown</span>
+            <span class="ix-data-value ix-neg">{{ "%.2f"|format(summary.worst_alpha_drawdown) }}%</span>
+            <span class="ix-data-note">peak-to-trough alpha</span>
+          </div>
+
+        </div>
+
+      </section>
+      {% endif %}
+
+      <!-- ── COMPANY METRICS ── -->
       <section class="metrics-wrapper">
         <div class="metrics-panel">
           <div class="panel-header">
@@ -128,7 +238,27 @@
           </div>
         </div>
       </section>
+
     </section>
+
     <script src="{{ url_for('static', filename='main.js') }}"></script>
+
+    {% if summary and index_ts %}
+    <script>
+      window.__IX__ = {
+        stock_name:        {{ stock_name | tojson }},
+        index_name:        {{ index_name | tojson }},
+        dates:             {{ index_ts.dates             | tojson }},
+        stock_normalized:  {{ index_ts.stock_normalized  | tojson }},
+        index_normalized:  {{ index_ts.index_normalized  | tojson }},
+        alpha_cumulative:  {{ index_ts.alpha_cumulative  | tojson }},
+        alpha_rolling:     {{ index_ts.alpha_rolling     | tojson }},
+        relative_strength: {{ index_ts.relative_strength | tojson }},
+        rs_ma:             {{ index_ts.rs_ma             | tojson }},
+      };
+    </script>
+    <script src="{{ url_for('static', filename='ix.js') }}"></script>
+    {% endif %}
+
   </body>
 </html>
