@@ -20,9 +20,33 @@ PANEL_INDICATORS = {
     "MACD": add_macd,
 }
 
+def _select_initial_start_date(data):
+    end_date = data.index[-1]
+    default_start = end_date - pd.DateOffset(months=6)
+    visible_data = data[data.index >= default_start]
+
+    low_series = visible_data["Low"].dropna()
+    high_series = visible_data["High"].dropna()
+
+    if low_series.empty or high_series.empty:
+        return default_start
+
+    full_span = float(high_series.max()) - float(low_series.min())
+
+    recent_window = min(len(visible_data), 45)
+    recent_low = float(low_series.tail(recent_window).min())
+    recent_high = float(high_series.tail(recent_window).max())
+    recent_span = recent_high - recent_low
+
+    if recent_span > 0 and full_span > recent_span * 1.25:
+        return end_date - pd.DateOffset(months=3)
+
+    return default_start
+
 def _compute_price_axis_range(visible_data):
     low_series = visible_data["Low"].dropna()
     high_series = visible_data["High"].dropna()
+    close_series = visible_data["Close"].dropna()
 
     if low_series.empty or high_series.empty:
         return None
@@ -31,23 +55,53 @@ def _compute_price_axis_range(visible_data):
     y_max = float(high_series.max())
     full_span = y_max - y_min
 
-    robust_low = float(low_series.quantile(0.05))
-    robust_high = float(high_series.quantile(0.95))
-    robust_span = robust_high - robust_low
+    if close_series.empty:
+        close_series = high_series
 
-    recent_window = min(len(visible_data), 20)
+    recent_window = min(len(visible_data), 45)
     recent_low = float(low_series.tail(recent_window).min())
     recent_high = float(high_series.tail(recent_window).max())
+    recent_span = recent_high - recent_low
 
-    # Ignore one-off visible-range spikes only when they severely compress
-    # the chart; otherwise preserve the full price range behavior.
-    if robust_span > 0 and full_span > robust_span * 3:
-        y_min = min(robust_low, recent_low)
-        y_max = max(robust_high, recent_high)
+    focused_low = float(low_series.quantile(0.03))
+    focused_high = float(high_series.quantile(0.97))
+    focused_span = focused_high - focused_low
 
-    span = y_max - y_min
-    reference_price = float(visible_data["Close"].dropna().iloc[-1]) if visible_data["Close"].dropna().size else y_max
-    padding = span * 0.1 if span > 0 else max(reference_price * 0.02, 1.0)
+    candidate_low = min(focused_low, recent_low)
+    candidate_high = max(focused_high, recent_high)
+    candidate_span = candidate_high - candidate_low
+
+    latest_close = float(close_series.iloc[-1])
+
+    # When the recent trading band is much tighter than the visible 6-month
+    # history, prefer that band so the current candles are readable.
+    if (
+        recent_span > 0
+        and full_span > recent_span * 1.25
+        and recent_low <= latest_close <= recent_high
+    ):
+        y_min = recent_low
+        y_max = recent_high
+        span = recent_span
+        padding_ratio = 0.06
+
+    # Switch to a tighter range only when visible outliers are materially
+    # compressing the candles and the latest price remains inside the focus band.
+    elif (
+        focused_span > 0
+        and candidate_span > 0
+        and full_span > candidate_span * 1.35
+        and candidate_low <= latest_close <= candidate_high
+    ):
+        y_min = candidate_low
+        y_max = candidate_high
+        span = candidate_span
+        padding_ratio = 0.06
+    else:
+        span = y_max - y_min
+        padding_ratio = 0.1
+
+    padding = span * padding_ratio if span > 0 else max(latest_close * 0.02, 1.0)
 
     return [y_min - padding, y_max + padding]
 
@@ -130,7 +184,8 @@ def generate_graph(data, indicators=None):
         showspikes=True,
         spikecolor="gray",
         spikemode="across",
-        spikesnap="cursor"
+        spikesnap="cursor",
+        rangebreaks=[dict(bounds=["sat", "mon"])]
     )
 
     fig.update_yaxes(
@@ -151,7 +206,7 @@ def generate_graph(data, indicators=None):
     # Zoom (6 months)
     # -----------------------
     end_date = data.index[-1]
-    start_date = end_date - pd.DateOffset(months=6)
+    start_date = _select_initial_start_date(data)
 
     visible_data = data[data.index >= start_date]
     price_axis_range = _compute_price_axis_range(visible_data)
