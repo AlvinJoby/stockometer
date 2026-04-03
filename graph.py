@@ -20,6 +20,37 @@ PANEL_INDICATORS = {
     "MACD": add_macd,
 }
 
+def _compute_price_axis_range(visible_data):
+    low_series = visible_data["Low"].dropna()
+    high_series = visible_data["High"].dropna()
+
+    if low_series.empty or high_series.empty:
+        return None
+
+    y_min = float(low_series.min())
+    y_max = float(high_series.max())
+    full_span = y_max - y_min
+
+    robust_low = float(low_series.quantile(0.05))
+    robust_high = float(high_series.quantile(0.95))
+    robust_span = robust_high - robust_low
+
+    recent_window = min(len(visible_data), 20)
+    recent_low = float(low_series.tail(recent_window).min())
+    recent_high = float(high_series.tail(recent_window).max())
+
+    # Ignore one-off visible-range spikes only when they severely compress
+    # the chart; otherwise preserve the full price range behavior.
+    if robust_span > 0 and full_span > robust_span * 3:
+        y_min = min(robust_low, recent_low)
+        y_max = max(robust_high, recent_high)
+
+    span = y_max - y_min
+    reference_price = float(visible_data["Close"].dropna().iloc[-1]) if visible_data["Close"].dropna().size else y_max
+    padding = span * 0.1 if span > 0 else max(reference_price * 0.02, 1.0)
+
+    return [y_min - padding, y_max + padding]
+
 def generate_graph(data, indicators=None):
 
     if indicators is None:
@@ -123,17 +154,17 @@ def generate_graph(data, indicators=None):
     start_date = end_date - pd.DateOffset(months=6)
 
     visible_data = data[data.index >= start_date]
-    y_min = float(visible_data["Low"].min())
-    y_max = float(visible_data["High"].max())
-    padding = (y_max - y_min) * 0.05
+    price_axis_range = _compute_price_axis_range(visible_data)
 
     fig.update_xaxes(range=[start_date, end_date], fixedrange=False)
 
-    fig.update_yaxes(
-            range=[y_min - padding, y_max + padding],
-            fixedrange=False,
-            row=1, col=1
-    )
+    if price_axis_range is not None:
+        fig.update_yaxes(
+                range=price_axis_range,
+                autorange=False,
+                fixedrange=False,
+                row=1, col=1
+        )
 
     # -----------------------
     # Export HTML

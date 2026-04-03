@@ -2,13 +2,12 @@ from flask import Flask,jsonify,render_template,request
 from validation import validateInput
 from retrieveData import retrieve_data,retrieve_ltp,retrieve_companyInfo,normalize_columns
 from graph import generate_graph
-from analysis.rsi_indicator import calculate_rsi,mark_signals
+from analysis.rsi_indicator import calculate_rsi
 from analysis.ma_indicator import calculate_sma,calculate_ema
 from analysis.periodic_returns import periodic_returns
 from analysis.company_data import companyData,format_number
 from analysis.daily_returns import price_change,dailyReturns
 from analysis.macd_indicator import calculate_macd
-from analysis.buysell_marker import marking_bs
 from stockIndex.getIndex import get_index
 from stockIndex.indexPerformance import index_performance_pipeline
 from symbol_search import search_symbols
@@ -118,9 +117,7 @@ def analyze():
         calculate_ema(data, 50)
         calculate_ema(data, 100)
         calculate_macd(data)
-        marking_bs(data)
 
-        mark_signals(data)
         periodicReturns = periodic_returns(data)
 
         index_summary = None
@@ -145,6 +142,8 @@ def analyze():
             company=company,
             periodicReturns=periodicReturns,
             summary=index_summary,
+            stock_name = ticker_info.get("shortName") or company["shortName"],
+            index_name = index
         )
     except ValueError as exc:
         app.logger.exception("Analysis failed for symbol %s", symbol)
