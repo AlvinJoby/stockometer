@@ -1,3 +1,5 @@
+from difflib import SequenceMatcher
+
 from yfinance import Search
 
 
@@ -27,6 +29,40 @@ def normalize_quote(quote, allowed_types=None):
     }
 
 
+def score_symbol_match(query, item):
+    normalized_query = (query or "").strip().lower()
+    if not normalized_query:
+        return 0
+
+    symbol = item["symbol"].lower()
+    name = " ".join(item["name"].lower().split())
+
+    score = 0
+
+    if symbol == normalized_query:
+        score += 200
+    elif symbol.startswith(normalized_query):
+        score += 140
+    elif normalized_query in symbol:
+        score += 90
+
+    if name == normalized_query:
+        score += 220
+    elif name.startswith(normalized_query):
+        score += 170
+    elif normalized_query in name:
+        score += 120
+
+    tokens = name.replace(".", " ").replace(",", " ").split()
+    if any(token.startswith(normalized_query) for token in tokens):
+        score += 80
+
+    score += int(SequenceMatcher(None, normalized_query, symbol).ratio() * 70)
+    score += int(SequenceMatcher(None, normalized_query, name).ratio() * 100)
+
+    return score
+
+
 def search_symbols(query, max_results=8, allowed_types=None):
     normalized_query = (query or "").strip()
     if len(normalized_query) < 2:
@@ -37,14 +73,14 @@ def search_symbols(query, max_results=8, allowed_types=None):
     try:
         results = Search(
             query=normalized_query,
-            max_results=max_results,
+            max_results=max(max_results * 3, 20),
             news_count=0,
             lists_count=0,
             include_cb=False,
             include_nav_links=False,
             include_research=False,
             include_cultural_assets=False,
-            enable_fuzzy_query=False,
+            enable_fuzzy_query=True,
             recommended=0,
             raise_errors=True,
         )
@@ -64,4 +100,13 @@ def search_symbols(query, max_results=8, allowed_types=None):
         seen.add(symbol)
         symbols.append(normalized)
 
-    return symbols
+    symbols.sort(
+        key=lambda item: (
+            score_symbol_match(normalized_query, item),
+            item["name"].lower(),
+            item["symbol"],
+        ),
+        reverse=True,
+    )
+
+    return symbols[:max_results]

@@ -1,7 +1,7 @@
 import unittest
 from unittest.mock import patch
 
-from symbol_search import normalize_quote, search_symbols
+from symbol_search import normalize_quote, score_symbol_match, search_symbols
 
 
 class NormalizeQuoteTests(unittest.TestCase):
@@ -107,7 +107,47 @@ class SearchSymbolsTests(unittest.TestCase):
             ],
         )
         mock_search.assert_called_once()
+        self.assertTrue(mock_search.call_args.kwargs["enable_fuzzy_query"])
+        self.assertEqual(mock_search.call_args.kwargs["max_results"], 24)
 
     @patch("symbol_search.Search", side_effect=RuntimeError("upstream error"))
     def test_search_symbols_fail_closed_on_upstream_error(self, _mock_search):
         self.assertEqual(search_symbols("app"), [])
+
+    @patch("symbol_search.Search")
+    def test_search_symbols_prioritizes_closest_company_name(self, mock_search):
+        mock_search.return_value.quotes = [
+            {
+                "symbol": "MSFT",
+                "shortname": "Microsoft Corporation",
+                "exchange": "NMS",
+                "quoteType": "EQUITY",
+            },
+            {
+                "symbol": "MSTR",
+                "shortname": "Strategy Incorporated",
+                "exchange": "NMS",
+                "quoteType": "EQUITY",
+            },
+            {
+                "symbol": "MA",
+                "shortname": "Mastercard Incorporated",
+                "exchange": "NYQ",
+                "quoteType": "EQUITY",
+            },
+        ]
+
+        results = search_symbols("microsoft")
+
+        self.assertEqual(results[0]["symbol"], "MSFT")
+
+
+class ScoreSymbolMatchTests(unittest.TestCase):
+    def test_typoed_name_still_scores_closest_match_highest(self):
+        close_match = {"symbol": "MSFT", "name": "Microsoft Corporation"}
+        weak_match = {"symbol": "MSTR", "name": "Strategy Incorporated"}
+
+        self.assertGreater(
+            score_symbol_match("microsft", close_match),
+            score_symbol_match("microsft", weak_match),
+        )

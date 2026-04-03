@@ -85,7 +85,7 @@ body {
     padding: 16px 22px;
     display: flex;
     flex-direction: column;
-    gap: 6px;
+    gap: 4px;
     cursor: pointer;
     text-align: left;
     transition: background 0.18s ease;
@@ -100,21 +100,34 @@ body {
     background: #eef4ff;
 }
 
-.suggestion-symbol {
-    font-size: 15px;
-    font-weight: 700;
-    letter-spacing: 0.06em;
-    color: #0f172a;
-}
-
 .suggestion-label,
-.suggestion-meta {
-    font-size: 13px;
-    color: #64748b;
+.suggestion-meta,
+.suggestion-support {
     line-height: 1.4;
 }
 
+.suggestion-label {
+    font-size: 15px;
+    font-weight: 700;
+    color: #0f172a;
+}
+
+.suggestion-symbol {
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    color: #475569;
+    text-transform: uppercase;
+}
+
+.suggestion-support {
+    font-size: 12px;
+    color: #64748b;
+}
+
 .suggestion-meta {
+    font-size: 13px;
+    color: #64748b;
     padding: 18px 22px;
 }
 

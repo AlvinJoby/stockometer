@@ -63,8 +63,7 @@ if (input && suggestions) {
     suggestions.innerHTML = items
       .map((item, index) => {
         const optionId = `symbol-suggestion-${index}`;
-        const exchangeLabel = item.exchange ? ` · ${item.exchange}` : "";
-        const typeLabel = item.type ? ` · ${item.type}` : "";
+        const metaLabel = [item.exchange, item.type].filter(Boolean).join(" | ");
         return `
           <button
             id="${optionId}"
@@ -74,8 +73,9 @@ if (input && suggestions) {
             aria-selected="false"
             data-index="${index}"
           >
+            <span class="suggestion-label">${item.name}</span>
             <span class="suggestion-symbol">${item.symbol}</span>
-            <span class="suggestion-label">${item.name}${exchangeLabel}${typeLabel}</span>
+            ${metaLabel ? `<span class="suggestion-support">${metaLabel}</span>` : ""}
           </button>
         `;
       })
