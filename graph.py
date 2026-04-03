@@ -161,8 +161,10 @@ def generate_graph(data, indicators=None):
         dragmode="pan",
         hovermode="x unified",
         height=height,
-        margin=dict(l=10, r=60, t=20, b=40),
+        margin=dict(l=10, r=84, t=20, b=40),
         showlegend=False,
+        uirevision="main-chart",
+        transition=dict(duration=0),
 
         hoverlabel=dict(
             bgcolor="#0d1117",
@@ -190,14 +192,16 @@ def generate_graph(data, indicators=None):
 
     fig.update_yaxes(
         side="right",
-        tickformat=".2f",
+        tickformat=",.2f",
         showgrid=True,
         gridcolor="rgba(255,255,255,0.05)",
         zeroline=False,
         showspikes=True,
         spikecolor="gray",
         spikemode="across",
-        spikesnap="cursor"
+        spikesnap="cursor",
+        automargin=False,
+        separatethousands=True
     )
 
     fig.update_yaxes(fixedrange=True)
