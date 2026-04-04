@@ -5,11 +5,32 @@ const container = document.querySelector(".front-layout");
 
 let isDragging = false;
 
-divider.addEventListener("mousedown", (e) => {
-  isDragging = true;
-  document.body.style.cursor = "col-resize";
-  document.body.style.userSelect = "none";
-});
+function getPlotDiv() {
+  return mainPanel?.querySelector(".js-plotly-plot") ?? null;
+}
+
+function syncMainChartLayout() {
+  const plotDiv = getPlotDiv();
+  if (!plotDiv || typeof Plotly === "undefined") return;
+
+  const chartWidth = mainPanel?.getBoundingClientRect().width ?? window.innerWidth;
+  const isMobile = chartWidth <= 768;
+
+  Plotly.relayout(plotDiv, {
+    autosize: true,
+    margin: isMobile
+      ? { l: 8, r: 44, t: 16, b: 32 }
+      : { l: 10, r: 54, t: 20, b: 40 },
+  });
+}
+
+if (divider) {
+  divider.addEventListener("mousedown", () => {
+    isDragging = true;
+    document.body.style.cursor = "col-resize";
+    document.body.style.userSelect = "none";
+  });
+}
 
 document.addEventListener("mousemove", (e) => {
   if (!isDragging) return;
@@ -23,9 +44,7 @@ document.addEventListener("mousemove", (e) => {
 
   mainPanel.style.flex = `0 0 ${mainPct}%`;
   returnsPanel.style.flex = `0 0 ${returnsPct}%`;
-
-  const plotDiv = mainPanel.querySelector(".js-plotly-plot");
-  if (plotDiv) Plotly.relayout(plotDiv, { autosize: true });
+  syncMainChartLayout();
 });
 
 document.addEventListener("mouseup", () => {
@@ -33,3 +52,6 @@ document.addEventListener("mouseup", () => {
   document.body.style.cursor = "";
   document.body.style.userSelect = "";
 });
+
+window.addEventListener("load", syncMainChartLayout);
+window.addEventListener("resize", syncMainChartLayout);

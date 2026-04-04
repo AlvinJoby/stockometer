@@ -90,39 +90,52 @@
         <!-- HERO VERDICT -->
         <div class="ix-hero {{ 'beat' if beating else 'lag' }}">
 
-          <span class="ix-hero-label">vs benchmark</span>
-
-          <div class="ix-hero-pair">
-            <span>{{ stock_name }}</span>
-            <span class="ix-hero-pair-sep">/</span>
-            <span>{{ index_name }}</span>
+          <!-- SECTION HEADING: Stock / Benchmark -->
+          <div class="ix-heading-row">
+            <h2 class="ix-heading">
+              <span class="ix-heading-stock">{{ stock_name }}</span>
+            </h2>
+            <span class="ix-heading-sep">/</span>
+            <span class="ix-heading-index">{{ index_name }}</span>
           </div>
 
-          <div class="ix-hero-number">
-            {{ '%+.2f'|format(alpha) }}%
+          <!-- THE SENTENCE -->
+          <div class="ix-sentence">
+            <span class="ix-sentence-stock">{{ stock_name }}</span>
+            <span class="ix-sentence-verb">{{ 'outperformed' if beating else 'underperformed' }}</span>
+            <span class="ix-sentence-index">{{ index_name }}</span>
+            <span class="ix-sentence-by">by</span>
+            <span class="ix-sentence-alpha">{{ '%+.2f'|format(alpha) }}%</span>
           </div>
 
-          <div class="ix-hero-verdict">
-            <strong>{{ stock_name }}</strong>
-            {{ 'outperformed' if beating else 'underperformed' }}
-            its index <strong>({{ index_name }})</strong>
-            by this much over the past year
-          </div>
+          <!-- 3 CARDS -->
+          <div class="ix-cards">
 
-          <!-- stock return vs index return pills -->
-          <div class="ix-hero-pills">
-            <div class="ix-hero-pill">
-              <span class="ix-hero-pill-label">{{ stock_name }}</span>
-              <span class="ix-hero-pill-val {{ 'ix-pos' if sr >= 0 else 'ix-neg' }}">
-                {{ '%+.2f'|format(sr) }}%
-              </span>
+            <div class="ix-card ix-card-stock">
+              <span class="ix-card-label">Stock Return</span>
+              <span class="ix-card-name">{{ stock_name }}</span>
+              <span class="ix-card-value">{{ '%+.2f'|format(sr) }}%</span>
+              {% if summary.stock_cagr is not none %}
+              <span class="ix-card-sub">CAGR {{ '%+.1f'|format(summary.stock_cagr * 100) }}% annualised</span>
+              {% endif %}
             </div>
-            <div class="ix-hero-pill">
-              <span class="ix-hero-pill-label">{{ index_name }}</span>
-              <span class="ix-hero-pill-val {{ 'ix-pos' if ir >= 0 else 'ix-neg' }}">
-                {{ '%+.2f'|format(ir) }}%
-              </span>
+
+            <div class="ix-card ix-card-index">
+              <span class="ix-card-label">Index Return</span>
+              <span class="ix-card-name">{{ index_name }}</span>
+              <span class="ix-card-value">{{ '%+.2f'|format(ir) }}%</span>
+              {% if summary.index_cagr is not none %}
+              <span class="ix-card-sub">CAGR {{ '%+.1f'|format(summary.index_cagr * 100) }}% annualised</span>
+              {% endif %}
             </div>
+
+            <div class="ix-card ix-card-alpha {{ 'beat' if beating else 'lag' }}">
+              <span class="ix-card-label">Alpha</span>
+              <span class="ix-card-name">{{ 'Excess return' if beating else 'Return gap' }}</span>
+              <span class="ix-card-value">{{ '%+.2f'|format(alpha) }}%</span>
+              <span class="ix-card-sub">{{ "%.1f"|format(summary.outperformance_days_pct) }}% of days ahead</span>
+            </div>
+
           </div>
 
         </div>
