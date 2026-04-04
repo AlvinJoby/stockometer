@@ -3,9 +3,10 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='src/logo1-cropped.png') }}" />
     <link rel="stylesheet" href="{{ url_for('static', filename='main.css') }}" />
     {% if summary %}<link rel="stylesheet" href="{{ url_for('static', filename='ix.css') }}" />{% endif %}
-    <title>Overview</title>
+    <title>Stockometer | {{ symbol_name }}</title>
   </head>
   <body>
     <div class="navbar">

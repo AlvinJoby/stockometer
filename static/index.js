@@ -1,5 +1,15 @@
 const input = document.getElementById("symbol-input");
 const suggestions = document.getElementById("symbol-suggestions");
+const formError = document.getElementById("form-error");
+
+if (formError) {
+  window.setTimeout(() => {
+    formError.classList.add("is-hidden");
+    window.setTimeout(() => {
+      formError.remove();
+    }, 1200);
+  }, 4000);
+}
 
 if (input && suggestions) {
   let debounceTimer = null;

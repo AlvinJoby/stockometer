@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <title>Stockometer</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/png" href="/static/src/logo1-cropped.png">
 
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
 
@@ -22,6 +23,7 @@
                     id="symbol-input"
                     type="text" 
                     name="symbol" 
+                    value="{{ symbol_value or '' }}"
                     placeholder="Enter stock symbol (e.g. AAPL, TSLA, INFY.NS)"
                     autocomplete="off"
                     autocapitalize="characters"
@@ -39,6 +41,10 @@
                     hidden
                 ></div>
             </div>
+
+            {% if error_message %}
+            <p class="form-error" id="form-error" role="alert">{{ error_message }}</p>
+            {% endif %}
 
             <button type="submit">Analyze</button>
 

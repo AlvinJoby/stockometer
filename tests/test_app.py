@@ -44,15 +44,17 @@ class AnalyzeRouteTests(unittest.TestCase):
 
         self.assertEqual(response.status_code, 400)
         self.assertIn(b"symbol is required", response.data)
+        self.assertIn(b"Enter stock symbol", response.data)
 
     @patch("app.retrieve_data")
-    def test_price_history_failure_returns_502(self, mock_retrieve_data):
+    def test_price_history_failure_renders_index_with_invalid_symbol_message(self, mock_retrieve_data):
         mock_retrieve_data.return_value = pd.DataFrame()
 
         response = self.client.post("/analyze", data={"symbol": "AAPL"})
 
-        self.assertEqual(response.status_code, 502)
-        self.assertIn(b"Unable to retrieve price history", response.data)
+        self.assertEqual(response.status_code, 200)
+        self.assertIn(b"We couldn&#39;t find that symbol", response.data)
+        self.assertIn(b'value="AAPL"', response.data)
 
     @patch("app.generate_graph")
     @patch("app.index_performance_pipeline")

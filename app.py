@@ -84,7 +84,7 @@ def _clean_series(series):
 
 @app.route('/')
 def home():
-    return render_template("index.html")
+    return render_template("index.html", error_message=None, symbol_value="")
 
 
 @app.route('/api/symbols')
@@ -95,16 +95,24 @@ def symbol_suggestions():
 
 @app.route('/analyze', methods=['POST'])
 def analyze():
-    symbol = request.form.get("symbol")
+    symbol = (request.form.get("symbol") or "").strip()
     validation_result = validateInput(symbol)
 
     if not validation_result["status"]:
-        return validation_result["error"], 400
+        return render_template(
+            "index.html",
+            error_message=validation_result["error"],
+            symbol_value=symbol,
+        ), 400
 
     try:
         data = retrieve_data(symbol)
         if data is None or data.empty:
-            return "Unable to retrieve price history for the requested symbol.", 502
+            return render_template(
+                "index.html",
+                error_message="We couldn't find that symbol. Try a different one and check again.",
+                symbol_value=symbol,
+            ), 200
 
         data = normalize_columns(data, symbol)
 

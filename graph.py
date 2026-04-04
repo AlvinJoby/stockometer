@@ -161,7 +161,7 @@ def generate_graph(data, indicators=None):
         dragmode="pan",
         hovermode="x unified",
         height=height,
-        margin=dict(l=10, r=84, t=20, b=40),
+        margin=dict(l=10, r=150, t=20, b=40),
         showlegend=False,
         uirevision="main-chart",
         transition=dict(duration=0),
@@ -200,7 +200,7 @@ def generate_graph(data, indicators=None):
         spikecolor="gray",
         spikemode="across",
         spikesnap="cursor",
-        automargin=False,
+        automargin=True,
         separatethousands=True
     )
 
