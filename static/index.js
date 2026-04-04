@@ -1,14 +1,86 @@
 const input = document.getElementById("symbol-input");
 const suggestions = document.getElementById("symbol-suggestions");
 const formError = document.getElementById("form-error");
+const analyzeForm = document.getElementById("analyze-form");
+const loadingOverlay = document.getElementById("loading-overlay");
+const errorState = document.body.dataset.errorState;
+const ANALYZE_STARTED_AT_KEY = "stockometerAnalyzeStartedAt";
 
-if (formError) {
+const showLoadingOverlay = () => {
+  if (!loadingOverlay) {
+    return;
+  }
+  loadingOverlay.classList.add("is-visible");
+  loadingOverlay.setAttribute("aria-hidden", "false");
+};
+
+const hideLoadingOverlay = () => {
+  if (!loadingOverlay) {
+    return;
+  }
+  loadingOverlay.classList.remove("is-visible");
+  loadingOverlay.setAttribute("aria-hidden", "true");
+};
+
+const clearAnalyzeState = () => {
+  try {
+    window.sessionStorage.removeItem(ANALYZE_STARTED_AT_KEY);
+  } catch (_error) {
+    // Ignore storage failures and fall back to immediate transitions.
+  }
+};
+
+const scheduleErrorDismiss = () => {
+  if (!formError) {
+    return;
+  }
+
   window.setTimeout(() => {
     formError.classList.add("is-hidden");
     window.setTimeout(() => {
       formError.remove();
     }, 1200);
   }, 4000);
+};
+
+if (formError && loadingOverlay && errorState === "visible") {
+  window.requestAnimationFrame(() => {
+    window.setTimeout(() => {
+      window.setTimeout(() => {
+        hideLoadingOverlay();
+        clearAnalyzeState();
+        window.setTimeout(() => {
+          formError.classList.add("is-visible");
+          scheduleErrorDismiss();
+        }, 220);
+      }, 0);
+    }, 120);
+  });
+} else if (formError) {
+  clearAnalyzeState();
+  formError.classList.add("is-visible");
+  scheduleErrorDismiss();
+} else {
+  clearAnalyzeState();
+  hideLoadingOverlay();
+}
+
+window.addEventListener("pageshow", () => {
+  if (errorState !== "visible") {
+    clearAnalyzeState();
+    hideLoadingOverlay();
+  }
+});
+
+if (analyzeForm && loadingOverlay) {
+  analyzeForm.addEventListener("submit", () => {
+    try {
+      window.sessionStorage.setItem(ANALYZE_STARTED_AT_KEY, String(Date.now()));
+    } catch (_error) {
+      // Ignore storage failures and still show the overlay.
+    }
+    showLoadingOverlay();
+  });
 }
 
 if (input && suggestions) {

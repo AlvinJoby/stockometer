@@ -15,6 +15,71 @@ body {
     padding-top: 100px;
 }
 
+.loading-overlay {
+    position: fixed;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    background: rgba(245, 247, 250, 0.46);
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transition: opacity 0.45s ease, visibility 0.45s ease;
+    z-index: 100;
+}
+
+.loading-overlay.is-visible {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+}
+
+.loading-panel {
+    min-width: 260px;
+    padding: 28px 30px;
+    border-radius: 28px;
+    background: rgba(255, 255, 255, 0.72);
+    border: 1px solid rgba(255, 255, 255, 0.7);
+    box-shadow: 0 24px 70px rgba(15, 23, 42, 0.12);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 18px;
+    transform: translateY(12px) scale(0.98);
+    transition: transform 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.loading-overlay.is-visible .loading-panel {
+    transform: translateY(0) scale(1);
+}
+
+.loading-overlay.is-returning {
+    transition: opacity 0.8s ease, visibility 0.8s ease;
+}
+
+.loading-overlay.is-returning .loading-panel {
+    transition: transform 0.8s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.8s ease;
+}
+
+.loading-overlay.is-returning:not(.is-visible) .loading-panel {
+    opacity: 0;
+}
+
+.loading-panel .loader {
+    color: #111827;
+}
+
+.loading-text {
+    font-size: 15px;
+    font-weight: 600;
+    color: #334155;
+    letter-spacing: 0.02em;
+}
+
 .wrapper {
     width: 100%;
     max-width: 720px;
@@ -68,6 +133,18 @@ body {
         padding-top 1.15s cubic-bezier(0.19, 1, 0.22, 1),
         padding-bottom 1.15s cubic-bezier(0.19, 1, 0.22, 1),
         border-width 1s ease;
+}
+
+.form-error-enter {
+    opacity: 0;
+    transform: translateY(10px);
+    filter: blur(4px);
+}
+
+.form-error-enter.is-visible {
+    opacity: 1;
+    transform: translateY(0);
+    filter: blur(0);
 }
 
 .form-error.is-hidden {
@@ -199,6 +276,12 @@ button:hover {
 @media (max-width: 640px) {
     body {
         padding-top: 64px;
+    }
+
+    .loading-panel {
+        width: min(100%, 320px);
+        padding: 24px 22px;
+        border-radius: 24px;
     }
 
     .title {

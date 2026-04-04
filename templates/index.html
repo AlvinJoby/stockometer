@@ -9,14 +9,22 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
 
     <link rel="stylesheet" href="/static/index.css">
+    <link rel="stylesheet" href="/static/src/loader.css">
 </head>
-<body>
+<body data-error-state="{% if error_message %}visible{% else %}none{% endif %}">
+
+    <div class="loading-overlay{% if error_message %} is-visible is-returning{% endif %}" id="loading-overlay" aria-hidden="{% if error_message %}false{% else %}true{% endif %}">
+        <div class="loading-panel" role="status" aria-live="polite">
+            <div class="loader"></div>
+            <p class="loading-text">Analyzing...</p>
+        </div>
+    </div>
 
     <div class="wrapper">
         <h1 class="title">STOCKOMETER</h1>
         <p class="subtitle">Analyze historical performance in seconds</p>
 
-        <form method="POST" action="/analyze" class="form">
+        <form method="POST" action="/analyze" class="form" id="analyze-form">
 
             <div class="symbol-input autocomplete">
                 <input 
@@ -43,7 +51,7 @@
             </div>
 
             {% if error_message %}
-            <p class="form-error" id="form-error" role="alert">{{ error_message }}</p>
+            <p class="form-error form-error-enter" id="form-error" role="alert">{{ error_message }}</p>
             {% endif %}
 
             <button type="submit">Analyze</button>

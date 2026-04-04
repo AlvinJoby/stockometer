@@ -5,10 +5,21 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="icon" type="image/png" href="{{ url_for('static', filename='src/logo1-cropped.png') }}" />
     <link rel="stylesheet" href="{{ url_for('static', filename='main.css') }}" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='src/loader.css') }}" />
     {% if summary %}<link rel="stylesheet" href="{{ url_for('static', filename='ix.css') }}" />{% endif %}
     <title>Stockometer | {{ symbol_name }}</title>
   </head>
   <body>
+    <div class="page-loading-overlay" id="page-loading-overlay" aria-hidden="false">
+      <div class="page-loading-panel" role="status" aria-live="polite">
+        <div class="loader"></div>
+        <div class="page-loading-copy">
+          <p class="page-loading-text page-loading-text-analyzing">Analyzing...</p>
+          <p class="page-loading-text page-loading-text-chart">Building your chart...</p>
+        </div>
+      </div>
+    </div>
+
     <div class="navbar">
       <h1>Stockometer</h1>
     </div>

@@ -2,6 +2,9 @@ const divider = document.getElementById("drag-divider");
 const mainPanel = document.querySelector(".main-panel");
 const returnsPanel = document.querySelector(".returns-panel");
 const container = document.querySelector(".front-layout");
+const pageLoadingOverlay = document.getElementById("page-loading-overlay");
+const MINIMUM_PAGE_LOADER_MS = 3000;
+const pageLoaderStartedAt = Date.now();
 
 let isDragging = false;
 
@@ -22,6 +25,17 @@ function syncMainChartLayout() {
       ? { l: 8, r: 44, t: 16, b: 32 }
       : { l: 10, r: 54, t: 20, b: 40 },
   });
+}
+
+function hidePageLoader() {
+  if (!pageLoadingOverlay) return;
+  pageLoadingOverlay.classList.add("is-hidden");
+  pageLoadingOverlay.setAttribute("aria-hidden", "true");
+}
+
+function enterChartLoaderStage() {
+  if (!pageLoadingOverlay) return;
+  pageLoadingOverlay.classList.add("is-chart-stage");
 }
 
 if (divider) {
@@ -53,5 +67,16 @@ document.addEventListener("mouseup", () => {
   document.body.style.userSelect = "";
 });
 
-window.addEventListener("load", syncMainChartLayout);
+window.addEventListener("load", () => {
+  syncMainChartLayout();
+  window.requestAnimationFrame(() => {
+    window.requestAnimationFrame(() => {
+      enterChartLoaderStage();
+      const remainingTime = Math.max(0, MINIMUM_PAGE_LOADER_MS - (Date.now() - pageLoaderStartedAt));
+      window.setTimeout(() => {
+        hidePageLoader();
+      }, remainingTime);
+    });
+  });
+});
 window.addEventListener("resize", syncMainChartLayout);

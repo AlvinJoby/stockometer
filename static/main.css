@@ -8,6 +8,118 @@
     background-color: #06090f;
     z-index: -100;
 }
+
+.page-loading-overlay {
+    position: fixed;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    background: rgba(245, 247, 250, 0.46);
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+    opacity: 1;
+    visibility: visible;
+    transition:
+        background-color 1.4s cubic-bezier(0.22, 1, 0.36, 1),
+        opacity 0.95s cubic-bezier(0.22, 1, 0.36, 1),
+        visibility 0.95s ease;
+    z-index: 2000;
+}
+
+.page-loading-overlay.is-hidden {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+}
+
+.page-loading-panel {
+    min-width: 280px;
+    padding: 30px 32px;
+    border-radius: 28px;
+    background: rgba(255, 255, 255, 0.72);
+    border: 1px solid rgba(255, 255, 255, 0.7);
+    box-shadow: 0 24px 70px rgba(15, 23, 42, 0.12);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 18px;
+    transform: translateY(0) scale(1);
+    filter: blur(0);
+    transition:
+        background-color 1.4s cubic-bezier(0.22, 1, 0.36, 1),
+        border-color 1.4s cubic-bezier(0.22, 1, 0.36, 1),
+        box-shadow 1.4s cubic-bezier(0.22, 1, 0.36, 1),
+        transform 0.95s cubic-bezier(0.22, 1, 0.36, 1),
+        opacity 0.95s ease,
+        filter 0.95s ease;
+}
+
+.page-loading-overlay.is-chart-stage {
+    background: rgba(6, 9, 15, 0.56);
+}
+
+.page-loading-overlay.is-chart-stage .page-loading-panel {
+    background: rgba(14, 18, 26, 0.76);
+    border-color: rgba(148, 163, 184, 0.16);
+    box-shadow: 0 24px 70px rgba(0, 0, 0, 0.28);
+}
+
+.page-loading-overlay.is-hidden .page-loading-panel {
+    opacity: 0;
+    transform: translateY(8px) scale(0.985);
+    filter: blur(2px);
+}
+
+.page-loading-panel .loader {
+    color: #111827;
+    transition: color 1.2s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.page-loading-overlay.is-chart-stage .page-loading-panel .loader {
+    color: #f8fafc;
+}
+
+.page-loading-copy {
+    position: relative;
+    min-height: 22px;
+    min-width: 180px;
+}
+
+.page-loading-text {
+    font-size: 15px;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    transition:
+        opacity 0.7s ease,
+        transform 0.7s cubic-bezier(0.22, 1, 0.36, 1),
+        color 1.2s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.page-loading-text-analyzing {
+    color: #334155;
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.page-loading-text-chart {
+    position: absolute;
+    inset: 0;
+    color: #dbe4f0;
+    opacity: 0;
+    transform: translateY(8px);
+}
+
+.page-loading-overlay.is-chart-stage .page-loading-text-analyzing {
+    opacity: 0;
+    transform: translateY(-8px);
+}
+
+.page-loading-overlay.is-chart-stage .page-loading-text-chart {
+    opacity: 1;
+    transform: translateY(0);
+}
 .navbar {
     background-color: #13151a;
     padding: 16px 36px;
@@ -276,6 +388,12 @@
 
     .navbar {
         padding: 14px 20px;
+    }
+
+    .page-loading-panel {
+        width: min(100%, 320px);
+        padding: 26px 22px;
+        border-radius: 24px;
     }
 
     .navbar h1 {
