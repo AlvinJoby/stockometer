@@ -1,7 +1,8 @@
 const divider = document.getElementById("drag-divider");
 const mainPanel = document.querySelector(".main-panel");
 const returnsPanel = document.querySelector(".returns-panel");
-const container = document.querySelector(".front-layout");
+const navbar = document.querySelector(".navbar");
+const stickyMarketBar = document.getElementById("sticky-market-bar");
 const pageLoadingOverlay = document.getElementById("page-loading-overlay");
 const MINIMUM_PAGE_LOADER_MS = 3000;
 const pageLoaderStartedAt = Date.now();
@@ -38,6 +39,16 @@ function enterChartLoaderStage() {
   pageLoadingOverlay.classList.add("is-chart-stage");
 }
 
+function syncStickyMarketBar() {
+  if (!stickyMarketBar || !mainPanel) return;
+
+  const mainPanelRect = mainPanel.getBoundingClientRect();
+  const shouldShow = mainPanelRect.bottom <= 32;
+
+  stickyMarketBar.classList.toggle("is-visible", shouldShow);
+  stickyMarketBar.setAttribute("aria-hidden", shouldShow ? "false" : "true");
+}
+
 if (divider) {
   divider.addEventListener("mousedown", () => {
     isDragging = true;
@@ -49,7 +60,7 @@ if (divider) {
 document.addEventListener("mousemove", (e) => {
   if (!isDragging) return;
 
-  const containerRect = container.getBoundingClientRect();
+  const containerRect = document.querySelector(".front-layout").getBoundingClientRect();
   const totalWidth = containerRect.width;
   const offsetX = e.clientX - containerRect.left;
 
@@ -69,6 +80,7 @@ document.addEventListener("mouseup", () => {
 
 window.addEventListener("load", () => {
   syncMainChartLayout();
+  syncStickyMarketBar();
   window.requestAnimationFrame(() => {
     window.requestAnimationFrame(() => {
       enterChartLoaderStage();
@@ -80,3 +92,5 @@ window.addEventListener("load", () => {
   });
 });
 window.addEventListener("resize", syncMainChartLayout);
+window.addEventListener("resize", syncStickyMarketBar);
+window.addEventListener("scroll", syncStickyMarketBar, { passive: true });

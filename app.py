@@ -13,6 +13,8 @@ from stockIndex.getIndex import get_index, get_index_display_name
 from stockIndex.indexPerformance import index_performance_pipeline
 from symbol_search import search_symbols
 import pandas as pd
+from datetime import time
+from zoneinfo import ZoneInfo
 
 import config
 
@@ -82,6 +84,46 @@ def _clean_series(series):
     ]
 
 
+def _sticky_symbol(symbol):
+    cleaned = (symbol or "").strip().upper()
+    return cleaned.split(".", 1)[0] or cleaned
+
+
+def _sticky_display_name(short_name, symbol):
+    base_name = (short_name or "").strip()
+    if not base_name:
+        base_name = _sticky_symbol(symbol)
+    return base_name[:1].upper() + base_name[1:].lower() if base_name else ""
+
+
+MARKET_HOURS = {
+    "NSE": (ZoneInfo("Asia/Kolkata"), time(9, 15), time(15, 30)),
+    "NSI": (ZoneInfo("Asia/Kolkata"), time(9, 15), time(15, 30)),
+    "BSE": (ZoneInfo("Asia/Kolkata"), time(9, 15), time(15, 30)),
+    "BOM": (ZoneInfo("Asia/Kolkata"), time(9, 15), time(15, 30)),
+    "NMS": (ZoneInfo("America/New_York"), time(9, 30), time(16, 0)),
+    "NYQ": (ZoneInfo("America/New_York"), time(9, 30), time(16, 0)),
+    "ASE": (ZoneInfo("America/New_York"), time(9, 30), time(16, 0)),
+    "PCX": (ZoneInfo("America/New_York"), time(9, 30), time(16, 0)),
+    "LSE": (ZoneInfo("Europe/London"), time(8, 0), time(16, 30)),
+    "HKG": (ZoneInfo("Asia/Hong_Kong"), time(9, 30), time(16, 0)),
+    "TYO": (ZoneInfo("Asia/Tokyo"), time(9, 0), time(15, 0)),
+}
+
+
+def _market_status(exchange):
+    normalized_exchange = (exchange or "").upper().strip()
+    market_hours = MARKET_HOURS.get(normalized_exchange)
+    if not market_hours:
+        return {"is_open": False, "label": "MARKET'S NOT LIVE"}
+
+    timezone, open_time, close_time = market_hours
+    now_local = pd.Timestamp.now(tz=timezone)
+    current_time = now_local.time()
+    is_open = now_local.weekday() < 5 and open_time <= current_time <= close_time
+    return {"is_open": is_open, "label": "LIVE" if is_open else "MARKET'S NOT LIVE"}
+
+
 @app.route('/')
 def home():
     return render_template("index.html", error_message=None, symbol_value="")
@@ -140,6 +182,7 @@ def analyze():
         index_summary = None
         index_ts = None
         exchange = ticker_info.get("exchange")
+        market_status = _market_status(exchange)
         index = get_index(exchange, symbol)
         index_name = get_index_display_name(index)
         if index:
@@ -168,9 +211,11 @@ def analyze():
             graph=graphPlot,
             symbol_name=ticker_info.get("longName") or company["longName"],
             stock_name=ticker_info.get("shortName") or company["longName"],
+            sticky_name=_sticky_display_name(ticker_info.get("shortName"), symbol),
             tLTP=LTP["tLTP"],
             percentChange=LTP["percentChange"],
             currency=ticker_info.get("currency", "USD"),
+            market_status=market_status,
             company=company,
             periodicReturns=periodicReturns,
             summary=index_summary,

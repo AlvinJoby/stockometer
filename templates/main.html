@@ -4,6 +4,9 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="icon" type="image/png" href="{{ url_for('static', filename='src/logo1-cropped.png') }}" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="{{ url_for('static', filename='main.css') }}" />
     <link rel="stylesheet" href="{{ url_for('static', filename='src/loader.css') }}" />
     {% if summary %}<link rel="stylesheet" href="{{ url_for('static', filename='ix.css') }}" />{% endif %}
@@ -22,6 +25,28 @@
 
     <div class="navbar">
       <h1>Stockometer</h1>
+      <span class="market-status-badge {{ 'market-status-open' if market_status.is_open else 'market-status-closed' }}">
+        {{ market_status.label }}
+      </span>
+    </div>
+
+    <div class="sticky-market-bar" id="sticky-market-bar" aria-hidden="true">
+      <div class="sticky-market-inner">
+        <div class="sticky-market-left">
+          <span class="sticky-market-name">{{ sticky_name }}</span>
+        </div>
+        <div class="sticky-market-right">
+          <div class="sticky-market-price-row">
+            <span class="sticky-market-price {{ 'positive' if percentChange > 0 else 'negative' if percentChange < 0 else 'neutral' }}">
+              {{ "%.2f"|format(tLTP) }}
+            </span>
+            <span class="sticky-market-currency">{{ currency }}</span>
+          </div>
+          <span class="sticky-market-change {{ 'positive' if percentChange > 0 else 'negative' if percentChange < 0 else 'neutral' }}">
+            {% if percentChange > 0 %}+{{ "%.2f"|format(percentChange) }}%{% else %}{{ "%.2f"|format(percentChange) }}%{% endif %}
+          </span>
+        </div>
+      </div>
     </div>
 
     <section class="bg_color">

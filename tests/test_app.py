@@ -127,6 +127,7 @@ class AnalyzeRouteTests(unittest.TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertIn(b"Mock Company", response.data)
         self.assertIn(b"chart", response.data)
+        self.assertIn(b"MARKET&#39;S NOT LIVE", response.data)
 
     @patch("app.generate_graph", side_effect=ValueError("Chart configuration failed"))
     @patch("app.periodic_returns", return_value={"1D": 1.0, "1W": 2.0, "1M": 3.0, "6M": 4.0})
