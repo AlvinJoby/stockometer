@@ -315,38 +315,78 @@
    MOBILE
    ══════════════════════════════════════ */
 @media (max-width: 768px) {
-    .ix-hero         { padding: 24px 16px 24px; }
+    .ix-section      { border-top: none; }
 
-    .ix-heading-row  { margin-bottom: 18px; gap: 8px; }
+    .ix-hero {
+        padding: 22px 14px 20px;
+        margin: 12px 10px 0;
+        border: 1px solid #1b2335;
+        border-radius: 20px;
+        background:
+            linear-gradient(180deg, rgba(10, 14, 22, 0.98), rgba(7, 10, 18, 0.98));
+        box-shadow: 0 18px 40px rgba(0, 0, 0, 0.22);
+    }
+
+    .ix-heading-row  { margin-bottom: 16px; gap: 6px; }
     .ix-heading      { font-size: 17px; }
+    .ix-heading-sep  { display: none; }
     .ix-heading-index{ font-size: 14px; }
 
-    .ix-sentence     { gap: 0 8px; margin-bottom: 20px; }
+    .ix-sentence     { gap: 4px 8px; margin-bottom: 18px; }
     .ix-sentence-stock,
     .ix-sentence-verb,
     .ix-sentence-index,
     .ix-sentence-by  { font-size: 15px; }
     .ix-sentence-alpha { font-size: 26px; }
 
-    .ix-cards        { grid-template-columns: 1fr 1fr; gap: 8px; }
-    .ix-card         { padding: 14px 14px 12px; }
+    .ix-cards        { grid-template-columns: 1fr; gap: 10px; }
+    .ix-card {
+        padding: 16px 16px 14px;
+        border-radius: 14px;
+        background: linear-gradient(180deg, rgba(10, 14, 22, 0.96), rgba(8, 12, 20, 0.96));
+        border-color: #202943;
+    }
     .ix-card-value   { font-size: 26px; letter-spacing: -1px; }
     .ix-card-name    { font-size: 12px; margin-bottom: 10px; }
+    .ix-card-sub     { margin-top: 2px; }
 
-    #ix-chart        { height: 220px; }
-    .ix-tabs         { padding: 0 10px; }
-    .ix-tab          { font-size: 9px; padding: 11px 12px 9px; }
+    .ix-chart-area {
+        margin: 12px 10px 0;
+        border: 1px solid #1b2335;
+        border-radius: 18px;
+        overflow: hidden;
+        background: #070b12;
+    }
 
-    .ix-data-row     { grid-template-columns: repeat(3, 1fr); }
-    .ix-data-cell:nth-child(3) { border-right: none; }
-    .ix-data-cell:nth-child(4),
-    .ix-data-cell:nth-child(5),
-    .ix-data-cell:nth-child(6) { border-top: 1px solid #1e2330; }
+    #ix-chart        { height: 240px; }
+    .ix-tabs         { padding: 0 8px; gap: 8px; }
+    .ix-tab {
+        font-size: 10px;
+        padding: 12px 6px 10px;
+        letter-spacing: 1.2px;
+    }
+    .ix-caption      { padding: 10px 14px 14px; }
+
+    .ix-data-row {
+        grid-template-columns: repeat(2, 1fr);
+        margin: 12px 10px 0;
+        border: 1px solid #1b2335;
+        border-radius: 18px;
+        overflow: hidden;
+        background: #070b12;
+    }
+    .ix-data-cell    { padding: 14px 14px 15px; }
+    .ix-data-label   { font-size: 11px; letter-spacing: 1.2px; }
+    .ix-data-value   { font-size: 17px; }
+    .ix-data-note    { font-size: 11px; margin-top: 4px; }
+    .ix-data-cell:nth-child(odd) { border-right: 1px solid #1e2330; }
+    .ix-data-cell:nth-child(even) { border-right: none; }
+    .ix-data-cell:nth-child(n + 3) { border-top: 1px solid #1e2330; }
     .ix-data-cell:nth-child(6) { border-right: none; }
 }
 
 @media (max-width: 480px) {
-    .ix-hero         { padding: 20px 14px 20px; }
+    .ix-hero         { padding: 18px 12px 18px; margin: 10px 8px 0; }
 
     .ix-sentence-stock,
     .ix-sentence-verb,
@@ -354,8 +394,10 @@
     .ix-sentence-by  { font-size: 13px; }
     .ix-sentence-alpha { font-size: 22px; }
 
+    .ix-chart-area,
+    .ix-data-row     { margin-left: 8px; margin-right: 8px; }
+
     .ix-cards        { grid-template-columns: 1fr; gap: 8px; }
-    /* on very small screens: cards go full width and lay out horizontally inside */
     .ix-card         { display: grid; grid-template-columns: 1fr auto; align-items: center; padding: 14px 16px; column-gap: 12px; }
     .ix-card-label   { grid-column: 1; grid-row: 1; margin-bottom: 2px; }
     .ix-card-name    { grid-column: 1; grid-row: 2; margin-bottom: 0; font-size: 11px; }

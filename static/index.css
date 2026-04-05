@@ -12,7 +12,7 @@ body {
     display: flex;
     justify-content: center;
     align-items: flex-start;
-    padding-top: 100px;
+    padding: 100px 24px 32px;
 }
 
 .loading-overlay {
@@ -84,7 +84,7 @@ body {
     width: 100%;
     max-width: 720px;
     text-align: center;
-    padding: 20px;
+    padding: 24px;
 }
 
 .title {
@@ -105,6 +105,9 @@ body {
     display: flex;
     flex-direction: column;
     gap: 30px;
+    width: 100%;
+    max-width: 680px;
+    margin: 0 auto;
 }
 
 .form-error {
@@ -275,7 +278,9 @@ button:hover {
 
 @media (max-width: 640px) {
     body {
-        padding-top: 64px;
+        min-height: 100svh;
+        padding: 40px 16px 24px;
+        align-items: center;
     }
 
     .loading-panel {
@@ -284,16 +289,92 @@ button:hover {
         border-radius: 24px;
     }
 
+    .wrapper {
+        padding: 8px 0;
+    }
+
     .title {
-        font-size: 42px;
+        font-size: clamp(34px, 10vw, 42px);
+        letter-spacing: 0.14em;
+        margin-bottom: 14px;
+    }
+
+    .subtitle {
+        font-size: 15px;
+        line-height: 1.55;
+        margin-bottom: 32px;
+        padding: 0 10px;
+    }
+
+    .form {
+        gap: 18px;
     }
 
     .symbol-input input {
-        padding: 18px 22px;
+        padding: 18px 20px;
         font-size: 16px;
+        border-radius: 24px;
+    }
+
+    .form-error {
+        margin-top: -4px;
+        font-size: 13px;
+        line-height: 1.5;
+        border-radius: 14px;
+        padding: 12px 14px;
     }
 
     .suggestions {
         border-radius: 18px;
+        top: calc(100% + 8px);
+        max-height: min(48svh, 320px);
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .suggestion {
+        padding: 14px 16px;
+    }
+
+    .suggestion-label {
+        font-size: 14px;
+    }
+
+    .suggestion-symbol,
+    .suggestion-support,
+    .suggestion-meta {
+        font-size: 12px;
+    }
+
+    button {
+        width: 100%;
+        min-height: 52px;
+        border-radius: 16px;
+        font-size: 15px;
+    }
+}
+
+@media (max-width: 380px) {
+    body {
+        padding: 28px 12px 20px;
+    }
+
+    .loading-panel {
+        padding: 22px 18px;
+    }
+
+    .title {
+        font-size: 30px;
+        letter-spacing: 0.12em;
+    }
+
+    .subtitle {
+        font-size: 14px;
+        margin-bottom: 26px;
+    }
+
+    .symbol-input input {
+        padding: 16px 18px;
+        font-size: 15px;
     }
 }
