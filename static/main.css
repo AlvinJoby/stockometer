@@ -470,6 +470,34 @@
     margin-top: 8px;
 }
 
+.returns-meta {
+    margin-top: 18px;
+    padding-top: 14px;
+    border-top: 1px solid #1e2330;
+}
+
+.returns-meta-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: 8px;
+}
+
+.returns-meta-label {
+    font-size: 11px;
+    letter-spacing: 1.4px;
+    text-transform: uppercase;
+    color: #64748b;
+}
+
+.returns-meta-value {
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: #cbd5f5;
+}
+
 .stat-box {
     display: flex;
     justify-content: space-between;
@@ -653,6 +681,21 @@
         font-size: 15px;
         font-weight: 700;
         letter-spacing: 0.3px;
+    }
+
+    .returns-meta {
+        grid-column: 1 / -1;
+        margin-top: 10px;
+        padding-top: 10px;
+    }
+
+    .returns-meta-label {
+        font-size: 10px;
+        letter-spacing: 1.2px;
+    }
+
+    .returns-meta-value {
+        font-size: 11px;
     }
 
     /* symbol header */

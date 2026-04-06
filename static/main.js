@@ -49,6 +49,19 @@ function syncStickyMarketBar() {
   stickyMarketBar.setAttribute("aria-hidden", shouldShow ? "false" : "true");
 }
 
+function setupBreakoutMobileToggle() {
+  const toggleButton = document.querySelector("[data-breakout-toggle]");
+  const breakoutTableWrap = document.querySelector(".breakout-table-wrap");
+  if (!toggleButton || !breakoutTableWrap) return;
+
+  toggleButton.addEventListener("click", () => {
+    const shouldExpand = !breakoutTableWrap.classList.contains("is-expanded");
+    breakoutTableWrap.classList.toggle("is-expanded", shouldExpand);
+    toggleButton.textContent = shouldExpand ? "Show Less" : "Show More";
+    toggleButton.setAttribute("aria-expanded", shouldExpand ? "true" : "false");
+  });
+}
+
 if (divider) {
   divider.addEventListener("mousedown", () => {
     isDragging = true;
@@ -81,6 +94,7 @@ document.addEventListener("mouseup", () => {
 window.addEventListener("load", () => {
   syncMainChartLayout();
   syncStickyMarketBar();
+  setupBreakoutMobileToggle();
   window.requestAnimationFrame(() => {
     window.requestAnimationFrame(() => {
       enterChartLoaderStage();

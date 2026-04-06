@@ -473,6 +473,84 @@
     font-size: 16px;
 }
 
+.breakout-hero {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 20px;
+    align-items: center;
+    margin-bottom: 20px;
+    padding: 24px 24px 22px;
+    border-radius: 16px;
+    border: 1px solid #1a2035;
+    background: #080c14;
+    box-shadow: 0 14px 30px rgba(0, 0, 0, 0.18);
+}
+
+.breakout-hero-positive {
+    background: linear-gradient(135deg, rgba(9, 18, 14, 0.98), rgba(8, 12, 20, 0.98));
+    border-color: rgba(34, 197, 94, 0.22);
+}
+
+.breakout-hero-neutral {
+    background: linear-gradient(135deg, rgba(11, 16, 24, 0.98), rgba(8, 12, 20, 0.98));
+    border-color: rgba(148, 163, 184, 0.18);
+}
+
+.breakout-hero-negative {
+    background: linear-gradient(135deg, rgba(24, 10, 12, 0.98), rgba(8, 12, 20, 0.98));
+    border-color: rgba(239, 68, 68, 0.22);
+}
+
+.breakout-hero-kicker {
+    display: inline-block;
+    margin-bottom: 10px;
+    font-size: 11px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: #94a3b8;
+}
+
+.breakout-hero-copy h3 {
+    margin: 0 0 8px;
+    font-size: clamp(24px, 3.3vw, 36px);
+    line-height: 1.1;
+    color: #f8fafc;
+    font-weight: 400;
+}
+
+.breakout-hero-copy p {
+    max-width: 720px;
+    color: #94a3b8;
+    font-size: 15px;
+    line-height: 1.6;
+}
+
+.breakout-hero-score {
+    min-width: 132px;
+    padding: 16px 18px;
+    border-radius: 14px;
+    border: 1px solid rgba(148, 163, 184, 0.14);
+    background: rgba(255, 255, 255, 0.03);
+    text-align: center;
+}
+
+.breakout-hero-score-label {
+    display: block;
+    margin-bottom: 6px;
+    font-size: 10px;
+    letter-spacing: 1.4px;
+    text-transform: uppercase;
+    color: #94a3b8;
+}
+
+.breakout-hero-score strong {
+    display: block;
+    color: #f8fafc;
+    font-size: clamp(28px, 3vw, 40px);
+    line-height: 1;
+    font-weight: 300;
+}
+
 .breakout-cards {
     display: grid;
     grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -523,6 +601,14 @@
 .breakout-card-value-success { color: #22c55e; }
 .breakout-card-value-failure { color: #ef4444; }
 .breakout-card-value-neutral { color: #e2e8f0; }
+
+.breakout-card-note {
+    display: block;
+    margin-top: 10px;
+    color: #64748b;
+    font-size: 12px;
+    line-height: 1.45;
+}
 
 .breakout-quality {
     padding: 20px 22px 22px;
@@ -631,6 +717,10 @@
     background: rgba(15, 23, 42, 0.35);
 }
 
+.breakout-show-more {
+    display: none;
+}
+
 .breakout-badge {
     display: inline-flex;
     align-items: center;
@@ -642,6 +732,7 @@
     letter-spacing: 1.3px;
     text-transform: uppercase;
     border: 1px solid transparent;
+    white-space: nowrap;
 }
 
 .breakout-badge-breakout {
@@ -682,43 +773,15 @@
 .breakout-return-negative { color: #ef4444; }
 .breakout-return-neutral { color: #94a3b8; }
 
-.breakout-confidence-cell {
-    position: relative;
-    min-width: 112px;
-}
-
-.breakout-confidence-track {
-    position: absolute;
-    inset: 50% 0 auto 0;
-    transform: translateY(-50%);
-    height: 16px;
-    border-radius: 999px;
-    background: rgba(30, 41, 59, 0.55);
-    overflow: hidden;
-}
-
-.breakout-confidence-fill {
-    display: block;
-    height: 100%;
-    border-radius: 999px;
-}
-
-.breakout-confidence-fill-success { background: linear-gradient(90deg, rgba(21, 128, 61, 0.75), rgba(34, 197, 94, 0.95)); }
-.breakout-confidence-fill-failure { background: linear-gradient(90deg, rgba(185, 28, 28, 0.75), rgba(239, 68, 68, 0.95)); }
-.breakout-confidence-fill-neutral { background: linear-gradient(90deg, rgba(71, 85, 105, 0.75), rgba(148, 163, 184, 0.95)); }
-
-.breakout-confidence-value {
-    position: relative;
-    z-index: 1;
-    display: inline-block;
-    padding: 0 8px;
-    line-height: 16px;
-    color: #f8fafc;
-    font-size: 12px;
-    font-weight: 600;
-}
-
 @media (max-width: 900px) {
+    .breakout-hero {
+        grid-template-columns: 1fr;
+    }
+
+    .breakout-hero-score {
+        justify-self: start;
+    }
+
     .breakout-cards {
         grid-template-columns: repeat(2, minmax(0, 1fr));
     }
@@ -746,6 +809,15 @@
         font-size: 14px;
     }
 
+    .breakout-hero {
+        padding: 18px 16px;
+        border-radius: 14px;
+    }
+
+    .breakout-hero-copy h3 {
+        font-size: 24px;
+    }
+
     .breakout-cards {
         grid-template-columns: repeat(2, minmax(0, 1fr));
     }
@@ -763,6 +835,14 @@
 }
 
 @media (max-width: 560px) {
+    .breakout-hero-copy h3 {
+        font-size: 22px;
+    }
+
+    .breakout-hero-copy p {
+        font-size: 14px;
+    }
+
     .breakout-cards {
         grid-template-columns: 1fr;
     }
@@ -787,6 +867,18 @@
     .breakout-table tr {
         padding: 12px;
         border-bottom: 1px solid #141b2a;
+        overflow: hidden;
+        transition:
+            max-height 0.35s ease,
+            opacity 0.28s ease,
+            transform 0.35s ease,
+            padding-top 0.35s ease,
+            padding-bottom 0.35s ease,
+            margin-top 0.35s ease,
+            border-color 0.35s ease;
+        max-height: 240px;
+        opacity: 1;
+        transform: translateY(0);
     }
 
     .breakout-table td {
@@ -802,5 +894,42 @@
         letter-spacing: 1.2px;
         text-transform: uppercase;
         color: #64748b;
+    }
+
+    .breakout-table-wrap:not(.is-expanded) .breakout-row-extra {
+        max-height: 0;
+        opacity: 0;
+        transform: translateY(-8px);
+        padding-top: 0;
+        padding-bottom: 0;
+        margin-top: 0;
+        border-bottom-color: transparent;
+        pointer-events: none;
+    }
+
+    .breakout-show-more {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: calc(100% - 24px);
+        margin: 0 12px 12px;
+        padding: 11px 14px;
+        border-radius: 12px;
+        border: 1px solid #23304a;
+        background: rgba(56, 189, 248, 0.06);
+        color: #cfe9ff;
+        font-size: 12px;
+        font-weight: 600;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+        cursor: pointer;
+        transition: background-color 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
+    }
+
+    .breakout-show-more:hover,
+    .breakout-show-more:active {
+        background: rgba(56, 189, 248, 0.12);
+        border-color: #38bdf8;
+        transform: translateY(-1px);
     }
 }
