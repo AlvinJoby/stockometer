@@ -9,6 +9,7 @@ from analysis.company_data import companyData, format_number
 from analysis.daily_returns import price_change, dailyReturns
 from analysis.macd_indicator import calculate_macd
 from analysis.buysell_marker import marking_bs
+from analysis.breakout_engine.breakout import breakout_behavior
 from stockIndex.getIndex import get_index, get_index_display_name
 from stockIndex.indexPerformance import index_performance_pipeline
 from symbol_search import search_symbols
@@ -121,7 +122,7 @@ def _market_status(exchange):
     now_local = pd.Timestamp.now(tz=timezone)
     current_time = now_local.time()
     is_open = now_local.weekday() < 5 and open_time <= current_time <= close_time
-    return {"is_open": is_open, "label": "LIVE" if is_open else "MARKET'S NOT LIVE"}
+    return {"is_open": is_open, "label": "MARKET IS OPEN" if is_open else "MARKET IS CLOSED"}
 
 
 @app.route('/')
@@ -178,7 +179,7 @@ def analyze():
         mark_signals(data)
 
         periodicReturns = periodic_returns(data)
-
+        breakout_data = breakout_behavior(data)
         index_summary = None
         index_ts = None
         exchange = ticker_info.get("exchange")
@@ -218,6 +219,7 @@ def analyze():
             market_status=market_status,
             company=company,
             periodicReturns=periodicReturns,
+            breakout_data=breakout_data,
             summary=index_summary,
             index_ts=index_ts,
             index_name=index_name,

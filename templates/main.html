@@ -9,7 +9,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="{{ url_for('static', filename='main.css') }}" />
     <link rel="stylesheet" href="{{ url_for('static', filename='src/loader.css') }}" />
-    {% if summary %}<link rel="stylesheet" href="{{ url_for('static', filename='ix.css') }}" />{% endif %}
+    {% if summary or breakout_data %}<link rel="stylesheet" href="{{ url_for('static', filename='ix.css') }}" />{% endif %}
     <title>Stockometer | {{ symbol_name }}</title>
   </head>
   <body>
@@ -246,6 +246,117 @@
       {% endif %}
 
       <!-- ── COMPANY METRICS ── -->
+      {% if breakout_data %}
+      {% set breakout_summary = breakout_data.summary %}
+      {% set breakout_empty = breakout_summary.note or breakout_summary.total == 0 %}
+      {% set breakout_neutral = (1 - breakout_summary.success_rate - breakout_summary.failure_rate) if not breakout_empty else 0 %}
+      {% set breakout_neutral = 0 if breakout_neutral < 0 else breakout_neutral %}
+      <section class="ix-section breakout-behavior-section">
+        <div class="breakout-panel">
+          <div class="breakout-header">
+            <span class="panel-eyebrow">Insights</span>
+            <h2>Breakout Behavior</h2>
+            <p class="breakout-subtitle">Breakout &amp; breakdown signal history with outcome classification</p>
+          </div>
+
+          {% if breakout_empty %}
+          <div class="breakout-empty-state">
+            <div class="breakout-empty-icon" aria-hidden="true">◎</div>
+            <p>Not enough breakout events to analyze</p>
+          </div>
+          {% else %}
+          <div class="breakout-cards">
+            <article class="breakout-card">
+              <span class="breakout-card-label">Total Signals</span>
+              <strong class="breakout-card-value breakout-card-value-neutral">{{ breakout_summary.total }}</strong>
+            </article>
+
+            <article class="breakout-card">
+              <span class="breakout-card-label">Success Rate</span>
+              <strong class="breakout-card-value breakout-card-value-success">{{ "%.0f"|format(breakout_summary.success_rate * 100) }}%</strong>
+            </article>
+
+            <article class="breakout-card">
+              <span class="breakout-card-label">Failure Rate</span>
+              <strong class="breakout-card-value breakout-card-value-failure">{{ "%.0f"|format(breakout_summary.failure_rate * 100) }}%</strong>
+            </article>
+
+            <article class="breakout-card">
+              <span class="breakout-card-label">Avg Return per Signal</span>
+              <strong class="breakout-card-value {{ 'breakout-card-value-success' if breakout_summary.avg_return > 0 else 'breakout-card-value-failure' if breakout_summary.avg_return < 0 else 'breakout-card-value-neutral' }}">
+                {{ '%+.2f'|format(breakout_summary.avg_return * 100) }}%
+              </strong>
+            </article>
+          </div>
+
+          <div class="breakout-quality">
+            <div class="breakout-quality-head">
+              <span class="breakout-quality-title">Signal Quality</span>
+              <span class="breakout-quality-meta">{{ breakout_summary.total }} classified signals</span>
+            </div>
+            <div class="breakout-quality-bar" aria-label="Signal quality distribution">
+              <div class="breakout-quality-segment breakout-quality-success" style="width: {{ '%.2f'|format(breakout_summary.success_rate * 100) }}%;">
+                {% if breakout_summary.success_rate >= 0.14 %}<span>{{ "%.0f"|format(breakout_summary.success_rate * 100) }}%</span>{% endif %}
+              </div>
+              <div class="breakout-quality-segment breakout-quality-neutral" style="width: {{ '%.2f'|format(breakout_neutral * 100) }}%;">
+                {% if breakout_neutral >= 0.14 %}<span>{{ "%.0f"|format(breakout_neutral * 100) }}%</span>{% endif %}
+              </div>
+              <div class="breakout-quality-segment breakout-quality-failure" style="width: {{ '%.2f'|format(breakout_summary.failure_rate * 100) }}%;">
+                {% if breakout_summary.failure_rate >= 0.14 %}<span>{{ "%.0f"|format(breakout_summary.failure_rate * 100) }}%</span>{% endif %}
+              </div>
+            </div>
+          </div>
+
+          <div class="breakout-table-wrap">
+            <div class="breakout-table-header">
+              <span class="breakout-table-title">Recent Signals</span>
+            </div>
+            <div class="breakout-table-scroll">
+              <table class="breakout-table">
+                <thead>
+                  <tr>
+                    <th>Date</th>
+                    <th>Type</th>
+                    <th>Return</th>
+                    <th>Outcome</th>
+                    <th>Confidence</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for event in breakout_data.recent[-7:]|reverse %}
+                  {% set confidence_width = (event.confidence / 3 * 100) if event.confidence < 3 else 100 %}
+                  <tr>
+                    <td data-label="Date">{{ event.date }}</td>
+                    <td data-label="Type">
+                      <span class="breakout-badge breakout-badge-{{ event.type }}">{{ event.type|upper }}</span>
+                    </td>
+                    <td data-label="Return">
+                      <span class="breakout-return {{ 'breakout-return-positive' if event.return > 0 else 'breakout-return-negative' if event.return < 0 else 'breakout-return-neutral' }}">
+                        {{ '%+.2f'|format(event.return) }}%
+                      </span>
+                    </td>
+                    <td data-label="Outcome">
+                      <span class="breakout-badge breakout-badge-outcome-{{ event.outcome }}">{{ event.outcome|upper }}</span>
+                    </td>
+                    <td data-label="Confidence">
+                      <div class="breakout-confidence-cell">
+                        <div class="breakout-confidence-track">
+                          <span class="breakout-confidence-fill breakout-confidence-fill-{{ event.outcome }}" style="width: {{ '%.2f'|format(confidence_width) }}%;"></span>
+                        </div>
+                        <span class="breakout-confidence-value">{{ "%.2f"|format(event.confidence) }}</span>
+                      </div>
+                    </td>
+                  </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            </div>
+          </div>
+          {% endif %}
+        </div>
+      </section>
+      {% endif %}
+
       <section class="metrics-wrapper">
         <div class="metrics-panel">
           <div class="panel-header">

@@ -63,5 +63,6 @@ def normalize_columns(data,symbol):
         colname(symbol,"Open") : "Open",
         colname(symbol,"High") : "High",
         colname(symbol,"Low") : "Low",
+        colname(symbol,"Volume"): "Volume",
         
     })

@@ -412,3 +412,395 @@
     .ix-data-cell:nth-child(even) { border-right: none; }
     .ix-data-cell:nth-child(3) { border-right: 1px solid #1e2330; }
 }
+
+.breakout-behavior-section {
+    border-top: 1px solid #1e2330;
+}
+
+.breakout-panel {
+    padding: 42px 28px 32px;
+    border-bottom: 1px solid #1e2330;
+    background: linear-gradient(180deg, rgba(8, 12, 20, 0.98), rgba(6, 9, 15, 1));
+}
+
+.breakout-header {
+    margin-bottom: 24px;
+}
+
+.breakout-header h2 {
+    margin: 0;
+    font-size: 28px;
+    font-weight: 400;
+    color: #e2e8f0;
+    line-height: 1.2;
+}
+
+.breakout-subtitle {
+    margin-top: 12px;
+    color: #64748b;
+    font-size: 15px;
+    line-height: 1.5;
+}
+
+.breakout-empty-state {
+    min-height: 220px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    border: 1px dashed #1f2a3d;
+    border-radius: 18px;
+    background: rgba(8, 12, 20, 0.55);
+    color: #94a3b8;
+    text-align: center;
+}
+
+.breakout-empty-icon {
+    width: 54px;
+    height: 54px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 999px;
+    border: 1px solid #23304a;
+    color: #38bdf8;
+    font-size: 24px;
+    background: rgba(56, 189, 248, 0.07);
+}
+
+.breakout-empty-state p {
+    font-size: 16px;
+}
+
+.breakout-cards {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 12px;
+    margin-bottom: 20px;
+}
+
+.breakout-card {
+    position: relative;
+    padding: 20px 22px;
+    border-radius: 12px;
+    background: #080c14;
+    border: 1px solid #1a2035;
+    overflow: hidden;
+    box-shadow: 0 14px 30px rgba(0, 0, 0, 0.18);
+}
+
+.breakout-card::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: linear-gradient(to right, #38bdf8, transparent);
+    opacity: 0.8;
+}
+
+.breakout-card-label {
+    display: block;
+    font-size: 11px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: #94a3b8;
+    margin-bottom: 16px;
+    font-weight: 500;
+}
+
+.breakout-card-value {
+    display: block;
+    font-size: clamp(28px, 3vw, 40px);
+    line-height: 1;
+    letter-spacing: -1px;
+    font-variant-numeric: tabular-nums;
+    font-weight: 300;
+}
+
+.breakout-card-value-success { color: #22c55e; }
+.breakout-card-value-failure { color: #ef4444; }
+.breakout-card-value-neutral { color: #e2e8f0; }
+
+.breakout-quality {
+    padding: 20px 22px 22px;
+    margin-bottom: 20px;
+    border-radius: 12px;
+    background: #080c14;
+    border: 1px solid #1a2035;
+}
+
+.breakout-quality-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 12px;
+}
+
+.breakout-quality-title {
+    font-size: 14px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: #e2e8f0;
+}
+
+.breakout-quality-meta {
+    font-size: 12px;
+    color: #64748b;
+}
+
+.breakout-quality-bar {
+    display: flex;
+    width: 100%;
+    height: 26px;
+    border-radius: 999px;
+    overflow: hidden;
+    background: #0d111a;
+    border: 1px solid #1a2035;
+}
+
+.breakout-quality-segment {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 0;
+    font-size: 11px;
+    font-weight: 600;
+    color: #f8fafc;
+    white-space: nowrap;
+}
+
+.breakout-quality-success { background: linear-gradient(90deg, #15803d, #22c55e); }
+.breakout-quality-neutral { background: linear-gradient(90deg, #475569, #64748b); }
+.breakout-quality-failure { background: linear-gradient(90deg, #b91c1c, #ef4444); }
+
+.breakout-table-wrap {
+    border-radius: 12px;
+    background: #080c14;
+    border: 1px solid #1a2035;
+    overflow: hidden;
+}
+
+.breakout-table-header {
+    padding: 16px 20px;
+    border-bottom: 1px solid #1e2330;
+}
+
+.breakout-table-title {
+    font-size: 14px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: #e2e8f0;
+}
+
+.breakout-table-scroll {
+    overflow-x: auto;
+}
+
+.breakout-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.breakout-table th,
+.breakout-table td {
+    padding: 16px 20px;
+    text-align: left;
+    border-bottom: 1px solid #141b2a;
+}
+
+.breakout-table th {
+    font-size: 11px;
+    letter-spacing: 1.4px;
+    text-transform: uppercase;
+    color: #64748b;
+    font-weight: 500;
+    background: rgba(10, 14, 22, 0.9);
+}
+
+.breakout-table td {
+    font-size: 14px;
+    color: #e2e8f0;
+    font-variant-numeric: tabular-nums;
+}
+
+.breakout-table tbody tr:hover {
+    background: rgba(15, 23, 42, 0.35);
+}
+
+.breakout-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 6px 10px;
+    border-radius: 999px;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 1.3px;
+    text-transform: uppercase;
+    border: 1px solid transparent;
+}
+
+.breakout-badge-breakout {
+    color: #38bdf8;
+    background: rgba(56, 189, 248, 0.08);
+    border-color: rgba(56, 189, 248, 0.16);
+}
+
+.breakout-badge-breakdown {
+    color: #f5a623;
+    background: rgba(245, 166, 35, 0.08);
+    border-color: rgba(245, 166, 35, 0.16);
+}
+
+.breakout-badge-outcome-success {
+    color: #22c55e;
+    background: rgba(34, 197, 94, 0.08);
+    border-color: rgba(34, 197, 94, 0.16);
+}
+
+.breakout-badge-outcome-failure {
+    color: #ef4444;
+    background: rgba(239, 68, 68, 0.08);
+    border-color: rgba(239, 68, 68, 0.16);
+}
+
+.breakout-badge-outcome-neutral {
+    color: #94a3b8;
+    background: rgba(148, 163, 184, 0.1);
+    border-color: rgba(148, 163, 184, 0.16);
+}
+
+.breakout-return {
+    font-weight: 600;
+}
+
+.breakout-return-positive { color: #22c55e; }
+.breakout-return-negative { color: #ef4444; }
+.breakout-return-neutral { color: #94a3b8; }
+
+.breakout-confidence-cell {
+    position: relative;
+    min-width: 112px;
+}
+
+.breakout-confidence-track {
+    position: absolute;
+    inset: 50% 0 auto 0;
+    transform: translateY(-50%);
+    height: 16px;
+    border-radius: 999px;
+    background: rgba(30, 41, 59, 0.55);
+    overflow: hidden;
+}
+
+.breakout-confidence-fill {
+    display: block;
+    height: 100%;
+    border-radius: 999px;
+}
+
+.breakout-confidence-fill-success { background: linear-gradient(90deg, rgba(21, 128, 61, 0.75), rgba(34, 197, 94, 0.95)); }
+.breakout-confidence-fill-failure { background: linear-gradient(90deg, rgba(185, 28, 28, 0.75), rgba(239, 68, 68, 0.95)); }
+.breakout-confidence-fill-neutral { background: linear-gradient(90deg, rgba(71, 85, 105, 0.75), rgba(148, 163, 184, 0.95)); }
+
+.breakout-confidence-value {
+    position: relative;
+    z-index: 1;
+    display: inline-block;
+    padding: 0 8px;
+    line-height: 16px;
+    color: #f8fafc;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+@media (max-width: 900px) {
+    .breakout-cards {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 768px) {
+    .breakout-behavior-section {
+        border-top: none;
+    }
+
+    .breakout-panel {
+        margin: 12px 10px 0;
+        padding: 22px 14px 20px;
+        border: 1px solid #1b2335;
+        border-radius: 20px;
+        background: linear-gradient(180deg, rgba(10, 14, 22, 0.98), rgba(7, 10, 18, 0.98));
+        box-shadow: 0 18px 40px rgba(0, 0, 0, 0.22);
+    }
+
+    .breakout-header h2 {
+        font-size: 22px;
+    }
+
+    .breakout-subtitle {
+        font-size: 14px;
+    }
+
+    .breakout-cards {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .breakout-card,
+    .breakout-quality,
+    .breakout-table-wrap {
+        border-radius: 14px;
+    }
+
+    .breakout-table th,
+    .breakout-table td {
+        padding: 14px 12px;
+    }
+}
+
+@media (max-width: 560px) {
+    .breakout-cards {
+        grid-template-columns: 1fr;
+    }
+
+    .breakout-quality-head {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .breakout-table thead {
+        display: none;
+    }
+
+    .breakout-table,
+    .breakout-table tbody,
+    .breakout-table tr,
+    .breakout-table td {
+        display: block;
+        width: 100%;
+    }
+
+    .breakout-table tr {
+        padding: 12px;
+        border-bottom: 1px solid #141b2a;
+    }
+
+    .breakout-table td {
+        padding: 8px 0;
+        border-bottom: none;
+    }
+
+    .breakout-table td::before {
+        content: attr(data-label);
+        display: block;
+        margin-bottom: 6px;
+        font-size: 10px;
+        letter-spacing: 1.2px;
+        text-transform: uppercase;
+        color: #64748b;
+    }
+}
