@@ -9,7 +9,8 @@
     <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="{{ url_for('static', filename='main.css') }}" />
     <link rel="stylesheet" href="{{ url_for('static', filename='src/loader.css') }}" />
-    {% if summary or breakout_data %}<link rel="stylesheet" href="{{ url_for('static', filename='ix.css') }}" />{% endif %}
+    {% if summary %}<link rel="stylesheet" href="{{ url_for('static', filename='ix.css') }}" />{% endif %}
+    {% if breakout_data %}<link rel="stylesheet" href="{{ url_for('static', filename='breakout.css') }}" />{% endif %}
     <title>Stockometer | {{ symbol_name }}</title>
   </head>
   <body>
@@ -239,89 +240,189 @@
       </section>
       {% endif %}
 
-      <!-- ── COMPANY METRICS ── -->
+{# ══════════════════════════════════════════════════════════════
+         BREAKOUT BEHAVIOR SECTION
+         - Shows all 10 recent events (not 5), Show More reveals rows 3-10
+         - Confidence column in table + avg_confidence card
+         - Holding window (10 sessions) stated everywhere relevant
+         - confidence_level badge near hero, not buried in card note
+         - Neutral bar width is recalculated from clamped value so bar always sums to 100%
+         - Hero verdict gates on success_rate alone (≥0.6), median_return is secondary
+         - Breakout vs Breakdown split counts shown
+         - Streak indicator on recent table
+         - Badge labels shortened to "Breakout" / "Breakdown"
+         - Empty state is lightweight (no full panel chrome)
+         ══════════════════════════════════════════════════════════════ #}
+
       {% if breakout_data %}
-      {% set breakout_summary = breakout_data.summary %}
-      {% set breakout_empty = breakout_summary.note or breakout_summary.total == 0 %}
-      {% set breakout_neutral = (1 - breakout_summary.success_rate - breakout_summary.failure_rate) if not breakout_empty else 0 %}
-      {% set breakout_neutral = 0 if breakout_neutral < 0 else breakout_neutral %}
-      {% if not breakout_empty %}
-      {% set breakout_signal_label = 'Breakouts hold up' if breakout_summary.success_rate >= 0.6 and breakout_summary.median_return > 0 else 'Breakouts are mixed' if breakout_summary.success_rate >= 0.4 else 'Breakouts fade fast' %}
-      {% set breakout_signal_tone = 'breakout-hero-positive' if breakout_summary.success_rate >= 0.6 and breakout_summary.median_return > 0 else 'breakout-hero-neutral' if breakout_summary.success_rate >= 0.4 else 'breakout-hero-negative' %}
-      {% set breakout_signal_note = 'Signals have more wins than losses and median follow-through is positive.' if breakout_summary.success_rate >= 0.6 and breakout_summary.median_return > 0 else 'Some signals work, but follow-through is not consistent enough to fully trust.' if breakout_summary.success_rate >= 0.4 else 'Recent breakout signals have failed too often to treat as reliable.' %}
-      {% if breakout_summary.low_confidence %}
-      {% set breakout_signal_note = breakout_signal_note ~ ' (Low confidence due to limited data)' %}
+
+      {# ── derive variables ── #}
+      {% set bs        = breakout_data.summary %}
+      {% set br        = breakout_data.recent %}
+      {% set is_empty  = bs.note is defined or bs.total == 0 %}
+
+      {% if not is_empty %}
+
+        {# neutral width, clamped, then the three segments re-proportioned to always sum 100 #}
+        {% set raw_neutral = 1 - bs.success_rate - bs.failure_rate %}
+        {% set bn          = [raw_neutral, 0] | max %}
+        {% set bar_total   = bs.success_rate + bn + bs.failure_rate %}
+        {% set bar_total   = bar_total if bar_total > 0 else 1 %}
+        {% set bar_s       = (bs.success_rate / bar_total * 100) | round(2) %}
+        {% set bar_n       = (bn            / bar_total * 100) | round(2) %}
+        {% set bar_f       = (bs.failure_rate / bar_total * 100) | round(2) %}
+
+        {# hero verdict — success_rate governs label; median_return is secondary nuance #}
+        {% if bs.success_rate >= 0.6 %}
+          {% set bh_label = 'Breakouts hold up' %}
+          {% set bh_tone  = 'breakout-hero-positive' %}
+          {% set bh_note  = 'More than 6 in 10 signals followed through in the expected direction.' %}
+          {% if bs.median_return < 0 %}
+            {% set bh_note = bh_note ~ ' Median move was negative, so magnitude has been limited.' %}
+          {% endif %}
+        {% elif bs.success_rate >= 0.4 %}
+          {% set bh_label = 'Breakouts are mixed' %}
+          {% set bh_tone  = 'breakout-hero-neutral' %}
+          {% set bh_note  = 'Signals work roughly half the time — follow-through is not consistent enough to rely on.' %}
+        {% else %}
+          {% set bh_label = 'Breakouts fade fast' %}
+          {% set bh_tone  = 'breakout-hero-negative' %}
+          {% set bh_note  = 'Most signals have reversed quickly. Breakout-style entries have not been reliable here.' %}
+        {% endif %}
+        {% if bs.low_confidence %}
+          {% set bh_note = bh_note ~ ' Results carry low confidence due to limited sample size.' %}
+        {% endif %}
+
+        {# signal type split from recent events #}
+        {% set ns_breakouts  = br | selectattr('type', 'equalto', 'breakout')  | list | length %}
+        {% set ns_breakdowns = br | selectattr('type', 'equalto', 'breakdown') | list | length %}
+
+        {# streak: walk recent events newest→oldest, count consecutive same outcome #}
+        {% set streak_events = br | reverse | list %}
+        {% set streak_outcome = streak_events[0].outcome if streak_events else '' %}
+        {% set streak_count = namespace(v=0) %}
+        {% for e in streak_events %}
+          {% if e.outcome == streak_outcome and streak_count.v == loop.index0 %}
+            {% set streak_count.v = streak_count.v + 1 %}
+          {% endif %}
+        {% endfor %}
+        {% if streak_count.v >= 2 and streak_outcome != 'neutral' %}
+          {% set streak_label = streak_count.v ~ ' ' ~ ('wins' if streak_outcome == 'success' else 'losses') ~ ' in a row' %}
+          {% set streak_tone  = 'streak-positive' if streak_outcome == 'success' else 'streak-negative' %}
+        {% else %}
+          {% set streak_label = '' %}
+          {% set streak_tone  = '' %}
+        {% endif %}
+
+        {# table: show all recent, first 2 visible, rest collapsible #}
+        {% set visible_n = 2 %}
+        {% set recent_rev = br | reverse | list %}
+
       {% endif %}
-      {% endif %}
+
       <section class="ix-section breakout-behavior-section">
+
+        {% if is_empty %}
+
+        {# ── LIGHTWEIGHT EMPTY STATE ── #}
+        <div class="breakout-empty-standalone">
+          <div class="breakout-empty-eyebrow">Breakout Behavior</div>
+          <div class="breakout-empty-body">
+            <span class="breakout-empty-icon" aria-hidden="true">◎</span>
+            <p>Not enough breakout events to analyze</p>
+            <span class="breakout-empty-hint">Requires at least 60 sessions of price history.</span>
+          </div>
+        </div>
+
+        {% else %}
+
         <div class="breakout-panel">
+
+          {# ── HEADER ── #}
           <div class="breakout-header">
             <span class="panel-eyebrow">Insights</span>
             <h2>Breakout Behavior</h2>
-            <p class="breakout-subtitle">A quick read on whether breakout signals in this stock usually follow through or fade out.</p>
+            <p class="breakout-subtitle">
+              Historical read on whether breakout and breakdown signals in this stock
+              tend to follow through or reverse — judged over a <strong>10-session holding window</strong>.
+            </p>
           </div>
 
-          {% if breakout_empty %}
-          <div class="breakout-empty-state">
-            <div class="breakout-empty-icon" aria-hidden="true">◎</div>
-            <p>Not enough breakout events to analyze</p>
-          </div>
-          {% else %}
-          <div class="breakout-overview">
-            <div class="breakout-hero {{ breakout_signal_tone }}">
-              <div class="breakout-hero-copy">
-                <span class="breakout-hero-kicker">Quick Take</span>
-                <h3>{{ breakout_signal_label }}</h3>
-                <p>{{ breakout_signal_note }}</p>
-              </div>
+          {# ── HERO ── #}
+          <div class="breakout-hero {{ bh_tone }}">
+            <div class="breakout-hero-copy">
+              <span class="breakout-hero-kicker">Quick Take</span>
+              <h3>{{ bh_label }}</h3>
+              <p>{{ bh_note }}</p>
+            </div>
+            <div class="breakout-hero-right">
               <div class="breakout-hero-score">
                 <span class="breakout-hero-score-label">Success Rate</span>
-                <strong>{{ "%.0f"|format(breakout_summary.success_rate * 100) }}%</strong>
+                <strong>{{ "%.0f"|format(bs.success_rate * 100) }}%</strong>
               </div>
+              {# confidence level badge — prominent, not buried #}
+              <span class="breakout-confidence-badge breakout-confidence-{{ 'low' if bs.low_confidence else ('moderate' if bs.confidence_level == 'Moderate Confidence' else 'high') }}">
+                {{ bs.confidence_level }}
+              </span>
             </div>
           </div>
 
+          {# ── STAT CARDS ── #}
           <div class="breakout-cards">
+
             <article class="breakout-card">
               <span class="breakout-card-label">Signals Found</span>
-              <strong class="breakout-card-value breakout-card-value-neutral">{{ breakout_summary.total }}</strong>
-              <span class="breakout-card-note">Confidence: {{ breakout_summary.confidence_level }} ({{ breakout_summary.confidence_note }})</span>
+              <strong class="breakout-card-value breakout-card-value-neutral">{{ bs.total }}</strong>
+              <span class="breakout-card-note">
+                {{ ns_breakouts }} breakout{% if ns_breakouts != 1 %}s{% endif %},
+                {{ ns_breakdowns }} breakdown{% if ns_breakdowns != 1 %}s{% endif %}
+                in sample
+              </span>
             </article>
 
             <article class="breakout-card">
               <span class="breakout-card-label">Worked Out</span>
-              <strong class="breakout-card-value breakout-card-value-success">{{ "%.0f"|format(breakout_summary.success_rate * 100) }}%</strong>
-              <span class="breakout-card-note">Signals that moved in the expected direction.</span>
+              <strong class="breakout-card-value breakout-card-value-success">{{ "%.0f"|format(bs.success_rate * 100) }}%</strong>
+              <span class="breakout-card-note">Moved ≥ 1 ATR in signal direction within 10 sessions.</span>
             </article>
 
             <article class="breakout-card">
               <span class="breakout-card-label">Failed</span>
-              <strong class="breakout-card-value breakout-card-value-failure">{{ "%.0f"|format(breakout_summary.failure_rate * 100) }}%</strong>
-              <span class="breakout-card-note">Signals that quickly reversed instead.</span>
+              <strong class="breakout-card-value breakout-card-value-failure">{{ "%.0f"|format(bs.failure_rate * 100) }}%</strong>
+              <span class="breakout-card-note">Reversed ≥ 0.75 ATR against signal within 10 sessions.</span>
             </article>
 
             <article class="breakout-card">
-              <span class="breakout-card-label">Median Move After Signal</span>
-              <strong class="breakout-card-value {{ 'breakout-card-value-success' if breakout_summary.median_return > 0 else 'breakout-card-value-failure' if breakout_summary.median_return < 0 else 'breakout-card-value-neutral' }}">
-                {{ '%+.2f'|format(breakout_summary.median_return * 100) }}%
+              <span class="breakout-card-label">Median Move</span>
+              <strong class="breakout-card-value {{ 'breakout-card-value-success' if bs.median_return > 0 else 'breakout-card-value-failure' if bs.median_return < 0 else 'breakout-card-value-neutral' }}">
+                {{ '%+.2f'|format(bs.median_return * 100) }}%
               </strong>
-              <span class="breakout-card-note">Median gain or loss after each signal over the fixed holding window.</span>
+              <span class="breakout-card-note">Direction-adjusted median return over the 10-session window.</span>
             </article>
+
+            <article class="breakout-card">
+              <span class="breakout-card-label">Avg Signal Quality</span>
+              <strong class="breakout-card-value breakout-card-value-neutral">{{ "%.2f"|format(bs.avg_confidence) }}<span class="breakout-card-value-unit"> / 3</span></strong>
+              <span class="breakout-card-note">Composite of breakout distance and volume expansion at trigger.</span>
+            </article>
+
           </div>
 
+          {# ── QUALITY BAR ── #}
           <div class="breakout-quality">
             <div class="breakout-quality-head">
               <span class="breakout-quality-title">How Those Signals Played Out</span>
+              <span class="breakout-quality-meta">{{ bs.total }} signals · 10-session window</span>
             </div>
-            <div class="breakout-quality-bar" aria-label="Signal quality distribution">
-              <div class="breakout-quality-segment breakout-quality-success" style="width: {{ '%.2f'|format(breakout_summary.success_rate * 100) }}%;">
-                {% if breakout_summary.success_rate >= 0.14 %}<span>{{ "%.0f"|format(breakout_summary.success_rate * 100) }}%</span>{% endif %}
+            <div class="breakout-quality-bar" aria-label="Signal outcome distribution: {{ "%.0f"|format(bar_s) }}% worked, {{ "%.0f"|format(bar_n) }}% neutral, {{ "%.0f"|format(bar_f) }}% failed">
+              <div class="breakout-quality-segment breakout-quality-success" style="width:{{ bar_s }}%">
+                {% if bar_s >= 14 %}<span>{{ "%.0f"|format(bar_s) }}%</span>{% endif %}
               </div>
-              <div class="breakout-quality-segment breakout-quality-neutral" style="width: {{ '%.2f'|format(breakout_neutral * 100) }}%;">
-                {% if breakout_neutral >= 0.14 %}<span>{{ "%.0f"|format(breakout_neutral * 100) }}%</span>{% endif %}
+              <div class="breakout-quality-segment breakout-quality-neutral" style="width:{{ bar_n }}%">
+                {% if bar_n >= 14 %}<span>{{ "%.0f"|format(bar_n) }}%</span>{% endif %}
               </div>
-              <div class="breakout-quality-segment breakout-quality-failure" style="width: {{ '%.2f'|format(breakout_summary.failure_rate * 100) }}%;">
-                {% if breakout_summary.failure_rate >= 0.14 %}<span>{{ "%.0f"|format(breakout_summary.failure_rate * 100) }}%</span>{% endif %}
+              <div class="breakout-quality-segment breakout-quality-failure" style="width:{{ bar_f }}%">
+                {% if bar_f >= 14 %}<span>{{ "%.0f"|format(bar_f) }}%</span>{% endif %}
               </div>
             </div>
             <div class="breakout-quality-legend" aria-hidden="true">
@@ -331,64 +432,75 @@
             </div>
           </div>
 
+          {# ── RECENT EVENTS TABLE ── #}
           <div class="breakout-table-wrap">
             <div class="breakout-table-header">
-              <span class="breakout-table-title">Recent Events</span>
-              <span class="breakout-table-meta">Latest {{ breakout_data.recent[-5:]|length }} signals</span>
+              <span class="breakout-table-title">
+                Recent Events
+                {% if streak_label %}
+                <span class="breakout-streak {{ streak_tone }}" title="Consecutive outcomes on latest signals">{{ streak_label }}</span>
+                {% endif %}
+              </span>
+              <span class="breakout-table-meta">Latest {{ recent_rev | length }} signals · 10-session window</span>
             </div>
+
             <div class="breakout-table-scroll">
               <table class="breakout-table">
                 <thead>
                   <tr>
                     <th>Date</th>
                     <th>Signal</th>
-                    <th>Move After Signal</th>
+                    <th>Move After</th>
+                    <th>Quality</th>
                     <th>Result</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {% for event in breakout_data.recent[-5:]|reverse %}
-                  <tr class="{% if loop.index > 2 %}breakout-row-extra{% endif %}">
+                  {% for event in recent_rev %}
+                  <tr data-breakout-row>
                     <td data-label="Date">{{ event.date }}</td>
                     <td data-label="Signal">
-                      <span class="breakout-badge breakout-badge-{{ event.type }}">{{ 'Price broke out' if event.type == 'breakout' else 'Price broke down' }}</span>
+                      <span class="breakout-badge breakout-badge-{{ event.type }}">{{ 'Breakout' if event.type == 'breakout' else 'Breakdown' }}</span>
                     </td>
-                    <td data-label="Move After Signal">
+                    <td data-label="Move After">
                       <span class="breakout-return {{ 'breakout-return-positive' if event.return > 0 else 'breakout-return-negative' if event.return < 0 else 'breakout-return-neutral' }}">
                         {{ '%+.2f'|format(event.return) }}%
                       </span>
                     </td>
+                    <td data-label="Quality">
+                      <div class="breakout-conf-cell">
+                        <span class="breakout-conf-bar-wrap">
+                          <span class="breakout-conf-bar breakout-conf-bar-{{ event.outcome }}"
+                                style="width:{{ [(event.confidence / 3 * 100), 100] | min | round(1) }}%"></span>
+                        </span>
+                        <span class="breakout-conf-val">{{ "%.2f"|format(event.confidence) }}</span>
+                      </div>
+                    </td>
                     <td data-label="Result">
-                      <span class="breakout-badge breakout-badge-outcome-{{ event.outcome }}">{{ 'Worked' if event.outcome == 'success' else 'Failed' if event.outcome == 'failure' else 'Flat' }}</span>
+                      <span class="breakout-badge breakout-badge-outcome-{{ event.outcome }}">
+                        {{ 'Worked' if event.outcome == 'success' else 'Failed' if event.outcome == 'failure' else 'Flat' }}
+                      </span>
                     </td>
                   </tr>
                   {% endfor %}
                 </tbody>
               </table>
             </div>
-            {% if breakout_data.recent[-5:]|length > 2 %}
+
             <button
-              type="button"
-              class="breakout-show-more"
-              data-breakout-toggle
-              aria-expanded="false"
-            >
-              Show More
-            </button>
-            {% endif %}
+  type="button"
+  class="breakout-show-more"
+  data-breakout-toggle
+  aria-expanded="false">
+</button>
           </div>
-          {% endif %}
-        </div>
+
+        </div>{# /breakout-panel #}
+        {% endif %}
+
       </section>
-      {% elif index_name %}
-      <section class="ix-section ix-empty-section">
-        <div class="ix-empty-panel">
-          <span class="panel-eyebrow">Insights</span>
-          <h2>Index Comparison</h2>
-          <p>{{ stock_name }} vs {{ index_name }} is temporarily unavailable. The section stays here so it does not disappear above Breakout Behavior.</p>
-        </div>
-      </section>
-      {% endif %}
+
+      {% endif %}{# /breakout_data #}
 
       <section class="metrics-wrapper">
         <div class="metrics-panel">
@@ -452,6 +564,10 @@
       };
     </script>
     <script src="{{ url_for('static', filename='ix.js') }}"></script>
+    {% endif %}
+
+    {% if breakout_data %}
+    <script src="{{ url_for('static', filename='breakout.js') }}"></script>
     {% endif %}
 
   </body>
