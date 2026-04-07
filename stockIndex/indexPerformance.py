@@ -54,6 +54,7 @@ def performance_summary(df):
     alpha_mean = df["alpha_daily"].mean()
 
     days = (df.index[-1] - df.index[0]).days
+    stock_drawdown = ((df["normalized_stock"] / df["normalized_stock"].cummax()) - 1) * 100
 
     summary = {
         "stock_return": df["normalized_stock"].iloc[-1] - 100,
@@ -85,9 +86,7 @@ def performance_summary(df):
 
         "alpha_trend_20d": df["alpha_rolling"].iloc[-1],
 
-        "worst_alpha_drawdown": (
-            df["alpha_cumulative"] - df["alpha_cumulative"].cummax()
-        ).min()
+        "max_drawdown_stock": stock_drawdown.min()
     }
 
     return summary

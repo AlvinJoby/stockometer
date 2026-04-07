@@ -127,7 +127,7 @@
       <!-- ══════════════════════════════════════
            INDEX COMPARISON
            ══════════════════════════════════════ -->
-      {% if summary %}
+      {% if summary and index_ts %}
       {% set alpha    = summary.alpha %}
       {% set sr       = summary.stock_return %}
       {% set ir       = summary.index_return %}
@@ -154,6 +154,7 @@
             <span class="ix-sentence-index">{{ index_name }}</span>
             <span class="ix-sentence-by">by</span>
             <span class="ix-sentence-alpha">{{ '%+.2f'|format(alpha) }}%</span>
+            <span class="ix-sentence-by">(1Y)</span>
           </div>
 
           <!-- 3 CARDS -->
@@ -163,25 +164,21 @@
               <span class="ix-card-label">Stock Return</span>
               <span class="ix-card-name">{{ stock_name }}</span>
               <span class="ix-card-value">{{ '%+.2f'|format(sr) }}%</span>
-              {% if summary.stock_cagr is not none %}
-              <span class="ix-card-sub">CAGR {{ '%+.1f'|format(summary.stock_cagr * 100) }}% annualised</span>
-              {% endif %}
+              <span class="ix-card-sub">1Y return</span>
             </div>
 
             <div class="ix-card ix-card-index">
               <span class="ix-card-label">Index Return</span>
               <span class="ix-card-name">{{ index_name }}</span>
               <span class="ix-card-value">{{ '%+.2f'|format(ir) }}%</span>
-              {% if summary.index_cagr is not none %}
-              <span class="ix-card-sub">CAGR {{ '%+.1f'|format(summary.index_cagr * 100) }}% annualised</span>
-              {% endif %}
+              <span class="ix-card-sub">1Y return</span>
             </div>
 
             <div class="ix-card ix-card-alpha {{ 'beat' if beating else 'lag' }}">
               <span class="ix-card-label">Alpha</span>
               <span class="ix-card-name">{{ 'Excess return' if beating else 'Return gap' }}</span>
               <span class="ix-card-value">{{ '%+.2f'|format(alpha) }}%</span>
-              <span class="ix-card-sub">{{ "%.1f"|format(summary.outperformance_days_pct) }}% of days ahead</span>
+              <span class="ix-card-sub">{{ "%.1f"|format(summary.outperformance_days_pct) }}% of days ahead (1Y)</span>
             </div>
 
           </div>
@@ -203,31 +200,15 @@
         </div>
 
         <!-- DATA STRIP -->
-        <div class="ix-data-row">
+          <div class="ix-data-row">
 
-          <div class="ix-data-cell">
+          <div class="ix-data-cell ix-data-cell-winrate">
             <span class="ix-data-label">Win Rate</span>
             <span class="ix-data-value ix-blue">{{ "%.1f"|format(summary.outperformance_days_pct) }}%</span>
-            <span class="ix-data-note">days beating index</span>
+            <span class="ix-data-note">days beating index (1Y)</span>
           </div>
 
-          <div class="ix-data-cell">
-            <span class="ix-data-label">Stock CAGR</span>
-            <span class="ix-data-value {{ 'ix-pos' if summary.stock_cagr and summary.stock_cagr >= 0 else 'ix-neg' }}">
-              {% if summary.stock_cagr is not none %}{{ '%+.1f'|format(summary.stock_cagr * 100) }}%{% else %}N/A{% endif %}
-            </span>
-            <span class="ix-data-note">annualised</span>
-          </div>
-
-          <div class="ix-data-cell">
-            <span class="ix-data-label">Index CAGR</span>
-            <span class="ix-data-value {{ 'ix-pos' if summary.index_cagr and summary.index_cagr >= 0 else 'ix-neg' }}">
-              {% if summary.index_cagr is not none %}{{ '%+.1f'|format(summary.index_cagr * 100) }}%{% else %}N/A{% endif %}
-            </span>
-            <span class="ix-data-note">annualised</span>
-          </div>
-
-          <div class="ix-data-cell">
+          <div class="ix-data-cell ix-data-cell-info">
             <span class="ix-data-label">Info Ratio</span>
             <span class="ix-data-value {% if summary.information_ratio is not none %}{{ 'ix-pos' if summary.information_ratio >= 0 else 'ix-neg' }}{% endif %}">
               {% if summary.information_ratio is not none %}{{ '%+.2f'|format(summary.information_ratio) }}{% else %}N/A{% endif %}
@@ -235,20 +216,22 @@
             <span class="ix-data-note">alpha / tracking error</span>
           </div>
 
-          <div class="ix-data-cell">
-            <span class="ix-data-label">Volatility</span>
-            <span class="ix-data-value ix-dim">
-              <span style="color:#38bdf8">{{ "%.1f"|format(summary.stock_volatility * 100) }}%</span>
-              <span style="color:#2a3350; font-size:11px"> / </span>
-              <span style="color:#f5a623">{{ "%.1f"|format(summary.index_volatility * 100) }}%</span>
-            </span>
-            <span class="ix-data-note">stock / index</span>
+          <div class="ix-data-cell ix-data-cell-stock-vol">
+            <span class="ix-data-label">Stock Volatility</span>
+            <span class="ix-data-value ix-blue">{{ "%.1f"|format(summary.stock_volatility * 100) }}%</span>
+            <span class="ix-data-note">{{ stock_name }} annualized (1Y)</span>
           </div>
 
-          <div class="ix-data-cell">
-            <span class="ix-data-label">Worst Drawdown</span>
-            <span class="ix-data-value ix-neg">{{ "%.2f"|format(summary.worst_alpha_drawdown) }}%</span>
-            <span class="ix-data-note">peak-to-trough alpha</span>
+          <div class="ix-data-cell ix-data-cell-index-vol">
+            <span class="ix-data-label">Index Volatility</span>
+            <span class="ix-data-value" style="color:#f5a623">{{ "%.1f"|format(summary.index_volatility * 100) }}%</span>
+            <span class="ix-data-note">{{ index_name }} annualized (1Y)</span>
+          </div>
+
+          <div class="ix-data-cell ix-data-cell-drawdown">
+            <span class="ix-data-label">Max Drawdown (Stock)</span>
+            <span class="ix-data-value ix-neg">{{ "%.2f"|format(summary.max_drawdown_stock) }}%</span>
+            <span class="ix-data-note">peak-to-trough decline (1Y)</span>
           </div>
 
         </div>
@@ -263,9 +246,12 @@
       {% set breakout_neutral = (1 - breakout_summary.success_rate - breakout_summary.failure_rate) if not breakout_empty else 0 %}
       {% set breakout_neutral = 0 if breakout_neutral < 0 else breakout_neutral %}
       {% if not breakout_empty %}
-      {% set breakout_signal_label = 'Usually works well after breakouts' if breakout_summary.success_rate >= 0.6 and breakout_summary.avg_return > 0 else 'Mixed results after breakouts' if breakout_summary.success_rate >= 0.4 else 'Often struggles after breakouts' %}
-      {% set breakout_signal_tone = 'breakout-hero-positive' if breakout_summary.success_rate >= 0.6 and breakout_summary.avg_return > 0 else 'breakout-hero-neutral' if breakout_summary.success_rate >= 0.4 else 'breakout-hero-negative' %}
-      {% set breakout_signal_note = 'Signals have more wins than losses and average follow-through is positive.' if breakout_summary.success_rate >= 0.6 and breakout_summary.avg_return > 0 else 'Some signals work, but follow-through is not consistent enough to fully trust.' if breakout_summary.success_rate >= 0.4 else 'Recent breakout signals have failed too often to treat as reliable.' %}
+      {% set breakout_signal_label = 'Breakouts hold up' if breakout_summary.success_rate >= 0.6 and breakout_summary.median_return > 0 else 'Breakouts are mixed' if breakout_summary.success_rate >= 0.4 else 'Breakouts fade fast' %}
+      {% set breakout_signal_tone = 'breakout-hero-positive' if breakout_summary.success_rate >= 0.6 and breakout_summary.median_return > 0 else 'breakout-hero-neutral' if breakout_summary.success_rate >= 0.4 else 'breakout-hero-negative' %}
+      {% set breakout_signal_note = 'Signals have more wins than losses and median follow-through is positive.' if breakout_summary.success_rate >= 0.6 and breakout_summary.median_return > 0 else 'Some signals work, but follow-through is not consistent enough to fully trust.' if breakout_summary.success_rate >= 0.4 else 'Recent breakout signals have failed too often to treat as reliable.' %}
+      {% if breakout_summary.low_confidence %}
+      {% set breakout_signal_note = breakout_signal_note ~ ' (Low confidence due to limited data)' %}
+      {% endif %}
       {% endif %}
       <section class="ix-section breakout-behavior-section">
         <div class="breakout-panel">
@@ -281,15 +267,17 @@
             <p>Not enough breakout events to analyze</p>
           </div>
           {% else %}
-          <div class="breakout-hero {{ breakout_signal_tone }}">
-            <div class="breakout-hero-copy">
-              <span class="breakout-hero-kicker">Quick Take</span>
-              <h3>{{ breakout_signal_label }}</h3>
-              <p>{{ breakout_signal_note }}</p>
-            </div>
-            <div class="breakout-hero-score">
-              <span class="breakout-hero-score-label">Success Rate</span>
-              <strong>{{ "%.0f"|format(breakout_summary.success_rate * 100) }}%</strong>
+          <div class="breakout-overview">
+            <div class="breakout-hero {{ breakout_signal_tone }}">
+              <div class="breakout-hero-copy">
+                <span class="breakout-hero-kicker">Quick Take</span>
+                <h3>{{ breakout_signal_label }}</h3>
+                <p>{{ breakout_signal_note }}</p>
+              </div>
+              <div class="breakout-hero-score">
+                <span class="breakout-hero-score-label">Success Rate</span>
+                <strong>{{ "%.0f"|format(breakout_summary.success_rate * 100) }}%</strong>
+              </div>
             </div>
           </div>
 
@@ -297,7 +285,7 @@
             <article class="breakout-card">
               <span class="breakout-card-label">Signals Found</span>
               <strong class="breakout-card-value breakout-card-value-neutral">{{ breakout_summary.total }}</strong>
-              <span class="breakout-card-note">How many breakout-style setups were detected.</span>
+              <span class="breakout-card-note">Confidence: {{ breakout_summary.confidence_level }} ({{ breakout_summary.confidence_note }})</span>
             </article>
 
             <article class="breakout-card">
@@ -313,18 +301,17 @@
             </article>
 
             <article class="breakout-card">
-              <span class="breakout-card-label">Typical Move</span>
-              <strong class="breakout-card-value {{ 'breakout-card-value-success' if breakout_summary.avg_return > 0 else 'breakout-card-value-failure' if breakout_summary.avg_return < 0 else 'breakout-card-value-neutral' }}">
-                {{ '%+.2f'|format(breakout_summary.avg_return * 100) }}%
+              <span class="breakout-card-label">Median Move After Signal</span>
+              <strong class="breakout-card-value {{ 'breakout-card-value-success' if breakout_summary.median_return > 0 else 'breakout-card-value-failure' if breakout_summary.median_return < 0 else 'breakout-card-value-neutral' }}">
+                {{ '%+.2f'|format(breakout_summary.median_return * 100) }}%
               </strong>
-              <span class="breakout-card-note">Average gain or loss after each signal.</span>
+              <span class="breakout-card-note">Median gain or loss after each signal over the fixed holding window.</span>
             </article>
           </div>
 
           <div class="breakout-quality">
             <div class="breakout-quality-head">
               <span class="breakout-quality-title">How Those Signals Played Out</span>
-              <span class="breakout-quality-meta">Green means it worked, red means it failed.</span>
             </div>
             <div class="breakout-quality-bar" aria-label="Signal quality distribution">
               <div class="breakout-quality-segment breakout-quality-success" style="width: {{ '%.2f'|format(breakout_summary.success_rate * 100) }}%;">
@@ -337,11 +324,17 @@
                 {% if breakout_summary.failure_rate >= 0.14 %}<span>{{ "%.0f"|format(breakout_summary.failure_rate * 100) }}%</span>{% endif %}
               </div>
             </div>
+            <div class="breakout-quality-legend" aria-hidden="true">
+              <span class="breakout-quality-key"><i class="breakout-quality-dot breakout-quality-dot-success"></i>Worked</span>
+              <span class="breakout-quality-key"><i class="breakout-quality-dot breakout-quality-dot-neutral"></i>Neutral</span>
+              <span class="breakout-quality-key"><i class="breakout-quality-dot breakout-quality-dot-failure"></i>Failed</span>
+            </div>
           </div>
 
           <div class="breakout-table-wrap">
             <div class="breakout-table-header">
-              <span class="breakout-table-title">Recent Examples</span>
+              <span class="breakout-table-title">Recent Events</span>
+              <span class="breakout-table-meta">Latest {{ breakout_data.recent[-5:]|length }} signals</span>
             </div>
             <div class="breakout-table-scroll">
               <table class="breakout-table">
@@ -366,7 +359,7 @@
                       </span>
                     </td>
                     <td data-label="Result">
-                      <span class="breakout-badge breakout-badge-outcome-{{ event.outcome }}">{{ 'Worked' if event.outcome == 'success' else 'Failed' if event.outcome == 'failure' else 'Unclear' }}</span>
+                      <span class="breakout-badge breakout-badge-outcome-{{ event.outcome }}">{{ 'Worked' if event.outcome == 'success' else 'Failed' if event.outcome == 'failure' else 'Flat' }}</span>
                     </td>
                   </tr>
                   {% endfor %}
@@ -385,6 +378,14 @@
             {% endif %}
           </div>
           {% endif %}
+        </div>
+      </section>
+      {% elif index_name %}
+      <section class="ix-section ix-empty-section">
+        <div class="ix-empty-panel">
+          <span class="panel-eyebrow">Insights</span>
+          <h2>Index Comparison</h2>
+          <p>{{ stock_name }} vs {{ index_name }} is temporarily unavailable. The section stays here so it does not disappear above Breakout Behavior.</p>
         </div>
       </section>
       {% endif %}

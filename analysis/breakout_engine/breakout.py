@@ -173,25 +173,44 @@ def summarize(events):
             "total": 0,
             "success_rate": 0,
             "failure_rate": 0,
-            "avg_return": 0,
+            "median_return": 0,
             "avg_confidence": 0,
+            "confidence_level": "Low Confidence",
+            "confidence_note": "limited sample size",
+            "low_confidence": True,
         }
 
     success_count = sum(1 for event in events if event["outcome"] == "success")
     failure_count = sum(1 for event in events if event["outcome"] == "failure")
-    avg_return = sum(event["return"] for event in events) / total
+    returns = [event["return"] for event in events]
+    median_return = pd.Series(returns).median()
     avg_confidence = sum(event.get("confidence", 0) for event in events) / total
+    if total < 20:
+        confidence_level = "Low Confidence"
+        confidence_note = "limited sample size"
+        low_confidence = True
+    elif total < 50:
+        confidence_level = "Moderate Confidence"
+        confidence_note = "sample size is improving"
+        low_confidence = False
+    else:
+        confidence_level = "High Confidence"
+        confidence_note = "ample sample size"
+        low_confidence = False
 
     return {
         "total": total,
         "success_rate": round(success_count / total, 2),
         "failure_rate": round(failure_count / total, 2),
-        "avg_return": round(avg_return, 4),
+        "median_return": round(float(median_return), 4),
         "avg_confidence": round(avg_confidence, 2),
+        "confidence_level": confidence_level,
+        "confidence_note": confidence_note,
+        "low_confidence": low_confidence,
     }
 
 
-def recent_events(events, df, n=7):
+def recent_events(events, df, n=10):
     latest = events[-n:]
     output = []
 

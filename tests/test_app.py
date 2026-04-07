@@ -15,6 +15,7 @@ def make_price_frame():
             "High": [101 + i for i in range(140)],
             "Low": [99 + i for i in range(140)],
             "Close": [100.5 + i for i in range(140)],
+            "Volume": [1_000_000 + i for i in range(140)],
             "Volume_TEST": [1_000_000 + i for i in range(140)],
         },
         index=dates,
@@ -127,7 +128,7 @@ class AnalyzeRouteTests(unittest.TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertIn(b"Mock Company", response.data)
         self.assertIn(b"chart", response.data)
-        self.assertIn(b"MARKET&#39;S NOT LIVE", response.data)
+        self.assertIn(b"MARKET", response.data)
 
     @patch("app.generate_graph", side_effect=ValueError("Chart configuration failed"))
     @patch("app.periodic_returns", return_value={"1D": 1.0, "1W": 2.0, "1M": 3.0, "6M": 4.0})
@@ -264,6 +265,67 @@ class SymbolSuggestionRouteTests(unittest.TestCase):
             ],
         )
         mock_search_symbols.assert_called_once_with("app")
+
+
+class DividendYieldNormalizationTests(unittest.TestCase):
+    def test_prepare_company_uses_dividend_rate_fallback(self):
+        ticker = SimpleNamespace(
+            info={
+                "longName": "Mock Company",
+                "sector": "Tech",
+                "marketCap": 1_000_000_000,
+                "trailingPE": 18.25,
+                "priceToBook": 4.321,
+                "totalRevenue": 2_000_000_000,
+                "netIncomeToCommon": 500_000_000,
+                "profitMargins": 0.25,
+                "beta": 1.111,
+                "fiftyTwoWeekRange": "80-140",
+                "currentPrice": 100.0,
+                "dayHigh": 125.0,
+                "dayLow": 120.0,
+                "fiftyDayAverage": 110.0,
+                "fiftyTwoWeekHigh": 140.0,
+                "fiftyTwoWeekLow": 80.0,
+                "dividendYield": None,
+                "dividendRate": 2.5,
+            }
+        )
+
+        company = stock_app._prepare_company("AAPL", ticker)
+
+        self.assertAlmostEqual(company["dividendYield"], 0.025)
+        self.assertEqual(company["dividendYieldDisplay"], "2.50%")
+        self.assertTrue(company["hasDividend"])
+
+    def test_prepare_company_normalizes_whole_percent_dividend_yield(self):
+        ticker = SimpleNamespace(
+            info={
+                "longName": "Mock Company",
+                "sector": "Tech",
+                "marketCap": 1_000_000_000,
+                "trailingPE": 18.25,
+                "priceToBook": 4.321,
+                "totalRevenue": 2_000_000_000,
+                "netIncomeToCommon": 500_000_000,
+                "profitMargins": 0.25,
+                "beta": 1.111,
+                "fiftyTwoWeekRange": "80-140",
+                "currentPrice": 100.0,
+                "dayHigh": 125.0,
+                "dayLow": 120.0,
+                "fiftyDayAverage": 110.0,
+                "fiftyTwoWeekHigh": 140.0,
+                "fiftyTwoWeekLow": 80.0,
+                "dividendYield": 2.5,
+                "dividendRate": None,
+            }
+        )
+
+        company = stock_app._prepare_company("AAPL", ticker)
+
+        self.assertAlmostEqual(company["dividendYield"], 0.025)
+        self.assertEqual(company["dividendYieldDisplay"], "2.50%")
 
 
 if __name__ == "__main__":

@@ -35,6 +35,32 @@ def _format_ratio_as_percent(value, digits=2):
     return f"{value * 100:.{digits}f}%"
 
 
+def _normalize_dividend_yield(value):
+    if value is None or pd.isna(value):
+        return None
+    if value < 0:
+        return None
+    if value > 1:
+        return value / 100
+    return value
+
+
+def _resolve_dividend_yield(company):
+    normalized_yield = _normalize_dividend_yield(company.get("dividendYield"))
+    if normalized_yield is not None:
+        return normalized_yield
+
+    dividend_rate = company.get("dividendRate")
+    current_price = company.get("currentPrice")
+    if (
+        dividend_rate is None or pd.isna(dividend_rate) or dividend_rate < 0 or
+        current_price is None or pd.isna(current_price) or current_price <= 0
+    ):
+        return None
+
+    return dividend_rate / current_price
+
+
 def _is_greater(left, right):
     if left is None or right is None or pd.isna(left) or pd.isna(right):
         return False
@@ -43,6 +69,7 @@ def _is_greater(left, right):
 
 def _prepare_company(symbol, ticker):
     company = companyData(ticker)
+    company["dividendYield"] = _resolve_dividend_yield(company)
     company["longName"] = company.get("longName") or symbol.upper()
     company["marketCap"] = format_number(company.get("marketCap"))
     company["totalRevenue"] = format_number(company.get("totalRevenue"))

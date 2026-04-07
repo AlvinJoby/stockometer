@@ -21,6 +21,7 @@ def companyData(ticker):
         "fiftyTwoWeekHigh",
         "fiftyTwoWeekLow",
         "dividendYield",
+        "dividendRate",
     ]
 
     company_data = {field: info.get(field) for field in required_fields}
