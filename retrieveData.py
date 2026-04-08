@@ -4,7 +4,7 @@ import pandas as pd
 
 def retrieve_data(symbol):
     try:
-        data = yf.download(symbol, period="5y", interval="1d")
+        data = yf.download(symbol, period="8y", interval="1d")
 
         if data is None or data.empty:
             raise ValueError(f"No data fetched for symbol: {symbol}")

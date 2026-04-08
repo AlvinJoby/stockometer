@@ -2,6 +2,15 @@ import pandas as pd
 import numpy as np
 
 
+def get_price_col(df):
+    if "Adj Close" in df.columns:
+        return "Adj Close"
+    elif "Close" in df.columns:
+        return "Close"
+    else:
+        raise ValueError("No valid price column found")
+
+
 def enforce_time_window(stock, index, days=365):
 
     stock = stock.copy()
@@ -19,23 +28,15 @@ def enforce_time_window(stock, index, days=365):
     return stock, index, start_date, end_date
 
 
-def normalize_data(data, base_value):
+def compute_performance(stock_df, index_df):
 
-    data = data.copy()
-    close = data["Close"].dropna().sort_index()
+    stock_df, index_df, start_date, end_date = enforce_time_window(stock_df, index_df)
 
-    if len(close) == 0:
-        raise ValueError("No valid Close data")
+    stock_col = get_price_col(stock_df)
+    index_col = get_price_col(index_df)
 
-    data["normalized"] = (close / base_value) * 100
-
-    return data
-
-
-def align_data(stock, index):
-
-    df = stock[["normalized"]].join(
-        index[["normalized"]],
+    df = stock_df[[stock_col]].join(
+        index_df[[index_col]],
         how="inner",
         lsuffix="_stock",
         rsuffix="_index"
@@ -44,28 +45,21 @@ def align_data(stock, index):
     if len(df) < 200:
         raise ValueError("Not enough overlapping trading days")
 
-    return df
+    base_stock = df[f"{stock_col}_stock"].iloc[0]
+    base_index = df[f"{index_col}_index"].iloc[0]
 
+    df["normalized_stock"] = (df[f"{stock_col}_stock"] / base_stock) * 100
+    df["normalized_index"] = (df[f"{index_col}_index"] / base_index) * 100
 
-def compute_performance(stock_df, index_df):
-
-    stock_df, index_df, start_date, end_date = enforce_time_window(stock_df, index_df)
-
-    base_stock = stock_df["Close"].iloc[0]
-    base_index = index_df["Close"].iloc[0]
-
-    stock_df = normalize_data(stock_df, base_stock)
-    index_df = normalize_data(index_df, base_index)
-
-    df = align_data(stock_df, index_df)
-
-    df['returns_stock'] = df['normalized_stock'].pct_change()
-    df['returns_index'] = df['normalized_index'].pct_change()
+    df['returns_stock'] = df["normalized_stock"].pct_change()
+    df['returns_index'] = df["normalized_index"].pct_change()
 
     df['alpha_daily'] = df['returns_stock'] - df['returns_index']
     df['alpha_rolling'] = df['alpha_daily'].rolling(20, min_periods=5).mean()
 
-    df["alpha_cumulative"] = df["normalized_stock"] - df["normalized_index"]
+    df["alpha_cumulative"] = (
+        (df["normalized_stock"] / df["normalized_index"]) - 1
+    ) * 100
 
     df["relative_strength"] = df["normalized_stock"] / df["normalized_index"]
     df["rs_ma"] = df["relative_strength"].rolling(20, min_periods=5).mean()

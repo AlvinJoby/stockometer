@@ -28,7 +28,7 @@
     <h1>Stockometer</h1>
 
     <div class="navbar-right">
-        <span class="data-upto">Last Day - {{ last_traded_date }}</span>
+        <span class="data-upto">Last Noted Day - {{ last_traded_date }}</span>
         <span class="status-divider">|</span>
         <span class="market-status-badge {% if market_status.is_open %}market-status-open{% else %}market-status-closed{% endif %}">
             {{ market_status.label }}
@@ -120,7 +120,7 @@
           <div class="returns-meta">
             <div class="returns-meta-row">
               <span class="returns-meta-label">Timeframe</span>
-              <span class="returns-meta-value">1Y</span>
+              <span class="returns-meta-value">8Y</span>
             </div>
             <div class="returns-meta-row">
               <span class="returns-meta-label">Interval</span>
@@ -345,7 +345,6 @@
 
           {# ── HEADER ── #}
           <div class="breakout-header">
-            <span class="panel-eyebrow">Insights</span>
             <h2>Breakout Behavior</h2>
             <p class="breakout-subtitle">
               Historical read on whether breakout and breakdown signals in this stock
@@ -461,34 +460,51 @@
                   </tr>
                 </thead>
                 <tbody>
-                  {% for event in recent_rev %}
-                  <tr data-breakout-row>
-                    <td data-label="Date">{{ event.date }}</td>
-                    <td data-label="Signal">
-                      <span class="breakout-badge breakout-badge-{{ event.type }}">{{ 'Breakout' if event.type == 'breakout' else 'Breakdown' }}</span>
-                    </td>
-                    <td data-label="Move After">
-                      <span class="breakout-return {{ 'breakout-return-positive' if event.return > 0 else 'breakout-return-negative' if event.return < 0 else 'breakout-return-neutral' }}">
-                        {{ '%+.2f'|format(event.return) }}%
-                      </span>
-                    </td>
-                    <td data-label="Quality">
-                      <div class="breakout-conf-cell">
-                        <span class="breakout-conf-bar-wrap">
-                          <span class="breakout-conf-bar breakout-conf-bar-{{ event.outcome }}"
-                                style="width:{{ [(event.confidence / 3 * 100), 100] | min | round(1) }}%"></span>
-                        </span>
-                        <span class="breakout-conf-val">{{ "%.2f"|format(event.confidence) }}</span>
-                      </div>
-                    </td>
-                    <td data-label="Result">
-                      <span class="breakout-badge breakout-badge-outcome-{{ event.outcome }}">
-                        {{ 'Worked' if event.outcome == 'success' else 'Failed' if event.outcome == 'failure' else 'Flat' }}
-                      </span>
-                    </td>
-                  </tr>
-                  {% endfor %}
-                </tbody>
+  {% for event in recent_rev %}
+  <tr data-breakout-row>
+    
+    <td data-label="Date">{{ event.date }}</td>
+
+    <!-- MERGED SIGNAL + RESULT -->
+    <td data-label="Signal">
+      <div class="signal-row">
+        <span class="breakout-badge breakout-badge-{{ event.type }}">
+          {{ 'Breakout' if event.type == 'breakout' else 'Breakdown' }}
+        </span>
+
+        <span class="breakout-badge breakout-badge-outcome-{{ event.outcome }}">
+          {{ 'Worked' if event.outcome == 'success' else 'Failed' if event.outcome == 'failure' else 'Flat' }}
+        </span>
+      </div>
+    </td>
+
+    <td data-label="Move After">
+      <span class="breakout-return {{ 'breakout-return-positive' if event.return > 0 else 'breakout-return-negative' if event.return < 0 else 'breakout-return-neutral' }}">
+        {{ '%+.2f'|format(event.return) }}%
+      </span>
+    </td>
+
+    <td data-label="Quality">
+      <div class="breakout-conf-cell">
+        <span class="breakout-conf-bar-wrap">
+          <span class="breakout-conf-bar breakout-conf-bar-{{ event.outcome }}"
+                style="width:{{ [(event.confidence / 3 * 100), 100] | min | round(1) }}%">
+          </span>
+        </span>
+        <span class="breakout-conf-val">{{ "%.2f"|format(event.confidence) }}</span>
+      </div>
+    </td>
+
+    <!-- Desktop only -->
+    <td data-label="Result" class="result-cell-desktop">
+      <span class="breakout-badge breakout-badge-outcome-{{ event.outcome }}">
+        {{ 'Worked' if event.outcome == 'success' else 'Failed' if event.outcome == 'failure' else 'Flat' }}
+      </span>
+    </td>
+
+  </tr>
+  {% endfor %}
+</tbody>
               </table>
             </div>
 

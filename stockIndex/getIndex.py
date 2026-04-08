@@ -1,65 +1,63 @@
 EXCHANGE_TO_INDEX = {
-    "NSE": "^NSEI",
-    "NSI": "^NSEI",
-    "BSE": "^BSESN",
-    "BOM": "^BSESN",
+    "NSE": "NIFTYBEES.NS",
+    "NSI": "NIFTYBEES.NS",
+    "BSE": "NIFTYBEES.NS",
+    "BOM": "NIFTYBEES.NS",
 
-    "NMS": "^GSPC",
-    "NYQ": "^GSPC",
-    "ASE": "^GSPC",
-    "PCX": "^GSPC",
+    "NMS": "SPY",
+    "NYQ": "SPY",
+    "ASE": "SPY",
+    "PCX": "SPY",
 
-    "LSE": "^FTSE",
-    "TYO": "^N225",
-    "HKG": "^HSI",
+    "LSE": "EWU",
+    "TYO": "EWJ",
+    "HKG": "EWH",
 
-    "SHH": "000001.SS",
-    "SHE": "399001.SZ",
+    "SHH": "ASHR",
+    "SHE": "ASHR",
 
-    "FRA": "^GDAXI",
-    "PAR": "^FCHI",
-    "TOR": "^GSPTSE",
-    "ASX": "^AXJO",
-    "KSC": "^KS11",
-    "SAO": "^BVSP",
-    "JNB": "^JN0U.JO",
+    "FRA": "EWG",
+    "PAR": "EWQ",
+    "TOR": "EWC",
+    "ASX": "EWA",
+    "KSC": "EWY",
+    "SAO": "EWZ",
+    "JNB": "EZA",
 }
 
 US_EXCHANGES = {"NMS", "NYQ", "ASE", "PCX"}
 
 SUFFIX_TO_INDEX = {
-    ".NS": "^NSEI",
-    ".BO": "^BSESN",
-    ".L": "^FTSE",
-    ".T": "^N225",
-    ".HK": "^HSI",
-    ".SS": "000001.SS",
-    ".SZ": "399001.SZ",
-    ".PA": "^FCHI",
-    ".F": "^GDAXI",
-    ".TO": "^GSPTSE",
-    ".AX": "^AXJO",
-    ".KS": "^KS11",
-    ".SA": "^BVSP",
-    ".JO": "^JN0U.JO",
+    ".NS": "NIFTYBEES.NS",
+    ".BO": "NIFTYBEES.NS",
+    ".L": "EWU",
+    ".T": "EWJ",
+    ".HK": "EWH",
+    ".SS": "ASHR",
+    ".SZ": "ASHR",
+    ".PA": "EWQ",
+    ".F": "EWG",
+    ".TO": "EWC",
+    ".AX": "EWA",
+    ".KS": "EWY",
+    ".SA": "EWZ",
+    ".JO": "EZA",
 }
 
 INDEX_DISPLAY_NAMES = {
-    "^NSEI": "NIFTY 50",
-    "^BSESN": "SENSEX",
-    "^GSPC": "S&P 500",
-    "^FTSE": "FTSE 100",
-    "^N225": "NIKKEI 225",
-    "^HSI": "HANG SENG",
-    "000001.SS": "SSE COMPOSITE",
-    "399001.SZ": "SZSE COMPONENT",
-    "^GDAXI": "DAX",
-    "^FCHI": "CAC 40",
-    "^GSPTSE": "S&P/TSX COMPOSITE",
-    "^AXJO": "S&P/ASX 200",
-    "^KS11": "KOSPI",
-    "^BVSP": "IBOVESPA",
-    "^JN0U.JO": "FTSE/JSE TOP 40",
+    "SPY": "S&P 500 (ETF)",
+    "NIFTYBEES.NS": "NIFTY 50 (ETF)",
+    "EWU": "UK Market (ETF)",
+    "EWJ": "Japan Market (ETF)",
+    "EWH": "Hong Kong Market (ETF)",
+    "ASHR": "China Market (ETF)",
+    "EWG": "Germany Market (ETF)",
+    "EWQ": "France Market (ETF)",
+    "EWC": "Canada Market (ETF)",
+    "EWA": "Australia Market (ETF)",
+    "EWY": "Korea Market (ETF)",
+    "EWZ": "Brazil Market (ETF)",
+    "EZA": "South Africa Market (ETF)",
 }
 
 
@@ -70,12 +68,13 @@ def get_index(exchange: str, symbol: str = None) -> str:
         index = EXCHANGE_TO_INDEX.get(normalized_exchange)
 
         if not index and normalized_exchange in US_EXCHANGES:
-            index = "^GSPC"
+            index = "SPY"
 
         if index:
             return index
 
     normalized_symbol = (symbol or "").upper().strip()
+
     for suffix, index in SUFFIX_TO_INDEX.items():
         if normalized_symbol.endswith(suffix):
             return index
