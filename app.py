@@ -35,30 +35,36 @@ def _format_ratio_as_percent(value, digits=2):
     return f"{value * 100:.{digits}f}%"
 
 
-def _normalize_dividend_yield(value):
-    if value is None or pd.isna(value):
-        return None
-    if value < 0:
-        return None
-    if value > 1:
-        return value / 100
-    return value
-
-
 def _resolve_dividend_yield(company):
-    normalized_yield = _normalize_dividend_yield(company.get("dividendYield"))
-    if normalized_yield is not None:
-        return normalized_yield
+    dy = company.get("dividendYield")
+    dr = company.get("dividendRate")
+    price = company.get("currentPrice")
 
-    dividend_rate = company.get("dividendRate")
-    current_price = company.get("currentPrice")
-    if (
-        dividend_rate is None or pd.isna(dividend_rate) or dividend_rate < 0 or
-        current_price is None or pd.isna(current_price) or current_price <= 0
-    ):
+    candidates = []
+
+    if dy is not None and not pd.isna(dy):
+        candidates.append(dy)
+
+    if dr is not None and price is not None and price > 0:
+        candidates.append(dr / price)
+
+    cleaned = []
+
+    for val in candidates:
+        if val is None or pd.isna(val) or val < 0:
+            continue
+        if val > 10:
+            continue
+        if val > 1:
+            val = val / 100
+        if val > 0.1:
+            continue
+        cleaned.append(val)
+
+    if not cleaned:
         return None
 
-    return dividend_rate / current_price
+    return min(cleaned)
 
 
 def _is_greater(left, right):
@@ -235,8 +241,6 @@ def analyze():
 
         indicators = ["RSI", "SMA_20", "EMA_20", "EMA_50", "EMA_100", "MACD"]
         graphPlot = generate_graph(data, indicators)
-
-        
 
         return render_template(
             "main.html",
