@@ -24,12 +24,17 @@
       </div>
     </div>
 
-    <div class="navbar">
-      <h1>Stockometer</h1>
-      <span class="market-status-badge {{ 'market-status-open' if market_status.is_open else 'market-status-closed' }}">
-        {{ market_status.label }}
-      </span>
+    <nav class="navbar">
+    <h1>Stockometer</h1>
+
+    <div class="navbar-right">
+        <span class="data-upto">Last Day - {{ last_traded_date }}</span>
+        <span class="status-divider">|</span>
+        <span class="market-status-badge {% if market_status.is_open %}market-status-open{% else %}market-status-closed{% endif %}">
+            {{ market_status.label }}
+        </span>
     </div>
+</nav>
 
     <div class="sticky-market-bar" id="sticky-market-bar" aria-hidden="true">
       <div class="sticky-market-inner">

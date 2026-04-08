@@ -186,6 +186,8 @@ def analyze():
 
         data = normalize_columns(data, symbol)
 
+        last_traded_date = data.index[-1].strftime("%d %b %Y")
+
         config.symbol = symbol
         config.data = data
 
@@ -234,6 +236,8 @@ def analyze():
         indicators = ["RSI", "SMA_20", "EMA_20", "EMA_50", "EMA_100", "MACD"]
         graphPlot = generate_graph(data, indicators)
 
+        
+
         return render_template(
             "main.html",
             graph=graphPlot,
@@ -250,6 +254,7 @@ def analyze():
             summary=index_summary,
             index_ts=index_ts,
             index_name=index_name,
+            last_traded_date=last_traded_date,
         )
     except ValueError as exc:
         app.logger.exception("Analysis failed for symbol %s", symbol)
