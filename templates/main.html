@@ -14,6 +14,7 @@
     <title>Stockometer | {{ symbol_name }}</title>
   </head>
   <body>
+    <div id="top"></div>
     <div class="page-loading-overlay" id="page-loading-overlay" aria-hidden="false">
       <div class="page-loading-panel" role="status" aria-live="polite">
         <div class="loader"></div>
@@ -37,23 +38,35 @@
 </nav>
 
     <div class="sticky-market-bar" id="sticky-market-bar" aria-hidden="true">
-      <div class="sticky-market-inner">
-        <div class="sticky-market-left">
-          <span class="sticky-market-name">{{ sticky_name }}</span>
-        </div>
-        <div class="sticky-market-right">
-          <div class="sticky-market-price-row">
-            <span class="sticky-market-price {{ 'positive' if percentChange > 0 else 'negative' if percentChange < 0 else 'neutral' }}">
-              {{ "%.2f"|format(tLTP) }}
-            </span>
-            <span class="sticky-market-currency">{{ currency }}</span>
-          </div>
-          <span class="sticky-market-change {{ 'positive' if percentChange > 0 else 'negative' if percentChange < 0 else 'neutral' }}">
-            {% if percentChange > 0 %}+{{ "%.2f"|format(percentChange) }}%{% else %}{{ "%.2f"|format(percentChange) }}%{% endif %}
-          </span>
-        </div>
-      </div>
+  <div class="sticky-market-inner">
+
+    <!-- LEFT: Clickable App Name -->
+    <div class="sticky-market-left">
+      <a href="#top" class="app-title">Stockometer</a>
     </div>
+
+    <!-- RIGHT -->
+    <div class="sticky-market-right">
+
+      <div class="sticky-market-price-row">
+
+        <span class="sticky-market-name">{{ sticky_name }}</span>
+
+        <span class="sticky-market-price {{ 'positive' if percentChange > 0 else 'negative' if percentChange < 0 else 'neutral' }}">
+          {{ "%.2f"|format(tLTP) }}
+        </span>
+
+        <span class="sticky-market-currency">{{ currency }}</span>
+
+      </div>
+
+      <span class="sticky-market-change {{ 'positive' if percentChange > 0 else 'negative' if percentChange < 0 else 'neutral' }}">
+        {% if percentChange > 0 %}+{{ "%.2f"|format(percentChange) }}%{% else %}{{ "%.2f"|format(percentChange) }}%{% endif %}
+      </span>
+
+    </div>
+  </div>
+</div>
 
     <section class="bg_color">
 
@@ -120,7 +133,7 @@
           <div class="returns-meta">
             <div class="returns-meta-row">
               <span class="returns-meta-label">Timeframe</span>
-              <span class="returns-meta-value">8Y</span>
+              <span class="returns-meta-value">{{ timeframe_period }}</span>
             </div>
             <div class="returns-meta-row">
               <span class="returns-meta-label">Interval</span>

@@ -4,6 +4,11 @@
     box-sizing: border-box;
     font-family: Arial, sans-serif;
 }
+
+html, body {
+    overflow-x: hidden;
+}
+
 .bg_color{
     background-color: #06090f;
     z-index: -100;
@@ -216,6 +221,10 @@
     box-shadow: 0 0 10px rgba(239, 68, 68, 0.35);
 }
 
+/* ============================================================
+   STICKY MARKET BAR
+   ============================================================ */
+
 .sticky-market-bar {
     position: fixed;
     top: 0;
@@ -229,6 +238,10 @@
     transition:
         opacity 0.35s ease,
         transform 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.sticky-market-bar.is-visible {
+    pointer-events: auto;
 }
 
 .sticky-market-bar.is-visible {
@@ -268,11 +281,15 @@
     text-align: right;
 }
 
+/* ============================================================
+   PRICE ROW (UPDATED STRUCTURE)
+   ============================================================ */
+
 .sticky-market-price-row {
     display: flex;
     align-items: baseline;
     justify-content: flex-end;
-    gap: 8px;
+    gap: 10px;
     min-width: 0;
 }
 
@@ -285,6 +302,7 @@
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    max-width: 180px;
 }
 
 .sticky-market-price {
@@ -306,6 +324,39 @@
     font-size: 13px;
     font-weight: 600;
     font-variant-numeric: tabular-nums;
+}
+
+/* ============================================================
+   APP TITLE (CLICKABLE STOCKOMETER)
+   ============================================================ */
+
+.app-title {
+    margin: 0;
+    color: white;
+    font-size: 20px;
+    font-weight: 300;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    position: relative;
+    padding-left: 14px;
+    text-decoration: none;
+    display: inline-block;
+}
+
+.app-title::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 3px;
+    height: 70%;
+    background: #4a9eff;
+    border-radius: 2px;
+}
+
+html {
+    scroll-behavior: smooth;
 }
 
 .symbol_header {
@@ -504,7 +555,7 @@
 }
 
 .returns-meta-label {
-    font-size: 11px;
+    font-size: 13px;
     letter-spacing: 1.4px;
     text-transform: uppercase;
     color: #64748b;
@@ -603,6 +654,11 @@
         gap: 12px;
     }
 
+    .app-title{
+        font-size: 14px;
+        letter-spacing: 2.4px;
+    }
+
     .page-loading-panel {
         width: min(100%, 320px);
         padding: 26px 22px;
@@ -634,6 +690,55 @@
     .sticky-market-change {
         font-size: 10px;
     }
+
+    /* ── STICKY BAR MOBILE FIX ── */
+
+.sticky-market-inner {
+    align-items: center; /* better vertical balance */
+}
+
+/* Keep everything in ONE line */
+.sticky-market-right {
+    width: 100%;
+    align-items: flex-end;
+}
+
+/* Core fix: prevent breaking + handle long names */
+.sticky-market-price-row {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 6px;
+    width: 100%;
+    overflow: hidden;
+}
+
+/* 🔑 Company name truncation */
+.sticky-market-name {
+    font-size: 13px;
+    max-width: 40vw;          /* dynamic constraint */
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    flex-shrink: 1;
+}
+
+/* Price should NEVER shrink */
+.sticky-market-price {
+    font-size: 16px;
+    flex-shrink: 0;
+}
+
+/* Currency stays tight */
+.sticky-market-currency {
+    font-size: 9px;
+    flex-shrink: 0;
+}
+
+/* % change below stays readable */
+.sticky-market-change {
+    font-size: 10px;
+}
 
     /* stack panels vertically */
     .front-layout {

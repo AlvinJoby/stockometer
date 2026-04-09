@@ -1,10 +1,12 @@
 import yfinance as yf
 import pandas as pd
 
+timeframe_period = "1y"
 
 def retrieve_data(symbol):
+    
     try:
-        data = yf.download(symbol, period="8y", interval="1d")
+        data = yf.download(symbol, period=timeframe_period, interval="1d") #set period to 8y on production
 
         if data is None or data.empty:
             raise ValueError(f"No data fetched for symbol: {symbol}")
@@ -36,6 +38,8 @@ def retrieve_data(symbol):
 def colname(symbol, col_name):
     return col_name + "_" + symbol
 
+def return_timeframePeriod():
+    return timeframe_period
 
 def retrieve_ltp(data):
     price_col = "Close"

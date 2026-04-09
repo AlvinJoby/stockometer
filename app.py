@@ -1,6 +1,6 @@
 from flask import Flask, jsonify, render_template, request
 from validation import validateInput
-from retrieveData import retrieve_data, retrieve_ltp, retrieve_companyInfo, normalize_columns
+from retrieveData import retrieve_data, retrieve_ltp, retrieve_companyInfo, normalize_columns, return_timeframePeriod
 from graph import generate_graph
 from analysis.rsi_indicator import calculate_rsi, mark_signals
 from analysis.ma_indicator import calculate_sma, calculate_ema
@@ -182,6 +182,7 @@ def analyze():
         ), 400
 
     try:
+        symbol = symbol.upper()
         data = retrieve_data(symbol)
         if data is None or data.empty:
             return render_template(
@@ -201,6 +202,8 @@ def analyze():
         ticker = retrieve_companyInfo(symbol)
         ticker_info = getattr(ticker, "info", {}) or {}
         company = _prepare_company(symbol, ticker)
+
+        timeframe_period = return_timeframePeriod()
 
         price_change(data)
         dailyReturns(data)
@@ -259,6 +262,7 @@ def analyze():
             index_ts=index_ts,
             index_name=index_name,
             last_traded_date=last_traded_date,
+            timeframe_period=timeframe_period,
         )
     except ValueError as exc:
         app.logger.exception("Analysis failed for symbol %s", symbol)

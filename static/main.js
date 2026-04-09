@@ -108,3 +108,16 @@ window.addEventListener("load", () => {
 window.addEventListener("resize", syncMainChartLayout);
 window.addEventListener("resize", syncStickyMarketBar);
 window.addEventListener("scroll", syncStickyMarketBar, { passive: true });
+
+document.addEventListener("DOMContentLoaded", function () {
+    const appTitle = document.querySelector('.app-title');
+    if (!appTitle) return;
+
+    appTitle.addEventListener('click', function(e) {
+        e.preventDefault();
+        window.scrollTo({
+            top: 0,
+            behavior: 'smooth'
+        });
+    });
+});
