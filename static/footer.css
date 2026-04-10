@@ -198,6 +198,8 @@ html,body{
     100% { transform: translate(0); }
 }
 
+
+
 /* ===== MOBILE ===== */
 @media (max-width: 768px) {
     .stockometer-footer-root-container-unique {

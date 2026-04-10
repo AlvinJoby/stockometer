@@ -12,7 +12,7 @@
   <div class="stockometer-footer-top-layout-wrapper-unique">
     
     <div class="stockometer-footer-logo-circle-container-unique">
-      <img src="{{ url_for('static', filename='src/logo1-cropped.png') }}" alt="Stockometer Logo">
+      <img src="{{ url_for('static', filename='src/logo2-cropped.png') }}" alt="Stockometer Logo">
     </div>
 
     <div class="stockometer-footer-divider-line-unique"></div>
@@ -29,7 +29,7 @@
   </div>
 
   <div class="stockometer-footer-copyright-unique">
-    &copy; 2026 Stockometer. All rights reserved.
+    &copy; <span id="footer-year"></span> Stockometer. All rights reserved.
   </div>
 
 </footer>
@@ -49,23 +49,8 @@
         var textWidth = h1.scrollWidth;
 
         // Calculate scale - Use 1.0 for absolute edges
-        // If there is still a tiny gap, use 1.01 to slightly 'over-scale' 
         var scale = (availableWidth / textWidth) * 1.0;
 
-        h1.style.fontSize = (100 * scale) + 'px';
-    }
-
-    window.addEventListener('load', () => setTimeout(fitBrandText, 50));
-    window.addEventListener('resize', fitBrandText);
-
-    function fitBrandText() {
-        var h1 = document.getElementById('stockometer-brand-h1');
-        if (!h1) return;
-        var wrapper = h1.parentElement;
-        h1.style.fontSize = '100px';
-        var availableWidth = wrapper.clientWidth;
-        var textWidth = h1.scrollWidth;
-        var scale = (availableWidth / textWidth);
         h1.style.fontSize = (100 * scale) + 'px';
     }
 
@@ -79,30 +64,36 @@
         const observer = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
                 if (entry.isIntersecting) {
-                    // Wait 1 second after the footer appears
+                    // Wait 0.1 second after the footer appears
                     setTimeout(() => {
                         creatorName.classList.add('is-glitching');
 
                         // Glitch for 2 seconds, then stop
                         setTimeout(() => {
                             creatorName.classList.remove('is-glitching');
-                        }, 1000);
+                        }, 2000);
                         
                     }, 100); 
 
-                    // Optional: Un-comment if you only want it to happen once per page load
                     observer.unobserve(footer);
                 }
             });
-        }, { threshold: 0.4 }); // Trigger when 40% of footer is visible
+        }, { threshold: 0.5 }); // Trigger when 50% of footer is visible
 
         observer.observe(footer);
     }
 
     window.addEventListener('load', () => {
+        // Set the current year
+        const yearElement = document.getElementById('footer-year');
+        if (yearElement) {
+            yearElement.textContent = new Date().getFullYear();
+        }
+
         fitBrandText();
         initGlitchOnScroll();
     });
+    
     window.addEventListener('resize', fitBrandText);
 })();
 </script>
