@@ -1,5 +1,5 @@
 /* ===== Footer Base ===== */
-* {
+html,body{
     margin: 0;
     padding: 0;
 }
@@ -87,7 +87,7 @@
 .stockometer-footer-madeby-text-unique {
     font-size: 11px;
     letter-spacing: 4px;
-    color: rgba(255,255,255,0.1);
+    color: rgba(255,255,255,0.3);
 }
 
 /* ===== ALV!N ===== */
@@ -121,11 +121,21 @@
 }
 
 .stockometer-footer-creator-name-unique:hover::before {
-    animation: stockometerFooterGlitchTop 0.4s linear;
+    animation: stockometerFooterGlitchTop 0.5s linear;
 }
 
 .stockometer-footer-creator-name-unique:hover::after {
-    animation: stockometerFooterGlitchBottom 0.4s linear;
+    animation: stockometerFooterGlitchBottom 0.5s linear;
+}
+
+
+/* Change your existing hover rules to use this class instead */
+.stockometer-footer-creator-name-unique.is-glitching::before {
+    animation: stockometerFooterGlitchTop 0.5s linear infinite;
+}
+
+.stockometer-footer-creator-name-unique.is-glitching::after {
+    animation: stockometerFooterGlitchBottom 0.5s linear infinite;
 }
 
 .stockometer-footer-bottom-branding-wrapper-unique {
@@ -225,7 +235,7 @@
 }
 @media (max-width: 768px){
     .stockometer-footer-root-container-unique {
-        padding: 50px 0px 80px;
+        padding: 50px 0px 20px;
     }
 }
 /* Add/Update this to ensure the top layout still has its padding */

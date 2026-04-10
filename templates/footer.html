@@ -57,6 +57,53 @@
 
     window.addEventListener('load', () => setTimeout(fitBrandText, 50));
     window.addEventListener('resize', fitBrandText);
+
+    function fitBrandText() {
+        var h1 = document.getElementById('stockometer-brand-h1');
+        if (!h1) return;
+        var wrapper = h1.parentElement;
+        h1.style.fontSize = '100px';
+        var availableWidth = wrapper.clientWidth;
+        var textWidth = h1.scrollWidth;
+        var scale = (availableWidth / textWidth);
+        h1.style.fontSize = (100 * scale) + 'px';
+    }
+
+    // --- 2. Delayed Glitch Logic ---
+    function initGlitchOnScroll() {
+        const footer = document.querySelector('.stockometer-footer-root-container-unique');
+        const creatorName = document.querySelector('.stockometer-footer-creator-name-unique');
+        
+        if (!footer || !creatorName) return;
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    // Wait 1 second after the footer appears
+                    setTimeout(() => {
+                        creatorName.classList.add('is-glitching');
+
+                        // Glitch for 2 seconds, then stop
+                        setTimeout(() => {
+                            creatorName.classList.remove('is-glitching');
+                        }, 1000);
+                        
+                    }, 100); 
+
+                    // Optional: Un-comment if you only want it to happen once per page load
+                    observer.unobserve(footer);
+                }
+            });
+        }, { threshold: 0.4 }); // Trigger when 40% of footer is visible
+
+        observer.observe(footer);
+    }
+
+    window.addEventListener('load', () => {
+        fitBrandText();
+        initGlitchOnScroll();
+    });
+    window.addEventListener('resize', fitBrandText);
 })();
 </script>
 </body>
