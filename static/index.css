@@ -39,7 +39,7 @@ body {
 }
 
 .loading-panel {
-    min-width: 260px;
+    min-width: 300px;
     padding: 28px 30px;
     border-radius: 28px;
     background: rgba(255, 255, 255, 0.72);
@@ -78,6 +78,14 @@ body {
     font-weight: 600;
     color: #334155;
     letter-spacing: 0.02em;
+    opacity: 1;
+    transform: translateY(0);
+    transition: opacity 0.38s cubic-bezier(0.22, 1, 0.36, 1), transform 0.38s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.loading-text.is-fading-out {
+    opacity: 0;
+    transform: translateY(-4px);
 }
 
 .wrapper {

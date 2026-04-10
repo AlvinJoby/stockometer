@@ -4,15 +4,26 @@ import pandas as pd
 from plotly.subplots import make_subplots
 
 from charts.price_chart import add_price
-from charts.ma_chart import add_sma,add_ema20,add_ema50,add_ema100
+from charts.ma_chart import add_sma20,add_sma50,add_sma100,add_ema20,add_ema50,add_ema100
 from charts.rsi_chart import add_rsi
 from charts.macd_chart import add_macd
 
 OVERLAY_INDICATORS = {
-    "SMA_20": add_sma,
+    "SMA_20": add_sma20,
+    "SMA_50": add_sma50,
+    "SMA_100": add_sma100,
     "EMA_20": add_ema20,
     "EMA_50": add_ema50,
     "EMA_100": add_ema100,
+}
+
+OVERLAY_TRACE_NAMES = {
+    "SMA_20": ["SMA_20"],
+    "SMA_50": ["SMA_50"],
+    "SMA_100": ["SMA_100"],
+    "EMA_20": ["EMA_20"],
+    "EMA_50": ["EMA_50"],
+    "EMA_100": ["EMA_100"],
 }
 
 PANEL_INDICATORS = {
@@ -105,10 +116,12 @@ def _compute_price_axis_range(visible_data):
 
     return [y_min - padding, y_max + padding]
 
-def generate_graph(data, indicators=None):
+def generate_graph(data, indicators=None, visible_indicators=None):
 
     if indicators is None:
         indicators = []
+    if visible_indicators is None:
+        visible_indicators = indicators
 
     overlay_inds = [i for i in indicators if i in OVERLAY_INDICATORS]
     panel_inds = [i for i in indicators if i in PANEL_INDICATORS]
@@ -145,6 +158,15 @@ def generate_graph(data, indicators=None):
 
     for ind in panel_inds:
         PANEL_INDICATORS[ind](fig, data, rows=row_map[ind])
+
+    hidden_overlay_traces = set()
+    for ind in overlay_inds:
+        if ind not in visible_indicators:
+            hidden_overlay_traces.update(OVERLAY_TRACE_NAMES.get(ind, []))
+    if hidden_overlay_traces:
+        for trace in fig.data:
+            if trace.name in hidden_overlay_traces:
+                trace.visible = False
 
     if len(panel_inds)>0:
         height = 400 + (rows - 1) * 150

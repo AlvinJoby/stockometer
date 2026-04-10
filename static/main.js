@@ -4,6 +4,11 @@ const returnsPanel = document.querySelector(".returns-panel");
 const navbar = document.querySelector(".navbar");
 const stickyMarketBar = document.getElementById("sticky-market-bar");
 const pageLoadingOverlay = document.getElementById("page-loading-overlay");
+const indicatorPicker = document.getElementById("indicator-picker");
+const indicatorTrigger = document.getElementById("indicator-trigger");
+const indicatorDropdown = document.getElementById("indicator-dropdown");
+const indicatorLoadingOverlay = document.getElementById("indicator-loading-overlay");
+const indicatorLoadingText = document.getElementById("indicator-loading-text");
 const MINIMUM_PAGE_LOADER_MS = 3000;
 const pageLoaderStartedAt = Date.now();
 
@@ -62,6 +67,121 @@ function setupBreakoutMobileToggle() {
   });
 }
 
+function toIndicatorLabel(indicator) {
+  return indicator.replaceAll("_", " ");
+}
+
+function setupIndicatorPicker() {
+  const selectableIndicators = window.__MAIN_CHART__?.selectableOverlayIndicators ?? [];
+  if (!indicatorPicker || !indicatorTrigger || !indicatorDropdown || selectableIndicators.length === 0) return;
+  let indicatorToggleTimer = null;
+
+  indicatorDropdown.innerHTML = "";
+  for (const indicator of selectableIndicators) {
+    const option = document.createElement("label");
+    option.className = "indicator-option";
+    option.innerHTML = `
+      <input type="checkbox" value="${indicator}" />
+      <span>${toIndicatorLabel(indicator)}</span>
+    `;
+    indicatorDropdown.appendChild(option);
+  }
+
+  const traceNamesByIndicator = {
+    SMA_20: ["SMA_20"],
+    SMA_50: ["SMA_50"],
+    SMA_100: ["SMA_100"],
+    EMA_20: ["EMA_20"],
+    EMA_50: ["EMA_50"],
+    EMA_100: ["EMA_100"],
+  };
+
+  function applyIndicatorSelection(selected) {
+    const plotDiv = getPlotDiv();
+    if (!plotDiv || typeof Plotly === "undefined" || !Array.isArray(plotDiv.data)) return;
+
+    for (const indicator of selectableIndicators) {
+      const indicatorTraceNames = traceNamesByIndicator[indicator] ?? [];
+      const shouldShow = selected.has(indicator);
+      plotDiv.data.forEach((trace, index) => {
+        if (indicatorTraceNames.includes(trace.name)) {
+          Plotly.restyle(plotDiv, { visible: shouldShow }, [index]);
+        }
+      });
+    }
+  }
+
+  function setIndicatorControlsDisabled(disabled) {
+    indicatorTrigger.disabled = disabled;
+    indicatorDropdown.querySelectorAll("input[type='checkbox']").forEach((input) => {
+      input.disabled = disabled;
+    });
+  }
+
+  function showIndicatorLoader(text = "") {
+    if (!indicatorLoadingOverlay || !indicatorLoadingText) return;
+    indicatorLoadingText.textContent = text;
+    indicatorLoadingText.style.display = text ? "block" : "none";
+    indicatorLoadingOverlay.classList.add("is-visible");
+    indicatorLoadingOverlay.setAttribute("aria-hidden", "false");
+  }
+
+  function hideIndicatorLoader() {
+    if (!indicatorLoadingOverlay || !indicatorLoadingText) return;
+    indicatorLoadingOverlay.classList.remove("is-visible");
+    indicatorLoadingOverlay.setAttribute("aria-hidden", "true");
+    indicatorLoadingText.textContent = "";
+  }
+
+  indicatorDropdown.addEventListener("change", (event) => {
+    if (event.target instanceof HTMLInputElement) {
+      const selected = new Set(
+        Array.from(indicatorDropdown.querySelectorAll("input[type='checkbox']:checked")).map((item) => item.value),
+      );
+      const actionText = event.target.checked ? `Adding ${toIndicatorLabel(event.target.value)}` : "";
+
+      if (indicatorToggleTimer) {
+        window.clearTimeout(indicatorToggleTimer);
+      }
+
+      setIndicatorControlsDisabled(true);
+      showIndicatorLoader(actionText);
+
+      indicatorToggleTimer = window.setTimeout(() => {
+        applyIndicatorSelection(selected);
+        hideIndicatorLoader();
+        setIndicatorControlsDisabled(false);
+      }, 2000);
+    }
+  });
+
+  indicatorTrigger.addEventListener("click", () => {
+    const shouldOpen = !indicatorDropdown.classList.contains("is-open");
+    indicatorDropdown.classList.toggle("is-open", shouldOpen);
+    indicatorDropdown.setAttribute("aria-hidden", shouldOpen ? "false" : "true");
+    indicatorTrigger.setAttribute("aria-expanded", shouldOpen ? "true" : "false");
+  });
+
+  document.addEventListener("click", (event) => {
+    if (!indicatorPicker.contains(event.target)) {
+      indicatorDropdown.classList.remove("is-open");
+      indicatorDropdown.setAttribute("aria-hidden", "true");
+      indicatorTrigger.setAttribute("aria-expanded", "false");
+    }
+  });
+
+  document.addEventListener("keydown", (event) => {
+    if (event.key === "Escape") {
+      indicatorDropdown.classList.remove("is-open");
+      indicatorDropdown.setAttribute("aria-hidden", "true");
+      indicatorTrigger.setAttribute("aria-expanded", "false");
+    }
+  });
+
+  // Ensure optional overlay indicators are hidden by default on first load.
+  applyIndicatorSelection(new Set());
+}
+
 if (divider) {
   divider.addEventListener("mousedown", () => {
     isDragging = true;
@@ -92,6 +212,7 @@ document.addEventListener("mouseup", () => {
 });
 
 window.addEventListener("load", () => {
+  setupIndicatorPicker();
   syncMainChartLayout();
   syncStickyMarketBar();
   setupBreakoutMobileToggle();

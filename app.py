@@ -22,6 +22,10 @@ import config
 
 app = Flask(__name__)
 
+DEFAULT_VISIBLE_INDICATORS = ["RSI", "MACD"]
+SELECTABLE_OVERLAY_INDICATORS = ["SMA_20", "SMA_50", "SMA_100", "EMA_20", "EMA_50", "EMA_100"]
+ALL_CHART_INDICATORS = DEFAULT_VISIBLE_INDICATORS + SELECTABLE_OVERLAY_INDICATORS
+
 
 def _format_decimal(value, digits=2):
     if value is None or pd.isna(value):
@@ -208,7 +212,9 @@ def analyze():
         price_change(data)
         dailyReturns(data)
         calculate_rsi(data)
-        calculate_sma(data, 20)
+        calculate_sma(data, 20, cname="sma_20_indicator")
+        calculate_sma(data, 50, cname="sma_50_indicator")
+        calculate_sma(data, 100, cname="sma_100_indicator")
         calculate_ema(data, 20)
         calculate_ema(data, 50)
         calculate_ema(data, 100)
@@ -242,8 +248,11 @@ def analyze():
                         "rs_ma":             _clean_series(df_ts["rs_ma"]),
                     }
 
-        indicators = ["RSI", "SMA_20", "EMA_20", "EMA_50", "EMA_100", "MACD"]
-        graphPlot = generate_graph(data, indicators)
+        graphPlot = generate_graph(
+            data,
+            indicators=ALL_CHART_INDICATORS,
+            visible_indicators=DEFAULT_VISIBLE_INDICATORS,
+        )
 
         return render_template(
             "main.html",
@@ -263,6 +272,7 @@ def analyze():
             index_name=index_name,
             last_traded_date=last_traded_date,
             timeframe_period=timeframe_period,
+            selectable_overlay_indicators=SELECTABLE_OVERLAY_INDICATORS,
         )
     except ValueError as exc:
         app.logger.exception("Analysis failed for symbol %s", symbol)

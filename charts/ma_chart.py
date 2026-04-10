@@ -1,14 +1,38 @@
 import plotly.graph_objects as go
 import pandas as pd
 
-def add_sma(fig,data,rows):
+def add_sma20(fig,data,rows):
         fig.add_trace(
             go.Scatter(
                 x=data.index,
-                y=data["sma_indicator"],
+                y=data["sma_20_indicator"],
                 mode="lines",
-                name="SMA",
+                name="SMA_20",
                 line=dict(color="#facc15", width=2)
+            ),
+            row=rows, col=1
+        )
+
+def add_sma50(fig,data,rows):
+        fig.add_trace(
+            go.Scatter(
+                x=data.index,
+                y=data["sma_50_indicator"],
+                mode="lines",
+                name="SMA_50",
+                line=dict(color="#fb923c", width=2)
+            ),
+            row=rows, col=1
+        )
+
+def add_sma100(fig,data,rows):
+        fig.add_trace(
+            go.Scatter(
+                x=data.index,
+                y=data["sma_100_indicator"],
+                mode="lines",
+                name="SMA_100",
+                line=dict(color="#f97316", width=2)
             ),
             row=rows, col=1
         )

@@ -1,7 +1,7 @@
 import yfinance as yf
 import pandas as pd
 
-timeframe_period = "1y"
+timeframe_period = "8y"
 
 def retrieve_data(symbol):
     

@@ -3,8 +3,11 @@ const suggestions = document.getElementById("symbol-suggestions");
 const formError = document.getElementById("form-error");
 const analyzeForm = document.getElementById("analyze-form");
 const loadingOverlay = document.getElementById("loading-overlay");
+const loadingText = document.getElementById("loading-text");
 const errorState = document.body.dataset.errorState;
 const ANALYZE_STARTED_AT_KEY = "stockometerAnalyzeStartedAt";
+const LOADING_TEXT_FADE_MS = 380;
+let loadingSequenceTimers = [];
 
 const showLoadingOverlay = () => {
   if (!loadingOverlay) {
@@ -27,6 +30,72 @@ const clearAnalyzeState = () => {
     window.sessionStorage.removeItem(ANALYZE_STARTED_AT_KEY);
   } catch (_error) {
     // Ignore storage failures and fall back to immediate transitions.
+  }
+};
+
+const clearLoadingSequence = () => {
+  loadingSequenceTimers.forEach((timerId) => window.clearTimeout(timerId));
+  loadingSequenceTimers = [];
+};
+
+const setLoadingText = (text) => {
+  if (!loadingText) {
+    return;
+  }
+
+  loadingText.classList.add("is-fading-out");
+  const timerId = window.setTimeout(() => {
+    loadingText.textContent = text;
+    loadingText.classList.remove("is-fading-out");
+  }, LOADING_TEXT_FADE_MS);
+  loadingSequenceTimers.push(timerId);
+};
+
+const startLoadingSequence = () => {
+  if (!loadingText) {
+    return;
+  }
+
+  clearLoadingSequence();
+  loadingText.textContent = "Checking the symbol...";
+  loadingText.classList.remove("is-fading-out");
+
+  loadingSequenceTimers.push(window.setTimeout(() => {
+    setLoadingText("Downloading 8yrs of data...");
+  }, 2000));
+
+  loadingSequenceTimers.push(window.setTimeout(() => {
+    setLoadingText("Analyzing...");
+  }, 12000));
+};
+
+const shouldAdvanceLoadingText = async (symbol) => {
+  if (!symbol) {
+    return false;
+  }
+
+  const controller = new AbortController();
+  const timeoutId = window.setTimeout(() => controller.abort(), 1200);
+
+  try {
+    const response = await fetch(`/api/symbols?q=${encodeURIComponent(symbol)}`, {
+      signal: controller.signal,
+    });
+    if (!response.ok) {
+      return true;
+    }
+
+    const data = await response.json();
+    if (!Array.isArray(data) || data.length === 0) {
+      return false;
+    }
+
+    const normalized = symbol.trim().toUpperCase();
+    return data.some((item) => (item?.symbol || "").trim().toUpperCase() === normalized);
+  } catch (_error) {
+    return true;
+  } finally {
+    window.clearTimeout(timeoutId);
   }
 };
 
@@ -73,13 +142,29 @@ window.addEventListener("pageshow", () => {
 });
 
 if (analyzeForm && loadingOverlay) {
-  analyzeForm.addEventListener("submit", () => {
+  analyzeForm.addEventListener("submit", async (event) => {
+    event.preventDefault();
+
     try {
       window.sessionStorage.setItem(ANALYZE_STARTED_AT_KEY, String(Date.now()));
     } catch (_error) {
       // Ignore storage failures and still show the overlay.
     }
+
     showLoadingOverlay();
+    clearLoadingSequence();
+    if (loadingText) {
+      loadingText.textContent = "Checking the symbol...";
+      loadingText.classList.remove("is-fading-out");
+    }
+
+    const symbol = (input?.value || "").trim();
+    const advanceLoadingText = await shouldAdvanceLoadingText(symbol);
+    if (advanceLoadingText) {
+      startLoadingSequence();
+    }
+
+    analyzeForm.submit();
   });
 }
 

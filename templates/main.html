@@ -75,6 +75,12 @@
         <div class="main-panel">
           <div class="symbol_header">
             <h2>{{ symbol_name }}</h2>
+            <div class="indicator-picker" id="indicator-picker">
+              <button type="button" class="indicator-trigger" id="indicator-trigger" aria-haspopup="true" aria-expanded="false">
+                + indicator
+              </button>
+              <div class="indicator-dropdown" id="indicator-dropdown" role="menu" aria-hidden="true"></div>
+            </div>
             <div id="ltp_area">
               <span class="ltp-price {{ 'positive' if percentChange > 0 else 'negative' if percentChange < 0 else 'neutral' }}">
                 {{ "%.2f"|format(tLTP) }}
@@ -84,7 +90,15 @@
               </span>
             </div>
           </div>
-          <div class="graph">{{ graph | safe }}</div>
+          <div class="graph-shell">
+            <div class="indicator-loading-overlay" id="indicator-loading-overlay" aria-hidden="true">
+              <div class="indicator-loading-content">
+                <div class="loader"></div>
+                <p class="indicator-loading-text" id="indicator-loading-text"></p>
+              </div>
+            </div>
+            <div class="graph">{{ graph | safe }}</div>
+          </div>
         </div>
         <div class="divider" id="drag-divider"></div>
         <div class="returns-panel">
@@ -583,6 +597,11 @@
 
     {% include 'footer.html' %}
 
+    <script>
+      window.__MAIN_CHART__ = {
+        selectableOverlayIndicators: {{ selectable_overlay_indicators | tojson }}
+      };
+    </script>
     <script src="{{ url_for('static', filename='main.js') }}"></script>
 
     {% if summary and index_ts %}

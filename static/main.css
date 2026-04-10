@@ -365,6 +365,8 @@ html {
     padding: 20px 20px 0 20px;
     color: white;
     font-size: 21px;
+    position: relative;
+    padding-right: 220px;
 }
 
 #ltp_area {
@@ -499,6 +501,205 @@ html {
     overflow: hidden;
 }
 
+.graph-shell {
+    position: relative;
+}
+
+.indicator-loading-overlay {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(6, 9, 15, 0.5);
+    backdrop-filter: blur(2px);
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transition: opacity 0.18s ease, visibility 0.18s ease;
+    z-index: 35;
+}
+
+.indicator-loading-overlay.is-visible {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: all;
+}
+
+.indicator-loading-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    padding: 14px 18px;
+    border-radius: 14px;
+    background: rgba(15, 23, 42, 0.82);
+}
+
+.indicator-loading-text {
+    margin: 0;
+    color: #e2e8f0;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+}
+
+.indicator-loading-text:empty {
+    display: none;
+}
+
+/* ===== Container ===== */
+.indicator-picker {
+    position: absolute;
+    top: 50px;
+    right: 20px;
+    z-index: 40;
+}
+
+/* ===== Trigger Button (UPDATED) ===== */
+.indicator-trigger {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+
+    padding: 10px 25px; /* increased size */
+
+    border-radius: 30px;
+    border: 1.8px solid #acabab;
+
+    background: transparent;
+    color: #acabab;
+
+    font-size: 15px;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+
+    cursor: pointer;
+
+    transition: background 0.18s ease, color 0.18s ease;
+}
+
+/* Hover → fill */
+.indicator-trigger:hover {
+    border-color: #dddcdc;
+    color: #dddcdc;
+}
+
+/* Active → slight press feedback */
+.indicator-trigger:active {
+    border-color: #dddcdc;
+    color: #dddcdc;
+}
+
+/* Optional icon */
+.indicator-trigger svg {
+    width: 16px;
+    height: 16px;
+    opacity: 0.8;
+}
+
+/* ===== Dropdown ===== */
+.indicator-dropdown {
+    position: absolute;
+    top: calc(100% + 12px);
+    right: 0;
+
+    min-width: 240px;
+    padding: 10px;
+
+    border-radius: 16px;
+
+    background: rgba(15, 23, 42, 0.85);
+    backdrop-filter: blur(18px);
+
+    border: 1px solid rgba(255, 255, 255, 0.08);
+
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+
+    display: none;
+
+    animation: dropdownFade 0.18s ease;
+}
+
+/* Open state */
+.indicator-dropdown.is-open {
+    display: block;
+}
+
+/* Animation */
+@keyframes dropdownFade {
+    from {
+        opacity: 0;
+        transform: translateY(-6px) scale(0.98);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+/* ===== Options ===== */
+.indicator-option {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+
+    padding: 10px 12px;
+    border-radius: 10px;
+
+    color: #cbd5f5;
+    font-size: 13px;
+    font-weight: 500;
+
+    cursor: pointer;
+
+    transition: all 0.2s ease;
+}
+
+/* Hover */
+.indicator-option:hover {
+    background: rgba(59, 130, 246, 0.12);
+    color: #ffffff;
+}
+
+/* ===== Radio Style ===== */
+.indicator-option input {
+    appearance: none;
+    -webkit-appearance: none;
+
+    width: 16px;
+    height: 16px;
+
+    border-radius: 50%;
+    border: 2px solid #64748b;
+
+    display: grid;
+    place-content: center;
+
+    transition: all 0.2s ease;
+}
+
+/* Inner dot */
+.indicator-option input::before {
+    content: "";
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+
+    background: #3b82f6;
+
+    transform: scale(0);
+    transition: transform 0.15s ease;
+}
+
+/* Checked */
+.indicator-option input:checked {
+    border-color: #3b82f6;
+}
+
+.indicator-option input:checked::before {
+    transform: scale(1);
+}
 /* ── SIDE PANEL ── */
 .returns-panel {
     flex: 0 0 17%;
@@ -757,6 +958,20 @@ html {
         padding-bottom: 6px;
     }
 
+    .indicator-picker {
+        top: 18px;
+        right: 14px;
+    }
+
+    .indicator-trigger {
+        font-size: 14px;
+        padding: 9px 16px;
+    }
+
+    .indicator-dropdown {
+        min-width: 188px;
+    }
+
     /* hide drag divider on mobile */
     .divider {
         display: none;
@@ -853,6 +1068,7 @@ html {
     .symbol_header {
         padding: 16px 14px 4px 14px;
         font-size: 17px;
+        padding-right: 165px;
     }
 
     .symbol_header h2 {
