@@ -8,8 +8,8 @@
 
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
 
-    <link rel="stylesheet" href="/static/index.css">
-    <link rel="stylesheet" href="/static/src/loader.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='index.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='src/loader.css') }}">
 </head>
 <body data-error-state="{% if error_message %}visible{% else %}none{% endif %}">
 
@@ -85,6 +85,6 @@
 
     </div>
 
-    <script src="/static/index.js"></script>
+    <script src="{{ url_for('static', filename='index.js') }}"></script>
 </body>
 </html>
