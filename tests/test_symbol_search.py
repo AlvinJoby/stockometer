@@ -98,12 +98,6 @@ class SearchSymbolsTests(unittest.TestCase):
                     "exchange": "NMS",
                     "type": "EQUITY",
                 },
-                {
-                    "symbol": "SPY",
-                    "name": "SPDR S&P 500 ETF",
-                    "exchange": "PCX",
-                    "type": "ETF",
-                },
             ],
         )
         mock_search.assert_called_once()

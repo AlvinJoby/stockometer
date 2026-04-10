@@ -1,9 +1,16 @@
 from difflib import SequenceMatcher
 
+import requests
 from yfinance import Search
 
 
-ALLOWED_QUOTE_TYPES = {"EQUITY", "ETF", "MUTUALFUND"}
+ALLOWED_QUOTE_TYPES = {"EQUITY"}
+STOCK_SCREENERS = (
+    "most_actives",
+    "day_gainers",
+    "aggressive_small_caps",
+    "undervalued_growth_stocks",
+)
 
 
 def normalize_quote(quote, allowed_types=None):
@@ -110,3 +117,68 @@ def search_symbols(query, max_results=8, allowed_types=None):
     )
 
     return symbols[:max_results]
+
+
+def trending_symbols(limit=10):
+    seen = set()
+    symbols = []
+    session = requests.Session()
+    session.trust_env = False
+    headers = {
+        "User-Agent": (
+            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
+            "AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0 Safari/537.36"
+        )
+    }
+
+    for screener_id in STOCK_SCREENERS:
+        if len(symbols) >= limit:
+            break
+        try:
+            response = session.get(
+                (
+                    "https://query1.finance.yahoo.com/v1/finance/screener/"
+                    f"predefined/saved?count={max(limit, 12)}&scrIds={screener_id}"
+                ),
+                timeout=4,
+                headers=headers,
+            )
+            if response.status_code != 200:
+                continue
+            payload = response.json() or {}
+        except Exception:
+            continue
+
+        screener_results = (((payload.get("finance") or {}).get("result")) or [])
+        if not screener_results:
+            continue
+
+        quotes = screener_results[0].get("quotes") or []
+        for quote in quotes:
+            symbol = (quote.get("symbol") or "").strip()
+            quote_type = (quote.get("quoteType") or "").strip().upper()
+            if not symbol or symbol in seen or quote_type != "EQUITY":
+                continue
+            seen.add(symbol)
+            symbols.append({
+                "symbol": symbol,
+                "name": (quote.get("shortName") or quote.get("longName") or symbol).strip(),
+            })
+            if len(symbols) >= limit:
+                break
+
+    if not symbols:
+        return [
+            {"symbol": "AAPL", "name": "Apple Inc."},
+            {"symbol": "MSFT", "name": "Microsoft Corporation"},
+            {"symbol": "NVDA", "name": "NVIDIA Corporation"},
+            {"symbol": "GOOGL", "name": "Alphabet Inc."},
+            {"symbol": "AMZN", "name": "Amazon.com, Inc."},
+            {"symbol": "META", "name": "Meta Platforms, Inc."},
+            {"symbol": "TSLA", "name": "Tesla, Inc."},
+            {"symbol": "RELIANCE.NS", "name": "Reliance Industries Limited"},
+            {"symbol": "TCS.NS", "name": "Tata Consultancy Services Limited"},
+            {"symbol": "7203.T", "name": "Toyota Motor Corporation"},
+        ][:limit]
+
+    return symbols[:limit]

@@ -21,7 +21,7 @@
     </div>
 
     <div class="wrapper">
-        <h1 class="title">STOCKOMETER</h1>
+        <h1 class="title">Stockometer</h1>
         <p class="subtitle">Analyze historical performance in seconds</p>
 
         <form method="POST" action="/analyze" class="form" id="analyze-form">
@@ -57,9 +57,34 @@
             <button type="submit">Analyze</button>
 
         </form>
+
+        <!-- ✅ MOVED: Trending below button -->
+        <div class="trending-section">
+            <p class="trending-label">POPULAR</p>
+            <div class="popular-region-filter" id="popular-region-filter" role="radiogroup" aria-label="Popular stocks by region">
+                <label class="popular-region-option"><input type="radio" name="popular-region" value="US" checked><span>US</span></label>
+                <label class="popular-region-option"><input type="radio" name="popular-region" value="EUROPE"><span>EUROPE</span></label>
+                <label class="popular-region-option"><input type="radio" name="popular-region" value="CHINA"><span>CHINA</span></label>
+                <label class="popular-region-option"><input type="radio" name="popular-region" value="INDIA"><span>INDIA</span></label>
+                <label class="popular-region-option"><input type="radio" name="popular-region" value="UK"><span>UK</span></label>
+                <label class="popular-region-option"><input type="radio" name="popular-region" value="KOREA"><span>KOREA</span></label>
+            </div>
+            <div class="trending-list" id="trending-list">
+                <button type="button" class="trend-item" data-symbol="AAPL">AAPL</button>
+                <button type="button" class="trend-item" data-symbol="MSFT">MSFT</button>
+                <button type="button" class="trend-item" data-symbol="NVDA">NVDA</button>
+                <button type="button" class="trend-item" data-symbol="AMZN">AMZN</button>
+                <button type="button" class="trend-item" data-symbol="GOOGL">GOOGL</button>
+                <button type="button" class="trend-item" data-symbol="META">META</button>
+                <button type="button" class="trend-item" data-symbol="TSLA">TSLA</button>
+                <button type="button" class="trend-item" data-symbol="JPM">JPM</button>
+                <button type="button" class="trend-item" data-symbol="RELIANCE.NS">RELIANCE.NS</button>
+                <button type="button" class="trend-item" data-symbol="TCS.NS">TCS.NS</button>
+            </div>
+        </div>
+
     </div>
 
     <script src="/static/index.js"></script>
 </body>
-
 </html>

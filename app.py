@@ -212,9 +212,25 @@ def _market_status(exchange):
     return {"is_open": is_open, "label": "MARKET IS OPEN" if is_open else "MARKET IS CLOSED"}
 
 
+def _is_equity_symbol(ticker_info):
+    quote_type = (ticker_info.get("quoteType") or "").strip().upper()
+    if quote_type:
+        return quote_type == "EQUITY"
+
+    quote_type_alt = (ticker_info.get("typeDisp") or "").strip().upper()
+    if quote_type_alt:
+        return quote_type_alt == "EQUITY"
+
+    return True
+
+
 @app.route('/')
 def home():
-    return render_template("index.html", error_message=None, symbol_value="")
+    return render_template(
+        "index.html",
+        error_message=None,
+        symbol_value="",
+    )
 
 
 @app.route('/terms-and-conditions')
@@ -265,6 +281,12 @@ def analyze():
         LTP = retrieve_ltp(data)
         ticker = retrieve_companyInfo(symbol)
         ticker_info = getattr(ticker, "info", {}) or {}
+        if not _is_equity_symbol(ticker_info):
+            return render_template(
+                "index.html",
+                error_message="Right now we only support equities",
+                symbol_value=symbol,
+            ), 400
         company = _prepare_company(symbol, ticker)
 
         timeframe_period = return_timeframePeriod()

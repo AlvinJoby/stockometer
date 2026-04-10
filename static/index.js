@@ -4,10 +4,30 @@ const formError = document.getElementById("form-error");
 const analyzeForm = document.getElementById("analyze-form");
 const loadingOverlay = document.getElementById("loading-overlay");
 const loadingText = document.getElementById("loading-text");
+const trendingList = document.getElementById("trending-list");
+const popularRegionFilter = document.getElementById("popular-region-filter");
 const errorState = document.body.dataset.errorState;
 const ANALYZE_STARTED_AT_KEY = "stockometerAnalyzeStartedAt";
 const LOADING_TEXT_FADE_MS = 380;
 let loadingSequenceTimers = [];
+
+const POPULAR_BY_REGION = {
+  US: ["AAPL", "MSFT", "NVDA", "AMZN", "GOOGL", "META", "TSLA", "JPM", "BRK-B", "WMT"],
+  EUROPE: ["ASML.AS", "SAP.DE", "NESN.SW", "MC.PA", "SIE.DE", "AIR.PA", "SHEL.L", "NOVO-B.CO", "SAN.PA", "OR.PA"],
+  CHINA: ["BABA", "JD", "PDD", "NIO", "XPEV", "LI", "BIDU", "TCEHY", "9988.HK", "0700.HK"],
+  INDIA: ["RELIANCE.NS", "TCS.NS", "HDFCBANK.NS", "ICICIBANK.NS", "INFY.NS", "SBIN.NS", "LT.NS", "ITC.NS", "BHARTIARTL.NS", "KOTAKBANK.NS"],
+  UK: ["SHEL.L", "HSBA.L", "AZN.L", "BP.L", "GSK.L", "RIO.L", "ULVR.L", "DGE.L", "BARC.L", "LLOY.L"],
+  KOREA: ["005930.KS", "000660.KS", "035420.KS", "005380.KS", "012330.KS", "068270.KS", "105560.KS", "035720.KS", "051910.KS", "207940.KS"],
+};
+
+const renderPopularSymbols = (region) => {
+  if (!trendingList) return;
+
+  const symbols = POPULAR_BY_REGION[region] || POPULAR_BY_REGION.US;
+  trendingList.innerHTML = symbols
+    .map((symbol) => `<button type="button" class="trend-item" data-symbol="${symbol}">${symbol}</button>`)
+    .join("");
+};
 
 const showLoadingOverlay = () => {
   if (!loadingOverlay) {
@@ -140,6 +160,24 @@ window.addEventListener("pageshow", () => {
     hideLoadingOverlay();
   }
 });
+
+if (popularRegionFilter) {
+  popularRegionFilter.addEventListener("change", (event) => {
+    if (!(event.target instanceof HTMLInputElement)) return;
+    if (event.target.name !== "popular-region") return;
+    renderPopularSymbols(event.target.value);
+  });
+}
+
+if (trendingList) {
+  trendingList.addEventListener("click", (event) => {
+    const button = event.target.closest(".trend-item");
+    if (!button || !input) return;
+    input.value = button.dataset.symbol || button.textContent || "";
+    input.focus();
+  });
+  renderPopularSymbols("US");
+}
 
 if (analyzeForm && loadingOverlay) {
   analyzeForm.addEventListener("submit", async (event) => {
