@@ -222,6 +222,11 @@ def terms_and_conditions():
     return render_template("terms_and_conditions.html")
 
 
+@app.errorhandler(404)
+def page_not_found(_error):
+    return render_template("404.html"), 404
+
+
 @app.route('/api/symbols')
 def symbol_suggestions():
     query = request.args.get("q", "")
