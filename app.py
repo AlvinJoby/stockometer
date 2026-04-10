@@ -2,6 +2,7 @@ from flask import Flask, jsonify, render_template, request
 from validation import validateInput
 from retrieveData import retrieve_data, retrieve_ltp, retrieve_companyInfo, normalize_columns, return_timeframePeriod
 from graph import generate_graph
+from yfinance.exceptions import YFRateLimitError
 from analysis.rsi_indicator import calculate_rsi, mark_signals
 from analysis.ma_indicator import calculate_sma, calculate_ema
 from analysis.periodic_returns import periodic_returns
@@ -89,7 +90,12 @@ def _first_valid_value(*values):
 
 def _prepare_company(symbol, ticker):
     company = companyData(ticker)
-    ticker_info = getattr(ticker, "info", {}) or {}
+
+    try:
+        ticker_info = dict(getattr(ticker, "fast_info", {}) or {})
+    except Exception:
+        ticker_info = {}
+
     try:
         fast_info = dict(getattr(ticker, "fast_info", {}) or {})
     except Exception:
@@ -280,13 +286,19 @@ def analyze():
 
         LTP = retrieve_ltp(data)
         ticker = retrieve_companyInfo(symbol)
-        ticker_info = getattr(ticker, "info", {}) or {}
+
+        try:
+            ticker_info = dict(getattr(ticker, "fast_info", {}) or {})
+        except Exception:
+            ticker_info = {}
+
         if not _is_equity_symbol(ticker_info):
             return render_template(
                 "index.html",
                 error_message="Right now we only support equities",
                 symbol_value=symbol,
             ), 400
+
         company = _prepare_company(symbol, ticker)
 
         timeframe_period = return_timeframePeriod()
@@ -306,12 +318,15 @@ def analyze():
 
         periodicReturns = periodic_returns(data)
         breakout_data = breakout_behavior(data)
+
         index_summary = None
         index_ts = None
+
         exchange = ticker_info.get("exchange")
         market_status = _market_status(exchange)
         index = get_index(exchange, symbol)
         index_name = get_index_display_name(index)
+
         if index:
             index_df = retrieve_data(index)
             if index_df is not None and not index_df.empty:
@@ -321,13 +336,13 @@ def analyze():
                 if result.get("summary") is not None and df_ts is not None and not df_ts.empty:
                     index_summary = result["summary"]
                     index_ts = {
-                        "dates":             df_ts.index.strftime("%Y-%m-%d").tolist(),
-                        "stock_normalized":  _clean_series(df_ts["normalized_stock"]),
-                        "index_normalized":  _clean_series(df_ts["normalized_index"]),
-                        "alpha_cumulative":  _clean_series(df_ts["alpha_cumulative"]),
-                        "alpha_rolling":     _clean_series(df_ts["alpha_rolling"] * 100),
+                        "dates": df_ts.index.strftime("%Y-%m-%d").tolist(),
+                        "stock_normalized": _clean_series(df_ts["normalized_stock"]),
+                        "index_normalized": _clean_series(df_ts["normalized_index"]),
+                        "alpha_cumulative": _clean_series(df_ts["alpha_cumulative"]),
+                        "alpha_rolling": _clean_series(df_ts["alpha_rolling"] * 100),
                         "relative_strength": _clean_series(df_ts["relative_strength"]),
-                        "rs_ma":             _clean_series(df_ts["rs_ma"]),
+                        "rs_ma": _clean_series(df_ts["rs_ma"]),
                     }
 
         graphPlot = generate_graph(
@@ -356,9 +371,18 @@ def analyze():
             timeframe_period=timeframe_period,
             selectable_overlay_indicators=SELECTABLE_OVERLAY_INDICATORS,
         )
+
+    except YFRateLimitError:
+        return render_template(
+            "index.html",
+            error_message="Too many requests. Please wait a few seconds and try again.",
+            symbol_value=symbol,
+        ), 429
+
     except ValueError as exc:
         app.logger.exception("Analysis failed for symbol %s", symbol)
         return str(exc), 500
+
     except Exception:
         app.logger.exception("Unexpected error while analyzing symbol %s", symbol)
         return "Unable to analyze the requested symbol right now.", 500
