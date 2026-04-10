@@ -235,9 +235,83 @@ html,body{
     overflow: hidden;
     min-height: 220px;
 }
+
+.stockometer-footer-info-box-unique {
+    margin: 0 24px 26px;
+    padding: 14px 16px;
+    border-radius: 12px;
+    border: 1px solid rgba(214, 59, 12, 0.8);
+    background: rgba(10, 14, 22, 0.72);
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    margin-bottom: 80px;
+}
+
+.stockometer-footer-info-icon-unique {
+    width: 19px;
+    height: 19px;
+    border-radius: 50%;
+    border: 1px solid rgba(200, 58, 15, 0.8);
+    color: #e2e8f0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-family:'Courier New', Courier, monospace;
+    font-size: 21px;
+    font-weight: 700;
+    line-height: 1;
+    flex: 0 0 19px;
+    margin-top: 1px;
+}
+
+.stockometer-footer-info-box-unique p {
+    margin: 0;
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 21px;
+    line-height: 1.45;
+    text-align:justify;
+    color: rgba(226, 232, 240, 0.95);
+}
+
+.stockometer-footer-terms-link-unique {
+    color: #7ec0ff;
+    text-decoration: none;
+    border-bottom: 1px solid rgba(126, 192, 255, 0.55);
+}
+
+.stockometer-footer-terms-link-unique:hover {
+    color: #b7ddff;
+    border-bottom-color: rgba(183, 221, 255, 0.9);
+}
+
+.stockometer-footer-info-text-mobile-unique {
+    display: none;
+}
+
 @media (max-width: 768px){
     .stockometer-footer-root-container-unique {
         padding: 50px 0px 20px;
+    }
+
+    .stockometer-footer-info-box-unique {
+        margin: 0 5px 80px;
+        padding: 12px 12px;
+        gap: 8px;
+    }
+
+    .stockometer-footer-info-box-unique p {
+        font-size: 19px;
+        text-align:start;
+        line-height: 1.45;
+    }
+
+    .stockometer-footer-info-text-desktop-unique {
+        display: none;
+    }
+
+    .stockometer-footer-info-text-mobile-unique {
+        display: block;
     }
 }
 /* Add/Update this to ensure the top layout still has its padding */
@@ -264,7 +338,7 @@ html,body{
 .stockometer-footer-copyright-unique {
     text-align: center;
     padding-top: 40px; /* Space between the big logo text and copyright */
-    font-size: 12px;
+    font-size: 13px;
     font-family: sans-serif;
     color: rgba(255, 255, 255, 0.3); /* Subtle grey */
     letter-spacing: 1px;

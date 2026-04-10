@@ -217,6 +217,11 @@ def home():
     return render_template("index.html", error_message=None, symbol_value="")
 
 
+@app.route('/terms-and-conditions')
+def terms_and_conditions():
+    return render_template("terms_and_conditions.html")
+
+
 @app.route('/api/symbols')
 def symbol_suggestions():
     query = request.args.get("q", "")
