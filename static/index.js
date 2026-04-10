@@ -66,7 +66,7 @@ const startLoadingSequence = () => {
 
   loadingSequenceTimers.push(window.setTimeout(() => {
     setLoadingText("Analyzing...");
-  }, 12000));
+  }, 13000));
 };
 
 const shouldAdvanceLoadingText = async (symbol) => {

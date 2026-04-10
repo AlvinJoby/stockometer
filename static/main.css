@@ -1116,10 +1116,13 @@ html {
 
     .metric strong {
         font-size: 16px;
+        line-height: 1.3;
+        overflow-wrap: anywhere;
     }
 
     .metric span {
         font-size: 11px;
+        line-height: 1.35;
     }
 
     .page-loading-text {

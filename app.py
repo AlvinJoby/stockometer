@@ -77,8 +77,53 @@ def _is_greater(left, right):
     return left > right
 
 
+def _first_valid_value(*values):
+    for value in values:
+        if value is None:
+            continue
+        if pd.isna(value):
+            continue
+        return value
+    return None
+
+
 def _prepare_company(symbol, ticker):
     company = companyData(ticker)
+    ticker_info = getattr(ticker, "info", {}) or {}
+    try:
+        fast_info = dict(getattr(ticker, "fast_info", {}) or {})
+    except Exception:
+        fast_info = {}
+
+    company["twoHundredDayAverage"] = _first_valid_value(
+        company.get("twoHundredDayAverage"),
+        ticker_info.get("twoHundredDayAverage"),
+        fast_info.get("twoHundredDayAverage"),
+    )
+    company["fiftyTwoWeekChange"] = _first_valid_value(
+        company.get("52WeekChange"),
+        ticker_info.get("52WeekChange"),
+        ticker_info.get("fiftyTwoWeekChange"),
+        fast_info.get("yearChange"),
+    )
+    company["averageVolume"] = _first_valid_value(
+        company.get("averageVolume"),
+        ticker_info.get("averageVolume"),
+        fast_info.get("threeMonthAverageVolume"),
+    )
+    company["averageVolume10days"] = _first_valid_value(
+        company.get("averageVolume10days"),
+        ticker_info.get("averageVolume10days"),
+        ticker_info.get("averageDailyVolume10Day"),
+        fast_info.get("tenDayAverageVolume"),
+    )
+    company["volume"] = _first_valid_value(
+        company.get("volume"),
+        ticker_info.get("volume"),
+        ticker_info.get("regularMarketVolume"),
+        fast_info.get("lastVolume"),
+    )
+
     company["dividendYield"] = _resolve_dividend_yield(company)
     company["longName"] = company.get("longName") or symbol.upper()
     company["marketCap"] = format_number(company.get("marketCap"))
@@ -89,8 +134,13 @@ def _prepare_company(symbol, ticker):
     company["dayHighDisplay"] = _format_decimal(company.get("dayHigh"))
     company["dayLowDisplay"] = _format_decimal(company.get("dayLow"))
     company["fiftyDayAverageDisplay"] = _format_decimal(company.get("fiftyDayAverage"))
+    company["twoHundredDayAverageDisplay"] = _format_decimal(company.get("twoHundredDayAverage"))
     company["fiftyTwoWeekHighDisplay"] = _format_decimal(company.get("fiftyTwoWeekHigh"))
     company["fiftyTwoWeekLowDisplay"] = _format_decimal(company.get("fiftyTwoWeekLow"))
+    company["fiftyTwoWeekChangeDisplay"] = _format_ratio_as_percent(company.get("fiftyTwoWeekChange"))
+    company["averageVolumeDisplay"] = format_number(company.get("averageVolume"))
+    company["averageVolume10daysDisplay"] = format_number(company.get("averageVolume10days"))
+    company["volumeDisplay"] = format_number(company.get("volume"))
     company["trailingPEDisplay"] = _format_decimal(company.get("trailingPE"))
     company["dividendYieldDisplay"] = _format_ratio_as_percent(company.get("dividendYield"))
     company["betaDisplay"] = _format_decimal(company.get("beta"), digits=3)

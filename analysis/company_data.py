@@ -18,8 +18,13 @@ def companyData(ticker):
         "dayHigh",
         "dayLow",
         "fiftyDayAverage",
+        "twoHundredDayAverage",
         "fiftyTwoWeekHigh",
         "fiftyTwoWeekLow",
+        "52WeekChange",
+        "averageVolume",
+        "averageVolume10days",
+        "volume",
         "dividendYield",
         "dividendRate",
     ]
