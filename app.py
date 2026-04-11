@@ -269,7 +269,11 @@ def analyze():
 
     try:
         symbol = symbol.upper()
-        data = retrieve_data(symbol)
+
+        # Create Ticker once — reused for both data fetch and company info
+        ticker = retrieve_companyInfo(symbol)
+
+        data = retrieve_data(symbol, ticker=ticker)
         if data is None or data.empty:
             return render_template(
                 "index.html",
@@ -285,7 +289,6 @@ def analyze():
         config.data = data
 
         LTP = retrieve_ltp(data)
-        ticker = retrieve_companyInfo(symbol)
 
         try:
             ticker_info = dict(getattr(ticker, "fast_info", {}) or {})
@@ -328,7 +331,9 @@ def analyze():
         index_name = get_index_display_name(index)
 
         if index:
-            index_df = retrieve_data(index)
+            # is_index=True gives it a 1-hour TTL and is shared across all
+            # stocks that map to the same index (e.g. ^NSEI for all NSE stocks)
+            index_df = retrieve_data(index, is_index=True)
             if index_df is not None and not index_df.empty:
                 index_df = normalize_columns(index_df, index)
                 result = index_performance_pipeline(data, index_df)
@@ -386,7 +391,6 @@ def analyze():
     except Exception:
         app.logger.exception("Unexpected error while analyzing symbol %s", symbol)
         return "Unable to analyze the requested symbol right now.", 500
-
 
 if __name__ == "__main__":
     app.run()
