@@ -619,7 +619,8 @@
 
     <script>
       window.__MAIN_CHART__ = {
-        selectableOverlayIndicators: {{ selectable_overlay_indicators | tojson }}
+        selectableOverlayIndicators: {{ selectable_overlay_indicators | tojson }},
+        defaultVisibleIndicators: {{ default_visible_indicators | tojson }}
       };
     </script>
     <script src="{{ url_for('static', filename='main.js') }}"></script>

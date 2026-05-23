@@ -11,12 +11,13 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='index.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='src/loader.css') }}">
 </head>
-<body data-error-state="{% if error_message %}visible{% else %}none{% endif %}">
+<body data-error-state="{% if error_message %}visible{% else %}none{% endif %}" data-timeframe-period="{{ timeframe_period or '8y' }}">
 
     <div class="loading-overlay{% if error_message %} is-visible is-returning{% endif %}" id="loading-overlay" aria-hidden="{% if error_message %}false{% else %}true{% endif %}">
         <div class="loading-panel" role="status" aria-live="polite">
             <div class="loader"></div>
             <p class="loading-text" id="loading-text">Checking the symbol...</p>
+            <p class="loading-text1" style="display:none" id="loading-text1">Downloading {{ timeframe_period or '8y' }} of data...</p>
         </div>
     </div>
 

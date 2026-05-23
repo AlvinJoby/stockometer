@@ -7,6 +7,7 @@ from charts.price_chart import add_price
 from charts.ma_chart import add_sma20,add_sma50,add_sma100,add_ema20,add_ema50,add_ema100
 from charts.rsi_chart import add_rsi
 from charts.macd_chart import add_macd
+from charts.rmi_chart import add_rmi
 
 OVERLAY_INDICATORS = {
     "SMA_20": add_sma20,
@@ -29,6 +30,7 @@ OVERLAY_TRACE_NAMES = {
 PANEL_INDICATORS = {
     "RSI": add_rsi,
     "MACD": add_macd,
+    "RMI": add_rmi,
 }
 
 def _select_initial_start_date(data):
@@ -211,6 +213,7 @@ def generate_graph(data, indicators=None, visible_indicators=None):
         spikesnap="cursor",
         rangebreaks=[dict(bounds=["sat", "mon"])]
     )
+    fig.update_xaxes(showticklabels=True, row=1, col=1)
 
     fig.update_yaxes(
         side="right",

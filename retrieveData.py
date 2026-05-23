@@ -4,7 +4,7 @@ import time
 import random
 from yfinance.exceptions import YFRateLimitError
 
-timeframe_period = "8y"
+timeframe_period = "2y"
 
 _cache = {}
 

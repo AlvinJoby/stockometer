@@ -4,12 +4,14 @@ import plotly.graph_objects as go
 def add_price(fig, data, rows):
     hover_text = [
         (
+            f"Date: {index.strftime('%Y-%m-%d')}<br>"
             f"Open: {open_price:.2f}<br>"
             f"High: {high_price:.2f}<br>"
             f"Low: {low_price:.2f}<br>"
             f"Close: {close_price:.2f}"
         )
-        for open_price, high_price, low_price, close_price in zip(
+        for index, open_price, high_price, low_price, close_price in zip(
+            data.index,
             data["Open"],
             data["High"],
             data["Low"],

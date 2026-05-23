@@ -73,6 +73,7 @@ function toIndicatorLabel(indicator) {
 
 function setupIndicatorPicker() {
   const selectableIndicators = window.__MAIN_CHART__?.selectableOverlayIndicators ?? [];
+  const defaultVisibleIndicators = new Set(window.__MAIN_CHART__?.defaultVisibleIndicators ?? []);
   if (!indicatorPicker || !indicatorTrigger || !indicatorDropdown || selectableIndicators.length === 0) return;
   let indicatorToggleTimer = null;
 
@@ -80,8 +81,9 @@ function setupIndicatorPicker() {
   for (const indicator of selectableIndicators) {
     const option = document.createElement("label");
     option.className = "indicator-option";
+    const isCheckedByDefault = defaultVisibleIndicators.has(indicator);
     option.innerHTML = `
-      <input type="checkbox" value="${indicator}" />
+      <input type="checkbox" value="${indicator}" ${isCheckedByDefault ? "checked" : ""} />
       <span>${toIndicatorLabel(indicator)}</span>
     `;
     indicatorDropdown.appendChild(option);
@@ -94,7 +96,11 @@ function setupIndicatorPicker() {
     EMA_20: ["EMA_20"],
     EMA_50: ["EMA_50"],
     EMA_100: ["EMA_100"],
+    RSI: ["RSI"],
+    MACD: ["MACD", "MACD Histogram", "Signal"],
+    RMI: ["RMI"],
   };
+
 
   function applyIndicatorSelection(selected) {
     const plotDiv = getPlotDiv();
@@ -178,8 +184,11 @@ function setupIndicatorPicker() {
     }
   });
 
-  // Ensure optional overlay indicators are hidden by default on first load.
-  applyIndicatorSelection(new Set());
+  // Keep backend defaults visible (RSI, MACD) and optional indicators hidden.
+  const initiallySelected = new Set(
+    Array.from(indicatorDropdown.querySelectorAll("input[type='checkbox']:checked")).map((item) => item.value),
+  );
+  applyIndicatorSelection(initiallySelected);
 }
 
 if (divider) {

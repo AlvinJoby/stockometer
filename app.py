@@ -5,6 +5,7 @@ from graph import generate_graph
 from yfinance.exceptions import YFRateLimitError
 from analysis.rsi_indicator import calculate_rsi, mark_signals
 from analysis.ma_indicator import calculate_sma, calculate_ema
+from analysis.rmi_indicator import calculate_rmi
 from analysis.periodic_returns import periodic_returns
 from analysis.company_data import companyData, format_number
 from analysis.daily_returns import price_change, dailyReturns
@@ -25,7 +26,9 @@ app = Flask(__name__)
 
 DEFAULT_VISIBLE_INDICATORS = ["RSI", "MACD"]
 SELECTABLE_OVERLAY_INDICATORS = ["SMA_20", "SMA_50", "SMA_100", "EMA_20", "EMA_50", "EMA_100"]
-ALL_CHART_INDICATORS = DEFAULT_VISIBLE_INDICATORS + SELECTABLE_OVERLAY_INDICATORS
+SELECTABLE_PANEL_INDICATORS = ["RSI", "MACD", "RMI"]
+SELECTABLE_INDICATORS = SELECTABLE_PANEL_INDICATORS + SELECTABLE_OVERLAY_INDICATORS
+ALL_CHART_INDICATORS = SELECTABLE_PANEL_INDICATORS + SELECTABLE_OVERLAY_INDICATORS
 
 
 def _format_decimal(value, digits=2):
@@ -236,6 +239,7 @@ def home():
         "index.html",
         error_message=None,
         symbol_value="",
+        timeframe_period=return_timeframePeriod(),
     )
 
 
@@ -265,6 +269,7 @@ def analyze():
             "index.html",
             error_message=validation_result["error"],
             symbol_value=symbol,
+            timeframe_period=return_timeframePeriod(),
         ), 400
 
     try:
@@ -279,6 +284,7 @@ def analyze():
                 "index.html",
                 error_message="We couldn't find that symbol. Try a different one and check again.",
                 symbol_value=symbol,
+                timeframe_period=return_timeframePeriod(),
             ), 200
 
         data = normalize_columns(data, symbol)
@@ -300,6 +306,7 @@ def analyze():
                 "index.html",
                 error_message="Right now we only support equities",
                 symbol_value=symbol,
+                timeframe_period=return_timeframePeriod(),
             ), 400
 
         company = _prepare_company(symbol, ticker)
@@ -309,6 +316,7 @@ def analyze():
         price_change(data)
         dailyReturns(data)
         calculate_rsi(data)
+        calculate_rmi(data)
         calculate_sma(data, 20, cname="sma_20_indicator")
         calculate_sma(data, 50, cname="sma_50_indicator")
         calculate_sma(data, 100, cname="sma_100_indicator")
@@ -374,7 +382,8 @@ def analyze():
             index_name=index_name,
             last_traded_date=last_traded_date,
             timeframe_period=timeframe_period,
-            selectable_overlay_indicators=SELECTABLE_OVERLAY_INDICATORS,
+            selectable_overlay_indicators=SELECTABLE_INDICATORS,
+            default_visible_indicators=DEFAULT_VISIBLE_INDICATORS,
         )
 
     except YFRateLimitError:
@@ -382,6 +391,7 @@ def analyze():
             "index.html",
             error_message="Too many requests. Please wait a few seconds and try again.",
             symbol_value=symbol,
+            timeframe_period=return_timeframePeriod(),
         ), 429
 
     except ValueError as exc:

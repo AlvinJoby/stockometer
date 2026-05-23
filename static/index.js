@@ -4,9 +4,11 @@ const formError = document.getElementById("form-error");
 const analyzeForm = document.getElementById("analyze-form");
 const loadingOverlay = document.getElementById("loading-overlay");
 const loadingText = document.getElementById("loading-text");
+const loadingText1 = document.getElementById("loading-text1");
 const trendingList = document.getElementById("trending-list");
 const popularRegionFilter = document.getElementById("popular-region-filter");
 const errorState = document.body.dataset.errorState;
+const timeframePeriod = document.body.dataset.timeframePeriod || "8y";
 const ANALYZE_STARTED_AT_KEY = "stockometerAnalyzeStartedAt";
 const LOADING_TEXT_FADE_MS = 380;
 let loadingSequenceTimers = [];
@@ -81,7 +83,7 @@ const startLoadingSequence = () => {
   loadingText.classList.remove("is-fading-out");
 
   loadingSequenceTimers.push(window.setTimeout(() => {
-    setLoadingText("Downloading 8yrs of data...");
+    setLoadingText(`Downloading ${timeframePeriod}rs of data...`);
   }, 2000));
 
   loadingSequenceTimers.push(window.setTimeout(() => {

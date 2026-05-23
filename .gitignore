@@ -7,3 +7,11 @@ env/
 .vscode/
 
 nb1.ipynb
+
+# pytest temp/cache artifacts
+.pytest-cache-files/
+pytest-cache-files-*/
+.pytest_cache/
+.cache/
+**/__pycache__/
+*.py[cod]

@@ -1,0 +1,22 @@
+You are not missing Jinja forwarding to main.html.
+
+Why it still shows 8yrs:
+- The text "Downloading 8yrs of data..." is in static/index.js (hardcoded).
+- That loader runs on templates/index.html (before /analyze returns main.html).
+- timeframe_period is currently passed only when rendering main.html, so index.js cannot see it unless you also pass it to index.html.
+
+What to change:
+1) In app.py home() and invalid analyze responses that render index.html, pass timeframe_period:
+   return render_template("index.html", ..., timeframe_period=return_timeframePeriod())
+
+2) In templates/index.html, expose it to JS (dataset):
+   <body data-error-state="..." data-timeframe-period="{{ timeframe_period or '8y' }}">
+
+3) In static/index.js, read dataset and replace hardcoded text:
+   const timeframePeriod = document.body?.dataset?.timeframePeriod || "8y";
+   setLoadingText(`Downloading ${timeframePeriod} of data...`);
+
+Optional UX:
+- If you want "8yrs" style (instead of "8y"), add a small formatter:
+  const toHuman = (p) => p.endsWith("y") ? `${p.slice(0,-1)}yrs` : p;
+  setLoadingText(`Downloading ${toHuman(timeframePeriod)} of data...`);
